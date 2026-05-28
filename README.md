@@ -108,7 +108,7 @@ my_mod/
   HPL2-specific AI grounding infrastructure, including API stubs, examples, templates, and engine documentation.
 
 * `maps/`
-  Primary gameplay scripting location containing real HPL map scripts and implementation logic.
+  Primary gameplay scripting location containing real HPL map scripts and implementation logic. Gameplay scripting files are primarily .hps files. Other map-related file types such as .map, .nodes, and similar files are generally editor or design data and are not primary scripting references.
 
 * `custom_story_settings.cfg`
   Mod configuration file indicating that `my_mod/` is the root directory of the active HPL2 custom story project.
