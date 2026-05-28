@@ -483,28 +483,18 @@ afDuration - The duration that the image is displayed for
 afFadeIn - The time, in seconds, to fade in the image
 afFadeOut - The time, in seconds, to fade out the image
 Insanity
-void SetInsanitySetEnabled(string &in asSet, bool abX);
-Determines which InsanitySets are enabled.
 
-asSet - the set
-abX - enabled or not
 void StartInsanityEvent(string &in asEventName);
 Alert icon.png Requires version 1.3
 
 Starts a specified insanity event.
 
 asEventName - Insanity event to play.
-void StartRandomInsanityEvent();
-Starts a random insanity event from the available sets.
 
 void StopCurrentInsanityEvent();
 Alert icon.png Requires version 1.3
 
 Stops the currently playing insanity event.
-
-void InsanityEventIsActive();
-Checks whether an insanity event is currently in effect.
-Not useful at all due to having a return type of void when it should be bool.
 
 
 void SetPlayerLampOil(float afOil);
@@ -512,11 +502,7 @@ void AddPlayerLampOil(float afOil);
 float GetPlayerLampOil();
 Modifies/returns the lamp oil of the player.
 
-void SetSanityDrainDisabled(bool abX);
-Enables/Disables sanity drain from darkness.
-
-Icon bug.png
-Bug: Sanity drain is reenabled on loading a save, as the game is unable to load the value properly from the save data.
+Sanity drain is reenabled on loading a save, as the game is unable to load the value properly from the save data.
 
 
 void SetPlayerJumpForceMul(float afMul);

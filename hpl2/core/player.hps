@@ -213,7 +213,7 @@ void SetEntityPlayerLookAtCallback(string &in asName, string &in asCallback, boo
 // Could work in unintended ways, like looking through walls may also trigger it
 // also it is generally quite inaccurate to rely upon for precision, like aiming
 
-// detailed in callbacks_core.hps
+// Callback syntax detailed in callbacks_core.hps
 
 
 // ============================================================
@@ -285,7 +285,29 @@ void GivePlayerDamage(
 
 
 // ============================================================
-// PLAYER SANITY
+// PLAYER SANITY / INSANITY
+// ============================================================
+
+// Sanity systems are heavily tied to:
+//
+// - darkness
+// - monster encounters
+// - scripted horror events
+// - hallucinations
+// - sound design
+// - screen effects
+//
+//
+// ------------------------------------------------------------
+//
+// Sanity changes are often gradual.
+//
+// Small repeated sanity damage events are
+// generally more effective than large instant drops.
+//
+// IMPORTANT:
+// Player sanity ranges from 0 to 100.
+//
 // ============================================================
 
 // Returns the player's current sanity.
@@ -339,6 +361,39 @@ void GiveSanityDamage(
 // afAmount - sanity damage amount
 // abUseEffect - enables screen/sound effects
 
+// Starts a random insanity event from the available sets.
+void StartRandomInsanityEvent();
+
+// void InsanityEventIsActive();
+// Checks whether an insanity event is currently in effect.
+// Not useful at all due to having a return type of void when it should be bool.
+// WE DO NOT USE IT, it is here only for documentation purposes.
+
+// Starts a screen effect.
+//
+// Common sanity-related effects:
+// - sanity blur
+// - camera distortion
+// - hallucination effects
+void StartScreenEffect(
+    string &in asName,
+    float afFadeInTime,
+    float afTime,
+    float afFadeOutTime,
+    bool abLoop);
+
+// asName - effect name
+// afFadeInTime - fade in duration
+// afTime - active duration
+// afFadeOutTime - fade out duration
+// abLoop - determines whether effect loops
+
+
+// Stops a screen effect.
+void StopScreenEffect(string &in asName);
+
+// asName - effect name
+
 
 // ============================================================
 // PLAYER LANTERN
@@ -367,7 +422,7 @@ void SetLanternDisabled(bool abX);
 // Sets a function to call when the player uses the lantern.
 void SetLanternLitCallback(string &in asCallback);
 
-// detailed in callbacks_core.hps
+// Callback syntax detailed in callbacks_core.hps
 
 
 // ============================================================
