@@ -28,7 +28,7 @@ Focus primarily on the following files and folders when generating scripting sug
 
 Prefer `.hps` files as the primary source of HPL-compatible scripting patterns.
 
-Use generic `.as` AngelScript references only as secondary language-level guidance when required.
+Use generic `.as` and `.html` AngelScript references only as secondary language-level guidance when required.
 
 The `maps/` folder contains the primary gameplay implementation scripts for the active mod project. Within maps/, focus only on .hps gameplay scripting files.
 

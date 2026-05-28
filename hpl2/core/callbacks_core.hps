@@ -1,0 +1,517 @@
+// ============================================================
+// callbacks.hps
+// HPL2 CALLBACK REFERENCE + STRUCTURE GROUNDING
+// Target: Amnesia TDD / HPL2 1.0 - 1.2
+//
+// PURPOSE:
+// This file exists primarily for AI grounding and autocomplete.
+//
+// It documents:
+// - core map lifecycle callbacks
+// - timer callbacks
+// - interaction callbacks
+// - collision callbacks
+// - entity state callbacks
+// - common HPL2 callback patterns
+//
+// IMPORTANT:
+// These are examples/interfaces, NOT engine implementations.
+// ============================================================
+
+
+
+// ============================================================
+// MAP LIFECYCLE CALLBACKS
+// ============================================================
+
+// Runs once when map loads for the first time.
+// IMPORTANT:
+//
+// OnStart() only runs the FIRST time the map loads.
+//
+// If a player revisits the map later,
+// logic inside OnStart() will NOT run again.
+//
+// Some state-enforcement functions therefore belong
+// inside OnEnter() instead.
+void OnStart()
+{
+    // Common usage:
+    // - initialize local variables
+    // - setup callbacks
+    // - setup timers
+    // - set entity states
+    // - preload sounds / particles
+}
+
+// Runs every time player enters the map.
+void OnEnter()
+{
+    // Common usage:
+    // - resume map logic
+    // - restore ambience
+    // - play music
+	
+	// Example:
+	// SetEntityInteractionDisabled(string &in asName, bool abDisabled);
+	//
+	// If called only in OnStart(), interaction state may
+	// become inconsistent after leaving and re-entering
+	// the map.
+}
+
+// Runs whenever player leaves the map.
+void OnLeave()
+{
+    // Common usage:
+    // - stop sounds/music
+    // - cleanup temporary systems
+	// - set loading screen image
+}
+
+
+
+// ============================================================
+// GLOBAL GAME START CALLBACK
+// ============================================================
+
+// Usually found in global.hps or inventory.hps.
+// Runs when player starts a NEW GAME.
+void OnGameStart()
+{
+    // Common usage:
+    // - initialize global variables
+    // - setup progression flags
+}
+
+
+
+// ============================================================
+// ENTITY INTERACTION CALLBACKS
+// ============================================================
+
+
+// Calls a function when the player interacts with a certain entity.
+void SetEntityPlayerInteractCallback(string &in asName, string &in asCallback, bool abRemoveOnInteraction);
+
+// asName - internal name
+// asCallback - function to call
+// abRemoveOnInteraction - determines whether the callback should be removed when the player interacts with the entity
+
+// Callback syntax
+void InteractXFunc(string &in asEntity)
+{
+    // Triggered when player interacts with entity.
+
+    // Common usage:
+    // - buttons
+    // - puzzle props
+    // - scripted events
+    // - pickup substitutes
+}
+
+// ============================================================
+// PLAYER LOOK CALLBACKS
+// ============================================================
+
+
+// Calls a function when the player looks at a certain entity.
+void SetEntityPlayerLookAtCallback(string &in asName, string &in asCallback, bool abRemoveWhenLookedAt);
+
+// asName - internal name
+// asCallback - function to call
+// abRemoveWhenLookedAt - determines whether the callback should be removed when the player looked at the entity
+
+// Callback syntax
+void LookAtXFunc(string &in asEntity, int alState)
+{
+    // Common usage:
+    // - sanity events
+    // - monster reveals
+    // - scare triggers
+}
+
+// alState:
+// 1 = looking
+// -1 = not looking
+
+
+// ============================================================
+// ENTITY EVENT CALLBACKS
+// ============================================================
+
+
+// Calls a function when certain events occur with an entity.
+void SetEntityCallbackFunc(string &in asName, string &in asCallback);
+
+// asName - internal name
+// asCallback - function to call
+
+
+// Callback syntax
+void EntityXCallback(string &in asEntity, string &in asType)
+{
+    // Example:
+    if(asType == "OnPickup")
+    {
+        // Trigger progression.
+    }
+}
+
+// asType values depend on entity type.
+
+	// Object:
+    // "Break"
+
+    // Lamp:
+    // "OnIgnite"
+
+    // Item:
+    // "OnPickup"
+
+    // Enemy:
+    // "OnDeath"
+
+    // Enemy_Grunt / Enemy_Manpig:
+    // "OnAutoDisabled"
+
+// ============================================================
+// CONNECTION STATE CALLBACKS
+// ============================================================
+
+
+// A callback called whenever the connection state changes.
+void SetEntityConnectionStateChangeCallback(string &in asName, string &in asCallback);
+
+// asName - internal name
+// asCallback - function to call
+
+// Callback syntax
+void ConnectionStateXCallback(string &in asEntity, int alState)
+{
+    // Common usage:
+    // - buttons
+    // - levers
+    // - machinery
+    // - puzzle systems
+}
+
+// alState:
+// -1 = off
+// 0 = between
+// 1 = on
+
+
+// ============================================================
+// COLLISION CALLBACKS
+// ============================================================
+
+// Calls a function when two entities collide.
+void AddEntityCollideCallback(
+    string &in asParentName,
+    string &in asChildName,
+    string &in asFunction,
+    bool abDeleteOnCollide,
+    int alStates);
+	
+// asParentName - internal name of main object
+// asChildName - internal name of object that collides with main object
+// asFunction - function to call
+// abDeleteOnCollide - determines whether the callback is removed after being called
+// alStates - 1 = only enter, -1 = only leave, 0 = both
+
+// Callback syntax
+void CollideXwithYCallback(
+    string &in asParent,
+    string &in asChild,
+    int alState)
+{
+    // Common usage:
+    // - area triggers
+    // - chase triggers
+    // - scripted sequences
+}
+
+// alState:
+// 1 = enter
+// -1 = leave
+
+
+// Removes an EntityCollideCallback.
+void RemoveEntityCollideCallback(
+    string &in asParentName,
+    string &in asChildName);
+
+
+// Checks whether two entities collide. This function does NOT support asterix (*) or "Player"!
+bool GetEntitiesCollide(string &in asEntityA, string &in asEntityB);
+
+// ============================================================
+// ITEM USE CALLBACKS
+// ============================================================
+
+// Allows the player to use items on the world.
+void AddUseItemCallback(
+    string &in asName,
+    string &in asItem,
+    string &in asEntity,
+    string &in asFunction,
+    bool abAutoDestroy);
+
+// asName - internal name of the callback
+// asItem - internal name of the item
+// asEntity - entity to be able to use the item on
+// asFunction - function to call
+// abAutoDestroy - determines whether the callback should be removed when the item is used
+
+
+// Callback syntax
+void UseItemXonYCallback(
+    string &in asItem,
+    string &in asEntity)
+{
+    // Common usage:
+    // - keys
+    // - puzzle items
+    // - machinery activation
+}
+
+// Removes an item callback.
+void RemoveUseItemCallback(string &in asName);
+
+
+// ============================================================
+// ITEM COMBINATION CALLBACKS
+// ============================================================
+
+// Allows the player to combine items in inventory.
+void AddCombineCallback(
+    string &in asName,
+    string &in asItemA,
+    string &in asItemB,
+    string &in asFunction,
+    bool abAutoRemove);
+
+// asName - internal name for the callback
+// asItemA - internal name of first item
+// asItemB - internal name of second item
+// asFunction - the function to call
+// abAutoRemove - determines whether the callback should be removed when the items are combined
+
+
+// Callback syntax
+void CombineXwithYCallback(
+    string &in asItemA,
+    string &in asItemB)
+{
+    // Common usage:
+    // - crafting
+    // - chemistry
+    // - puzzle assembly
+}
+
+// Removes a combine callback.
+void RemoveCombineCallback(string &in asName);
+
+// ============================================================
+// CHECKPOINT CALLBACKS
+// ============================================================
+
+// Sets a checkpoint at which the player will respawn in case he dies.
+// IMPORTANT - not the same as AutoSave() - which actually creates a save file!
+void CheckPoint(
+    string &in asName,
+    string &in asStartPos,
+    string &in asCallback,
+    string &in asDeathHintCat,
+    string &in asDeathHintEntry);
+
+// asName - the internal name
+// asStartPos - the name of the StartPos in the editor
+// asCallback - the function to call when the player dies/respawns
+// asDeathHintCat - the category of the death hint message to be used in the .lang file
+// asDeathHintEntry - the entry in the .lang file
+
+
+// Callback syntax
+void CheckpointXCallback(
+    string &in asName,
+    int alCount)
+{
+    // Common usage:
+    // - restore progression and enemy encounters
+    // - alter encounters
+    // - reset scripted events
+}
+
+// alCount:
+// 0 = first checkpoint load
+// 1+ = subsequent checkpoint loads
+
+/// ============================================================
+// PROP ANIMATION CALLBACKS
+// ============================================================
+
+// Makes the prop play an animation and calls a function when it stops.
+void PlayPropAnimation(
+    string &in asProp,
+    string &in asAnimation,
+    float afFadeTime,
+    bool abLoop,
+    string &in asCallback);
+
+// asProp - internal name of the prop
+// asAnimation - animation to play
+// afFadeTime - fade time between current and new animations
+// abLoop - determines whether the animation loops
+// asCallback - function to call when the animation ends
+
+
+// Callback syntax
+void AnimationPlayedOnPropXCallback(string &in asProp)
+{
+    // Common usage:
+    // - chained events
+    // - machinery
+    // - cinematic sequences
+}
+
+// ============================================================
+// LANTERN CALLBACKS
+// ============================================================
+
+// Sets the function to call when the player uses the lantern.
+void SetLanternLitCallback(string &in asCallback);
+
+// asCallback - function to call
+
+
+// Callback syntax
+void LanternCallback(bool abLit)
+{
+    // Common usage:
+    // - darkness mechanics
+    // - scripted encounters
+    // - monster reactions
+}
+
+// abLit:
+// true = lantern lit
+// false = lantern unlit
+
+
+// ============================================================
+// CONNECTION CALLBACKS
+// ============================================================
+
+// Connects two entities together so that changing the state
+// of the main entity changes the state of the connected entity.
+void ConnectEntities(
+    string &in asName,
+    string &in asMainEntity,
+    string &in asConnectEntity,
+    bool abInvertStateSent,
+    int alStatesUsed,
+    string &in asCallbackFunc);
+
+// asName - the name of the connection
+// asMainEntity - the entity that causes the change
+// asConnectEntity - the entity that is affected by the change
+// abInvertStateSent - invert state sent to connected entity
+// alStatesUsed - the state to use
+// asCallbackFunc - the name of the connection callback
+
+
+// Callback syntax
+void ConnectionXwithYCallback(
+    string &in asConnectionName,
+    string &in asMainEntity,
+    string &in asConnectEntity,
+    int alState)
+{
+    // Common usage:
+    // - machinery systems
+    // - bridge controls
+    // - puzzle chains
+}
+
+// alState:
+// -1 = off/min
+// 1 = on/max
+
+// ============================================================
+// MULTISLIDER CALLBACKS
+// ============================================================
+
+// Calls a function when state changes.
+void SetMultiSliderCallback(
+    string &in asName,
+    string &in asCallback);
+
+// asName - internal name
+// asCallback - function to call
+
+
+// Callback syntax
+void MultiSliderXCallback(
+    string &in asEntity,
+    int alState)
+{
+    // Used for advanced machinery/puzzle systems.
+}
+
+// ============================================================
+// COMMON CALLBACK DESIGN NOTES
+// ============================================================
+
+// HPL2 scripting is heavily callback-driven.
+//
+// Typical flow:
+//
+// player interaction
+// -> callback
+// -> timer
+// -> entity state change
+// -> sound/effect
+// -> another callback
+//
+// Most gameplay scripting is event chaining.
+//
+// ------------------------------------------------------------
+//
+// GOOD PRACTICE:
+//
+// Use descriptive callback names:
+//
+// Bad:
+// Func1()
+// Event()
+//
+// Good:
+// LeverPulled_MainHall()
+// MonsterSpawnTimer()
+// MachineSequenceFinished()
+//
+// Best (depicted with X and Y)
+//
+// X marks the name of the object we are referencing. It is useful to use it as a naming convention when we know the actual name.
+// Y is then used as a second object, when two are references in the same context.
+//
+// LookAtMirrorFunc() - where X == mirror
+// CollidePlayerwithGateCallback - where X == Player and Y == Gate
+//
+//
+// ------------------------------------------------------------
+//
+// CALLBACKS ARE THE CORE OF HPL2 SCRIPTING.
+//
+// Most gameplay logic is built from:
+// - callbacks
+// - timers
+// - entity states
+// - chained events
+//
+// NOT from continuous update loops.
+// EXCEPT from patch 1.5 where OnUpdate may be introduced for a FEW things
+//
+// ============================================================
