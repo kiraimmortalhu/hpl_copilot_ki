@@ -1,0 +1,1380 @@
+This page documents all scripts available in Amnesia: The Dark Descent.
+
+Note icon.png Note: Some of the functions require the Amnesia 1.3 or 1.5 update. Steam and other online store copies should be automatically updated. Other copies can get 1.3 here.
+Directives
+First off, #include "file.hps" can be used to programmatically merge together multiple separate files to make organizing scripts easier.
+
+
+Alert icon.png Requires version 1.5
+
+Engine scripts
+Main
+The following functions are the main hps functions that the HPL2 engine looks to run on certain events - similar to the C++ int main() function.
+
+void OnStart();
+The function that runs when the map is loaded for the first time.
+
+void OnEnter();
+The function that runs whenever the player enters a map.
+
+void OnLeave();
+The function that runs when the player leaves a map.
+
+void OnGameStart();
+This function is found in the global.hps file and the inventory.hps file, and is run when the game is first started by the player (ie via "Start New Game").
+
+void OnUpdate(float afStep);
+Alert icon.png Requires version 1.5
+
+This function is executed for every game update or "tick". Can be used for rapid-firing updates instead of looping timers. Keep in mind that this can affect game performance if not used with care.
+
+afStep- Time elapsed in seconds since the last frame. Multiply speeds, distances etc. by this argument to avoid framerate dependence issues (for example: if you move something in this function with constant speed, it will move faster on computers which run the game with high FPS and slower on computers with low FPS).
+General
+float RandFloat(float afMin, float afMax);
+Generates a random float.
+
+afMin - minimum value
+afMax - maximum value
+int RandInt(int alMin, int alMax);
+Generates a random int. Note: the maximum value is inclusive - the RandInt() function may return this value.
+
+alMin - minimum value
+alMax - maximum value
+bool StringContains(string &in asString, string &in asSubString);
+Checks whether a string contains the specified string.
+Example: searching for "hello" in "hello world" would return true.
+
+asString - the string to check
+asSubString - the string to search for
+string& StringSub(string &in asString, int alStart, int alCount);
+Returns the substring in a string.
+Example: in the string "frictional games rocks", using 4 as alStart and 6 as alCount would return "tional".
+
+asString - the string
+alStart - starting character of the string, with 0 being the first character
+alCount - amount of characters
+int StringToInt(string &in asString);
+Alert icon.png Requires version 1.3
+
+If possible, returns an integer converted from a string, else returns 0.
+
+asString - String to convert.
+float StringToFloat(string &in asString);
+Alert icon.png Requires version 1.3
+
+If possible, returns a float converted from a string, else returns 0.
+
+asString - String to convert.
+bool StringToBool(string &in asString);
+Alert icon.png Requires version 1.3
+
+If possible, returns a boolean converted from a string, else returns false.
+
+asString - String to convert.
+Mathematical Operations
+float MathSin(float afX);
+Alert icon.png Requires version 1.3
+
+Returns the sine of the specified value.
+
+afX - Value to operate.
+float MathCos(float afX);
+Alert icon.png Requires version 1.3
+
+Returns the cosine of the specified value.
+
+afX - Value to operate.
+float MathTan(float afX);
+Alert icon.png Requires version 1.3
+
+Returns the tangent of the specified value.
+
+afX - Value to operate.
+float MathAsin(float afX);
+Alert icon.png Requires version 1.3
+
+Returns the arc sine of the specified value.
+
+afX - Value to operate.
+float MathAcos(float afX);
+Alert icon.png Requires version 1.3
+
+Returns the arc cosine of the specified value.
+
+afX - Value to operate.
+float MathAtan(float afX);
+Alert icon.png Requires version 1.3
+
+Returns the arc tangent of the specified value.
+
+afX - Value to operate.
+float MathAtan2(float afX, float afY);
+Alert icon.png Requires version 1.3
+
+Calculates and returns the arc tangent of the specified values.
+
+afX - First value to operate.
+afY - Second value to operate.
+float MathSqrt(float afX);
+Alert icon.png Requires version 1.3
+
+Returns the square root of the specified value.
+
+afX - Value to operate.
+float MathPow(float afBase, float afExp);
+Alert icon.png Requires version 1.3
+
+Returns the value of afBase raised to the power of afExp.
+
+afBase - The base value.
+afExp - Value to calculate the base with.
+float MathMin(float afA, float afB);
+Alert icon.png Requires version 1.3
+
+Returns the lowest value.
+
+afA - First value.
+afB - Second value.
+float MathMax(float afA, float afB);
+Alert icon.png Requires version 1.3
+
+Returns the highest value.
+
+afA - First value.
+afB - Second value.
+float MathClamp(float afX, float afMin, float afMax);
+Alert icon.png Requires version 1.3
+
+Returns afX clamped between afMin and afMax. If afX < afMin, returns afMin, and if afX > afMax, returns afMax.
+
+afX - The value to clamp.
+afMin - The minimum value to clamp afX with.
+afMax - The maximum value to clamp afX with.
+float MathAbs(float afX);
+Alert icon.png Requires version 1.3
+
+Returns the absolute value.
+
+afX - Value to operate.
+Debugging
+void Print(string &in asString);
+Prints a string to the log file (hpl.log).
+
+void AddDebugMessage(string &in asString, bool abCheckForDuplicates);
+Prints a line of text to the debug console at the bottom left of the screen. Debug mode must be enabled for the console messages to be visible.
+
+asString - the string to print
+abCheckForDuplicates - if true, the string won't be printed more than once on screen until it disappears
+void ProgLog(string &in asLevel, string &in asMessage);
+Prints an entry to the ProgLog (progression log).
+ProgLog is a file created in Documents/Amnesia/main (or an FC folder if one is being used). It logs certain events, such us opening the menu or picking up the lantern, as well as the player's state (Health, Sanity, Oil, Tinderboxes, Coins), for the purpose of documenting a tester's playstyle.
+
+This function allows to log custom messages.The messages in the ProgLog file are sorted by time elapsed since a map was loaded.
+
+ProgLog has to be enabled for a player profile in user_settings.cfg before it starts working.
+
+asLevel - can be "Low", "Medium" or "High". It's a tag which appears in each log entry, for event prioritising.
+asMessage - The custom message to be printed to the log.
+bool ScriptDebugOn();
+Checks whether the debug mode is enabled.
+See "Setting up Development Environment" to setup debug mode on your own computer.
+
+Variables
+Alert icon.png Warning: Regular variables (int, float, etc.) are not saved by the game. Using them in important parts of yor script will break it upon loading a game save. In HPL, those variables should only be used for disposable counters, like spawning objects in a "for" loop. For variables which need to be saved, use the wrappers as described below.
+Local
+Local variables can be used throughout the same script file.
+
+void SetLocalVarInt(string &in asName, int alVal);
+void AddLocalVarInt(string &in asName, int alVal);
+int GetLocalVarInt(string &in asName);
+void SetLocalVarFloat(string &in asName, float afVal);
+void AddLocalVarFloat(string &in asName, float afVal);
+float GetLocalVarFloat(string &in asName);
+void SetLocalVarString(string &in asName, const string &in asVal);
+void AddLocalVarString(string &in asName, string &in asVal);
+string& GetLocalVarString(string &in asName);
+Global
+Global variables can be used throughout several maps and can be accessed by several script files.
+
+void SetGlobalVarInt(string &in asName, int alVal);
+void AddGlobalVarInt(string &in asName, int alVal);
+int GetGlobalVarInt(string &in asName);
+void SetGlobalVarFloat(string &in asName, float afVal);
+void AddGlobalVarFloat(string &in asName, float afVal);
+float GetGlobalVarFloat(string &in asName);
+void SetGlobalVarString(string &in asName, const string &in asVal);
+void AddGlobalVarString(string &in asName, string &in asVal);
+string& GetGlobalVarString(string &in asName);
+Particle Systems
+void PreloadParticleSystem(string &in asPSFile);
+Preloads a particle system.
+
+asPSFile - The particle system file to load. Extension: .ps
+void CreateParticleSystemAtEntity(string &in asPSName, string &in asPSFile, string &in asEntity, bool abSavePS);
+Creates a particle system on an entity.
+
+asPSName - internal name
+asPSFile - the particle system to use + extension .ps
+asEntity - the entity to create the particle system at
+abSavePS - determines whether a particle system should "remember" its shown/hidden state, so that this state can be restored when the player revisits the level
+void CreateParticleSystemAtEntityExt(string &in asPSName, string &in asPSFile, string &in asEntity, bool abSavePS,
+float afR, float afG, float afB, float afA, bool abFadeAtDistance, float afFadeMinEnd, float afFadeMinStart,
+float afFadeMaxStart, float afFadeMaxEnd);
+Creates a particle system on an entity, extended method with more options.
+
+asPSName - internal name
+asPSFile - the particle system to use + extension .ps
+asEntity - the entity to create the particle system at
+abSavePS - determines whether a particle system should "remember" its shown/hidden state, so that this state can be restored when the player revisits the level
+afR - red value
+afG - green value
+afB - blue value
+afA - alpha value
+abFadeAtDistance - determines whether a particle system fades from a certain distance on
+afFadeMinEnd - minimum distance at which the particle system stops fading
+afFadeMinStart - minimum distance at which the particle system starts fading
+afFadeMaxStart - maximum distance at which the particle system starts fading
+afFadeMaxEnd - maximum distance at which the particle system stops fading
+void DestroyParticleSystem(string &in asName);
+Destroys a particle system.
+
+asName - The internal name of the particle system
+Sounds & Music
+void PreloadSound(string &in asSoundFile);
+Preloads a sound.
+
+asSoundFile - The sound file to load (extension .snt optional)
+void PlayGuiSound(string &in asSoundFile, float afVolume);
+Plays a sound, not using 3D.
+
+asSoundFile - the sound to play (extension .snt/.ogg optional)
+afVolume - the volume of the sound
+void PlaySoundAtEntity(string &in asSoundName, string &in asSoundFile, string &in asEntity, float afFadeTime, bool abSaveSound);
+Creates a sound at an entity.
+
+asSoundName - internal name
+asSoundFile - the sound to use (extension .snt optional)
+asEntity - the entity to create the sound at. Using "Player" is effectively the same as PlayGuiSound, yet this function allows a looping sound to be saved
+afFadeTime - time in seconds the sound needs to fade. Avoids enemies hearing the sound if afFadeTime is at least 0.1f
+abSaveSound - if true, a looping sound will "remember" its playback state (currently playing/stopped), and that state will be restored the next time the level is entered. If true, the sound is never attached to the entity! Note that saving should only be used on looping sounds!
+void FadeInSound(string &in asSoundName, float afFadeTime, bool abPlayStart);
+Fades in a sound.
+
+asSoundName - internal name
+afFadeTime - time in seconds
+abPlayStart - Play the sound defined in the <Start> section of the .snt before playing the main sound
+void StopSound(string &in asSoundName, float afFadeTime);
+Fades out a sound.
+
+asSoundName - internal name
+afFadeTime - time in seconds, use 0 to immediately stop the sound
+void PlayMusic(string &in asMusicFile, bool abLoop, float afVolume, float afFadeTime, int alPrio, bool abResume);
+Plays music.
+
+asMusicFile - the music file to play (extension .ogg optional)
+abLoop - determines whether a music track should loop
+afVolume - volume of the music
+afFadeTime - time in seconds until music reaches full volume
+alPrio - priority of the music. Note that only the music with the highest priority can be heard! 0 - lowest, 1 - higher, etc.
+abResume - if true, playback will be continued from where the track stopped after the call to StopMusic(). If false, the track will be restarted.
+void StopMusic(float afFadeTime, int alPrio);
+Stops music.
+
+afFadeTime - time in seconds until music stops
+alPrio - the priority of the music that should stop
+Icon bug.png
+Bug: When loading a map from the debug menu, music from the previously loaded map cannot be stopped! It can only be overridden by playing another instance of music at the same priority level.
+
+To work around this, call PlayMusic first, where the volume is greater than 0 and the priority matches the previous map's music, then call StopMusic immediately afterward.
+
+
+
+void AddEffectVoice(string &in asVoiceFile, string &in asEffectFile, string &in asTextCat, string &in asTextEntry,
+bool abUsePosition, string &in asPosEntity, float afMinDistance, float afMaxDistance);
+This adds a voice and an additional sound effect to be played. It is okay to call this many times in order to play many voices in a row. The EffectVoiceOverCallback is not called until ALL voices have finished.
+
+asVoiceFile - the voice to play
+asEffectFile - the sound effect to play
+asTextCat - the category in the .lang file, usually "Voice"
+asTextEntry - the text entry in the .lang file
+abUsePosition - plays using 3D from the entity, or without 3D
+asPosEntity - the entity at which the voice and sound are played from
+afMinDistance - minimum distance the voice and sound are heard
+afMaxDistance - maximum distance the voice and sound are heard
+void StopAllEffectVoices(float afFadeOutTime);
+Stops all voices and calls the EffectVoiceOverCallback.
+
+bool GetEffectVoiceActive();
+Checks whether EffectVoices are still active.
+
+void SetEffectVoiceOverCallback(string &in asFunc);
+Sets the function to be called when the EffectVoices are finished.
+Callback syntax: void MyFunc()
+
+void FadeGlobalSoundVolume(float afDestVolume, float afTime);
+Influences the global sound volume, that means everything you can hear from the world. This does not affect music of GUI sounds.
+
+afDestVolume - desired volume
+afTime - time in seconds until volume reaches desired volume
+void FadeGlobalSoundSpeed(float afDestSpeed, float afTime);
+Influences the global sound speed.
+
+afDestSpeed - desired speed
+afTime - time in seconds until volume reaches desired speed
+Lights
+void SetLightVisible(string &in asLightName, bool abVisible);
+Enables/disables lights.
+
+asLightName - internal name
+abVisible - determines the state of the light
+void FadeLightTo(string &in asLightName, float afR, float afG, float afB, float afA, float afRadius, float afTime);
+Changes the properties of a light.
+
+asLightName - internal name
+afR - red value
+afG - green value
+afB - blue value
+afA - alpha value
+afRadius - radius of the light. -1 means keeping the radius
+afTime - time in seconds until change is done
+void SetLightFlickerActive(string &in asLightName, bool abActive);
+Activates flickering on a light.
+
+asLightName - The internal light name
+abActive - true = active, false = inactive
+Game scripts
+General
+void StartCredits(string &in asMusic, bool abLoopMusic, string &in asTextCat, string &in asTextEntry, int alEndNum);
+Starts the end credits screen.
+
+asMusic - the music to play (including .ogg)
+abLoopMusic - determines whether the music should loop
+asTextCat - the category to be used in the .lang file, usually "Ending"
+asTextEntry - the entry in the .lang file
+alEndNum - Amnesia has 3 different endings and displays a code at the bottom. Determines which code is displayed. 0-2 will display codes, any other integer will not.
+void StartDemoEnd();
+Shows the demo end screen. The background and UI elements are defined in demo.cfg, with the text using the entries in the "Demo" category of the .lang file.
+
+void AutoSave();
+Creates an auto save file.
+
+void CheckPoint(string &in asName, string &in asStartPos, string &in asCallback, string &in asDeathHintCat, string &in asDeathHintEntry);
+Sets a checkpoint at which the player will respawn in case he dies.
+Callback syntax: void MyFunc(string &in asName, int alCount)
+Count is 0 on the first checkpoint load!
+
+asName - the internal name
+asStartPos - the name of the StartPos in the editor
+asCallback - the function to call when the player dies/respawns
+asDeathHintCat - the category of the death hint message to be used in the .lang file, usually "Hints"
+asDeathHintEntry - the entry in the .lang file
+void ChangeMap(string &in asMapName, string &in asStartPos, string &in asStartSound, string &in asEndSound);
+Loads another map after a 1.5 second fade out.
+
+asMapName - the file to load
+asStartPos - the name of the StartPos in the next map
+asStartSound - the sound that is played when the change starts
+asEndSound - the sound that is played when the new map is loaded
+void ClearSavedMaps();
+Clears the "history" of the save, useful to do when you know the player will not be able to go back anymore. Makes the next save much smaller in size.
+
+void CreateDataCache();
+void DestroyDataCache();
+This caches all current textures and models and they are not released until destroy is called. If there is already cached data it is destroyed. Create caches to enable faster loading when going back to a map. Destroy the cache if you know the player won't go back to that map.
+
+void SetMapDisplayNameEntry(string &in asNameEntry);
+Sets the map name shown in save file names. If none is set NULL is assumed.
+
+asNameEntry - the entry to display, category must be "Levels"!
+void SetSkyBoxActive(bool abActive);
+Enables/Disables the skybox.
+
+abActive - true = active, false = inactive
+void SetSkyBoxTexture(string &in asTexture);
+Sets the texture of the skybox.
+
+asTexture - The texture file to set. Extension: .dds
+void SetSkyBoxColor(float afR, float afG, float afB, float afA);
+Sets the solid color of the skybox rather than a texture.
+
+afR - red value
+afG - green value
+afB - blue value
+afA - alpha value
+void SetFogActive(bool abActive);
+Enables/Disables the global fog.
+
+abActive - true = active, false = inactive
+void SetFogColor(float afR, float afG, float afB, float afA);
+Sets the color to use for the global fog.
+
+afR - red value
+afG - green value
+afB - blue value
+afA - alpha value
+void SetFogProperties(float afStart, float afEnd, float afFalloffExp, bool abCulling);
+Sets the properties for the global fog.
+
+afStart - how many meters from the camera should the fog begin
+afEnd - how many meters from the camera should the fog reach full thickness
+afFalloffExp - the amount by which the thinkness increases
+abCulling - whether occlusion culling is active for the fog; this prevents objects behind the fog from being loaded
+void SetupLoadScreen(string &in asTextCat, string &in asTextEntry, int alRandomNum, string &in asImageFile);
+Determines which loading screen will be shown when changing maps.
+
+asTextCat - the category of the loading text in the .lang file to be shown on the loading screen, usually "LoadingText"
+asTextEntry - the entry in the .lang file
+alRandomNum - if greater 1, then it will randomize between 1 and alRandom for each LoadScreen giving entry the suffix XX (eg 01). If < =1 then no suffix is added
+asImageFile - the image to be shown (optional)
+void UnlockAchievement(string &in asName);
+Unlocks the specified achievement. Only able to be used for the ending achievements.
+
+asName - The name of the achievement. Only the following strings are valid:
+Benefactor
+Survivor
+Sacrifice
+Quitter
+Egotist
+Altruist
+Vacillator
+Game Timer
+void AddTimer(string &in asName, float afTime, string &in asFunction);
+Creates a timer which calls a function when it expires.
+Callback syntax: void MyFunc(string &in asTimer)
+
+asName - the name of the timer
+afTime - time in seconds
+asFunction - the function to call
+void RemoveTimer(string &in asName);
+Removes a timer, no matter how much time is left.
+
+asName - the internal name of the timer.
+float GetTimerTimeLeft(string &in asName);
+Returns the time left on a timer.
+
+asName - the internal name of the timer.
+Screen Effects
+void FadeOut(float afTime);
+Fades the screen to black.
+
+afTime - time in seconds until the screen is completly black
+void FadeIn(float afTime);
+Fades the screen back to normal.
+
+afTime - time in seconds until the screen back to normal
+void FadeImageTrailTo(float afAmount, float afSpeed);
+Applies the image trail effect to the screen.
+
+afAmount - intensity (default: 0)
+afSpeed - time in seconds until full effect
+void FadeSepiaColorTo(float afAmount, float afSpeed);
+Makes the screen go dark red.
+
+afAmount - intensity (default: 0)
+afSpeed - time in seconds until full effect
+void FadeRadialBlurTo(float afSize, float afSpeed);
+Applies radial blur effects to the screen.
+
+afSize - intensity (default: 0)
+afSpeed - time in seconds until full effect
+void SetRadialBlurStartDist(float afStartDist);
+Determines at which distance the radial blur effects appear.
+
+afStartDist - the distance at which the effect starts
+void StartEffectFlash(float afFadeIn, float afWhite, float afFadeOut);
+Fades the screen to white.
+
+afFadeIn - time in seconds until screen is white
+afWhite - determines to which percentage the screen fades to white (1.0 = completly white)
+afFadeOut - time in seconds until screen is back to normal again
+void StartEffectEmotionFlash(string &in asTextCat, string &in asTextEntry, string &in asSound);
+Fades the screen to white and shows a text message.
+
+asTextCat - the category in the .lang file
+asTextEntry - the text entry in the .lang file
+asSound - the sound to play while fading
+bool GetFlashbackIsActive();
+Checks whether a flashback is still in effect.
+
+void StartPlayerSpawnPS(string &in asSPSFile);
+void StopPlayerSpawnPS();
+Continuously spawn regular particle systems (.ps) around the player. Particles created by this script carry over from map to map.
+
+asSPSFile - the .sps file to use. Example .sps files are located in the /misc folder in the main game directory.
+Custom .sps files can be created by hand in a text editor (see existing ones and mimic how those are written).
+Since StopPlayerSpawnPS() doesn't seem to work, to stop an SPS you must create an .sps file with an empty particle field field and override the old SPS by calling StartPlayerSpawnPS again.
+void StartScreenShake(float afAmount, float afTime, float afFadeInTime, float afFadeOutTime);
+Shakes the screen.
+
+afAmount - intensity of the shake
+afTime - duration of the shake
+afFadeInTime - time in seconds until full intensity is reached
+afFadeOutTime - time until screen is back to normal
+void SetInDarknessEffectsActive(bool abX);
+Alert icon.png Requires version 1.3
+
+Enables/disables the sanity drain and night vision effects while in the darkness.
+
+bool abX - Enable/disable effects.
+
+void ShowScreenImage(string &in asImageName, float afX, float afY, float afScale, bool abUseRelativeCoordinates, float afDuration, float afFadeIn, float afFadeOut);
+Alert icon.png Requires version 1.5
+
+Displays an image file directly onto the screen. See ShowScreenImage() in the tutorials section for more information.
+
+asImageName - The image file to render (.jpg, .png, .tga, .dds)
+afX - The X position of the image
+afY - The Y position of the image
+afScale - The size of the image in pixels (not scale), or original image size if negative
+abUseRelativeCoordinates - Whether X and Y are relative to the screen resoltion, or pixel co-ordinates if not
+afDuration - The duration that the image is displayed for
+afFadeIn - The time, in seconds, to fade in the image
+afFadeOut - The time, in seconds, to fade out the image
+Insanity
+void SetInsanitySetEnabled(string &in asSet, bool abX);
+Determines which InsanitySets are enabled.
+
+asSet - the set
+abX - enabled or not
+void StartInsanityEvent(string &in asEventName);
+Alert icon.png Requires version 1.3
+
+Starts a specified insanity event.
+
+asEventName - Insanity event to play.
+void StartRandomInsanityEvent();
+Starts a random insanity event from the available sets.
+
+void StopCurrentInsanityEvent();
+Alert icon.png Requires version 1.3
+
+Stops the currently playing insanity event.
+
+void InsanityEventIsActive();
+Checks whether an insanity event is currently in effect.
+Not useful at all due to having a return type of void when it should be bool.
+
+Player
+Note that the player's maximum health and sanity is 100.
+
+void SetPlayerActive(bool abActive);
+Enabled/Disable player controlled movement.
+
+void ChangePlayerStateToNormal();
+Resets the player's state, forcing them to stop interacting with objects. It also clears the inventory item to be used (as if it was double-clicked on in the inventory again) and dismounts the player from ladders.
+
+void SetPlayerCrouching(bool abCrouch);
+Forces the player to crouch.
+
+void AddPlayerBodyForce(float afX, float afY, float afZ, bool abUseLocalCoords);
+Pushes the player into a certain direction. Note that you need values above ~2000 to see any effects.
+
+afX - amount along the X-axis
+afY - amount along the Y-axis
+afZ - amount along the Z-axis
+abUseLocalCoords - If true, axes are based on where the player is facing, not the world.
+void ShowPlayerCrossHairIcons(bool abX);
+Enables/Disables the icons when a player has something in focus.
+
+void SetPlayerSanity(float afSanity);
+void AddPlayerSanity(float afSanity);
+float GetPlayerSanity();
+Modifies/returns the sanity of the player.
+
+void SetPlayerHealth(float afHealth);
+void AddPlayerHealth(float afHealth);
+float GetPlayerHealth();
+Modifies/returns the health of the player.
+
+void SetPlayerLampOil(float afOil);
+void AddPlayerLampOil(float afOil);
+float GetPlayerLampOil();
+Modifies/returns the lamp oil of the player.
+
+float GetPlayerSpeed();
+float GetPlayerYSpeed();
+Returns the current speed of the player.
+
+void SetSanityDrainDisabled(bool abX);
+Enables/Disables sanity drain from darkness.
+
+Icon bug.png
+Bug: Sanity drain is reenabled on loading a save, as the game is unable to load the value properly from the save data.
+
+
+
+void GiveSanityBoost();
+Boosts the player's sanity by a large amount depending on the current sanity.
+
+Sanity	New Sanity
+0-24	100
+25-49	90
+50-74	80
+75-100	+5
+void GiveSanityBoostSmall();
+Boosts the player's sanity by a small amount depending on the current sanity.
+
+Sanity	Sanity Bonus
+0-24	+20
+25-49	+15
+50-75	+10
+75-100	+5
+void GiveSanityDamage(float afAmount, bool abUseEffect);
+Reduces the sanity of the player.
+
+afAmount - amount of sanity damage done
+abUseEffect - if a sound is played and screen effects are shown when the sanity damage is dealt
+void GivePlayerDamage(float afAmount, string &in asType, bool abSpinHead, bool abLethal);
+Reduces the health of the player.
+
+afAmount - amount of damage done to health
+asType - plays a certain effect on the screen when the damage is dealt (BloodSplat, Claws, or Slash)
+abSpinHead - changes the camera view when damage is dealt
+abLethal - set to true if player can die from given damage. If false and the damage would have left the player with less than 10 health, health is set to 10.
+void FadePlayerFOVMulTo(float afX, float afSpeed);
+Changes the field of view of the player. A shorter FOV will create a zoom effect.
+
+afX - multiplier of default FOV (1 is default)
+afSpeed - the speed of change between FOVs
+void FadePlayerAspectMulTo(float afX, float afSpeed);
+Changes the aspect ratio of the player. Basically stretches or narrows the screen horizontally.
+
+afX - multiplier of default aspect (default is 1)
+afSpeed - the speed of change between FOVs
+void FadePlayerRollTo(float afX, float afSpeedMul, float afMaxSpeed);
+Rotates the position of the camera on the player's body.
+
+afX - angle of rotation of head, positive being counter-clockwise
+afSpeedMul - speed (possibly acceleration) multiplier of the rotation (default 1, which is really slow)
+afMaxSpeed - maximum speed of rotation
+void MovePlayerForward(float afAmount);
+Alert icon.png Requires version 1.2
+
+Moves the player forward. It needs to be called in a timer that updates 60 times / second.
+
+void MovePlayerHeadPos(float afX, float afY, float afZ, float afSpeed, float afSlowDownDist);
+Changes the position of the camera on the player's body.
+
+afX - amount along the X-axis
+afY - amount along the Y-axis
+afZ - amount along the Z-axis
+afSpeed - speed at which the change happens
+afSlowDownDist - distance at which to start slowing down (prevents the head from abruptly stopping)
+void StartPlayerLookAt(string &in asEntityName, float afSpeedMul, float afMaxSpeed, string &in asAtTargetCallback);
+void StopPlayerLookAt();
+Forces the player to look at a certain entity until StopPlayerLookAt is used.
+
+asEntityName - the entity to look at
+afSpeedMul - how fast should the player look at the entity
+afMaxSpeed - maximum speed allowed
+asAtTargetCallback - function to call when player looks at target
+void SetPlayerMoveSpeedMul(float afMul);
+void SetPlayerRunSpeedMul(float afMul);
+void SetPlayerLookSpeedMul(float afMul);
+Changes the player's move/run/look speed. Default is 1.
+
+void SetPlayerJumpForceMul(float afMul);
+Alert icon.png Requires version 1.3
+
+Changes the player's jump multiplier. Higher values = higher jumps. Default is 1.
+
+void SetPlayerJumpDisabled(bool abX);
+void SetPlayerCrouchDisabled(bool abX);
+Enables/Disables the player's ability to jump/crouch.
+
+void TeleportPlayer(string &in asStartPosName);
+Instantly teleports the player to the target StartPos.
+
+void SetLanternActive(bool abX, bool abUseEffects);
+Makes the player use his lantern.
+
+abX - Set lantern to be active (true) or inactive (false)
+abUseEffects - Play on/off sounds
+bool GetLanternActive();
+Checks whether the player is currently using the lantern.
+
+void SetLanternDisabled(bool abX);
+Enables/Disables the player's ability to use the lantern.
+
+void SetLanternLitCallback(string &in asCallback);
+Sets the function to call when the player uses the lantern.
+Callback syntax: MyFunc(bool abLit)
+
+void SetMessage(string &in asTextCategory, string &in asTextEntry, float afTime);
+Displays a message on the screen.
+
+asTextCategory - the category in the .lang file
+asTextEntry - the entry in the .lang file
+afTime - determines how long the message is displayed. If time is <= 0 then the life time is calculated based on string length.
+void SetDeathHint(string &in asTextCategory, string &in asTextEntry);
+Sets the message that appears when the player dies.
+
+asTextCategory - the category in the .lang file, usually "Hints"
+asTextEntry - the entry in the .lang file
+void DisableDeathStartSound();
+Disables the death sound when the player dies. This must be called directly before player is killed! The variable as soon as player dies too.
+
+void SetPlayerPermaDeathSound(string &in asSound);
+Alert icon.png Requires version 1.2
+
+Sets the sound played after the player dies when permadeath is active. Permadeath is only active when the game is launched with the ptest command line parameter. Only used for the post-death Suitor lines in Justine.
+
+asSound - The sound to be played after death. Expects a voice-type sound.
+void SetPlayerFallDamageDisabled(bool abX);
+Alert icon.png Requires version 1.3
+
+Enables/disables the player's ability to take fall damage.
+
+void SetPlayerPos(float afX, float afY, float afZ);
+Alert icon.png Requires version 1.3
+
+Sets the player's position within the level.
+
+afX - X co-ordinate position.
+afY - Y co-ordinate position.
+afZ - Z co-ordinate position.
+float GetPlayerPosX();
+float GetPlayerPosY();
+float GetPlayerPosZ();
+Alert icon.png Requires version 1.3
+
+Returns the player's position within the level on the specified axis.
+
+Journal
+void AddNote(string &in asNameAndTextEntry, string &in asImage);
+Adds a note to the player's journal.
+
+asNameAndTextEntry - entries in the .lang file. Must end with _Name and _Text and be in category "Journal"!
+asImage - the background image to be used
+void AddDiary(string &in asNameAndTextEntry, string &in asImage);
+Adds a diary to the player's journal.
+
+asNameAndTextEntry - entries in the .lang file. Must end with _NameX and _TextY whereas X and Y are numbers of the parts (_Name1: first diary, _Text1: first page) and be in category "Journal"!
+asImage - the background image to be used
+void ReturnOpenJournal(bool abOpenJournal);
+Only called in the pickup diary callback! If true the journal displays the entry else not.
+
+Quests
+void AddQuest(string &in asName, string &in asNameAndTextEntry);
+Adds a quest to the player's journal under mementos. Completed quests cannot be readded.
+
+asName - the internal name to be used
+asNameAndTextEntry - entry in the .lang file. Must start with "Quest_<texthere>_Text”, and be in category “Journal”!
+void CompleteQuest(string &in asName, string &in asNameAndTextEntry);
+Completes a quest. If the quest has not been added, it's marked as complete anyway, preventing it from being added.
+
+asName - the internal name of the quest
+asNameAndTextEntry - entry in the .lang file. Must start with " Quest_<texthere>_Text ”, and be in category “Journal”!
+bool QuestIsCompleted(string &in asName);
+bool QuestIsAdded(string &in asName);
+Checks whether a quest is completed/added.
+
+asName - the internal name of the quest
+void SetNumberOfQuestsInMap(int alNumberOfQuests);
+Sets the number of quests in the map. Obsolete; formerly used to calculate a completion percentage when looking at a level door.
+
+alNumberOfQuests - Amount of quests
+void GiveHint(string &in asName, string &in asMessageCat, string &in asMessageEntry, float afTimeShown);
+Displays a hint on the player's screen.
+
+asName - the internal name
+asMessageCat - the category in the .lang file, usually "Hints"
+asMessageEntry - the entry in the .lang file
+afTimeShown - time in seconds until the message disappears. If time is <= 0 then the life time is calculated based on string length.
+void BlockHint(string &in asName);
+void UnBlockHint(string &in asName);
+Blocking a hint prevents it from being shown. Blocked hints are included in savefiles, so they should persist between levels. Unblocking a hint allows it to be shown.
+
+asName - the internal name. Basic game hints use the same name as their respective lang entries, with the exception of "numbered" hints. For example, EntityGrab blocks the EntityGrab01 and EntityGrab02 entries.
+void RemoveHint(string &in asName);
+Removes the hint from the list of already shown hints, allowing it to appear again.
+
+asName - the internal name. Basic game hints use the same name as their respective lang entries, with the exception of "numbered" hints. For example, EntityGrab reenables the EntityGrab01 and EntityGrab02 entries.
+Inventory
+void ExitInventory();
+Exits the inventory by force.
+
+void SetInventoryDisabled(bool abX);
+Disables the player's ability to open his inventory.
+
+void SetInventoryMessage(string &in asTextCategory, string &in asTextEntry, float afTime);
+Adds a message on the inventory screen. Used for feedback messages when failing to combine items.
+
+asTextCategory - the category in the .lang file, usually "Inventory"
+asTextEntry - the entry in the .lang file
+afTime - time in seconds until the message disappears. If life time is <= 0 then the life time is calculated based on string length.
+void GiveItem(string &in asName, string &in asType, string &in asSubTypeName, string &in asImageName, float afAmount);
+Adds an item to the inventory of the player. Note that the item does not have to exist as entity in the world to be able to do this.
+
+asName - internal name
+asType - item type to give, Available types are:
+Puzzle
+Lantern
+Health
+Sanity
+LampOil
+Tinderbox
+asSubTypeName - item name for .lang file
+asImageName - the image which will appear in inventory. For example: void GiveItem("chemical_container_full_1", "Puzzle", "chemical_container_full", "chemical_container_full.tga", 1); will use the image from graphics/item/chemical_container_full.tga
+afAmount - amount the item gives, - For example: Oil potions will fill the oil meter by this amount, Health potions will heal by this amount, etc.
+void RemoveItem(string &in asName);
+Removes an item from the player's inventory.
+
+asName - internal name
+bool HasItem(string &in asName);
+Checks whether the player has an item in his inventory.
+
+asName - internal name
+void GiveItemFromFile(string &in asName, string &in asFileName);
+Adds a single item to the player's inventory. This is meant to be used for debug mostly as it creates the actual item and then destroys it.
+
+asName - internal name
+asFileName - item to give + extension (.ent)
+void AddCombineCallback(string &in asName, string &in asItemA, string &in asItemB, string &in asFunction, bool abAutoRemove);
+Allows the player to combine items in his inventory.
+Callback syntax: void MyFunc(string &in asItemA, string &in asItemB)
+
+asName - internal name for the callback
+asItemA - internal name of first item
+asItemB - internal name of second item
+asFunction - the function to call
+abAutoRemove - determines whether the callback should be removed when the items are combined
+void RemoveCombineCallback(string &in asName);
+Removes a combine callback.
+
+asName - the internal name of the callback to be removed (as specified in AddCombineCallback)
+void AddUseItemCallback(string &in asName, string &in asItem, string &in asEntity, string &in asFunction, bool abAutoDestroy);
+Allows the player to use items on the world.
+Callback syntax: void MyFunc(string &in asItem, string &in asEntity)
+
+asName - internal name of the callback
+asItem - internal name of the item
+asEntity - entity to be able to use the item on
+asFunction - function to call
+abAutoDestroy - determines whether the callback should be removed when the item is used
+void RemoveUseItemCallback(string &in asName);
+Removes an item callback.
+
+asName - internal name of the callback
+Entities
+General
+void SetEntityActive(string &in asName, bool abActive);
+Activates/deactivates an entity.
+
+void SetEntityVisible(string &in asName, bool abVisible);
+Alert icon.png Requires version 1.3
+
+Activates/deactivates an entity's visual mesh. The collision body remains.
+
+asName - Name of the entity.
+abActive - Activate/deactivate mesh.
+bool GetEntityExists(string &in asName);
+Checks whether an entity exists.
+
+void SetEntityCustomFocusCrossHair(string &in asName, string& asCrossHair);
+Changes the crosshair that is used when focusing an entity.
+
+asName - internal name
+asCrossHair - desired crosshair, can be:
+Default (no crosshair)
+Grab
+Push
+Ignite
+Pick
+LevelDoor
+Ladder
+void CreateEntityAtArea(string &in asEntityName, string &in asEntityFile, string &in asAreaName, bool abFullGameSave);
+Creates an entity at an area. When creating an enemy though, it cannot chase properly along PathNodes (using for example ShowEnemyPlayerPosition).
+
+asEntityName - internal name
+asEntityFile - entity to be used extension .ent
+asAreaName - the area to create the entity at
+abFullGameSave - determines whether an entity "remembers" its state
+void ReplaceEntity(string &in asName, string &in asBodyName, string &in asNewEntityName, string &in asNewEntityFile, bool abFullGameSave);
+Alert icon.png Requires version 1.3
+
+Removes an entity and places a new one in its place.
+
+asName - Name of the entity to replace.
+asBodyName - Name of the body of the entity to place the new entity at. If empty the first body is used (might be buggy, recommended to name a body anyway).
+asNewEntityName - Name of the new entity.
+asNewEntityFile - Name of the new entity file. Extension .ent.
+abFullGameSave - Whether ALL properties of this entity should be saved throughout levels.
+void PlaceEntityAtEntity(string &in asName, string &in asTargetEntity, string &in asTargetBodyName, bool abUseRotation);
+Alert icon.png Requires version 1.3
+
+Places an entity at the position of another entity. Does not work for enemies, use TeleportEnemyToEntity instead.
+
+asName - Name of the entity to place.
+asTargetEntity - Name of the other entity to place the first entity at.
+asTargetBodyName - Name of the body of the entity to place the first entity at. If empty the first body is used (might be buggy, recommended to name a body anyway).
+abUseRotation - Whether the entity should be rotated like the target entity.
+void SetEntityPos(string &in asName, float afX, float afY, float afZ);
+Alert icon.png Requires version 1.3
+
+Moves an entity to a position in the level.
+
+asName - Name of the entity to move.
+afX - X co-ordinate position.
+afY - Y co-ordinate position.
+afZ - Z co-ordinate position.
+float GetEntityPosX(string &in asName);
+float GetEntityPosY(string &in asName);
+float GetEntityPosZ(string &in asName);
+Alert icon.png Requires version 1.3
+
+Returns an entity's position in the level on the specified axis.
+
+asName - Name of the entity.
+void SetEntityPlayerLookAtCallback(string &in asName, string &in asCallback, bool abRemoveWhenLookedAt);
+Calls a function when the player looks at a certain entity.
+Callback syntax: void MyFunc(string &in asEntity, int alState)
+alState: 1 = looking, -1 = not looking
+
+asName - internal name
+asCallback - function to call
+abRemoveWhenLookedAt - determines whether the callback should be removed when the player looked at the entity
+void SetEntityPlayerInteractCallback(string &in asName, string &in asCallback, bool abRemoveOnInteraction);
+Calls a function when the player interacts with a certain entity.
+Callback syntax: void MyFunc(string &in asEntity)
+
+asName - internal name
+asCallback - function to call
+abRemoveOnInteraction - determines whether the callback should be removed when the player interacts with the entity
+void SetEntityCallbackFunc(string &in asName, string &in asCallback);
+Calls a function when certain events occur with an entity.
+Callback syntax: void MyFunc(string &in asEntity, string &in asType)
+
+asType values depend on entity type:
+
+Entity Type	asType Value
+Object	Break
+Lamp	OnIgnite
+Item	OnPickup
+Enemy	OnDeath
+Enemy_Grunt
+Enemy_Manpig	OnAutoDisabled
+void SetEntityConnectionStateChangeCallback(string &in asName, string &in asCallback);
+A callback called when ever the connection state changes (button being switched on, lever switched, etc).
+Callback syntax: void Func(string &in asEntity, int alState)
+alState: -1 = off, 0 = between, 1 = on
+
+void SetEntityInteractionDisabled(string &in asName, bool abDisabled);
+Disallows interaction with an entity.
+
+void BreakJoint (string &in asName);
+Breaks a joint. Do not use this on joints in SwingDoors, Levers, Wheels, etc. where the joint is part of an interaction. That will make the game crash.
+
+void AddEntityCollideCallback(string &in asParentName, string &in asChildName, string &in asFunction, bool abDeleteOnCollide, int alStates);
+Calls a function when two entities collide.
+Callback syntax: void MyFunc(string &in asParent, string &in asChild, int alState)
+alState: 1 = enter, -1 = leave
+
+asParentName - internal name of main object
+asChildName - internal name of object that collides with main object (asterix (*) NOT supported!)
+asFunction - function to call
+abDeleteOnCollide - determines whether the callback after it was called
+alStates - 1 = only enter, -1 = only leave, 0 = both
+void RemoveEntityCollideCallback(string &in asParentName, string &in asChildName);
+Removes an EntityCollideCallback. Asterix (*) not supported in asChildName.
+
+bool GetEntitiesCollide(string &in asEntityA, string &in asEntityB);
+Checks whether two entities collide. This function does NOT support asterix (*) or "Player"!
+
+void SetBodyMass(string &in asName, float afMass);
+Alert icon.png Requires version 1.3
+
+Sets the mass of an entity's body.
+
+asName - Name of the body of an entity. The body name of an entity is EntityName_BodyName.
+afMass - The mass to set.
+float GetBodyMass(string &in asName);
+Alert icon.png Requires version 1.3
+
+Gets the mass of an entity's body.
+
+asName - Name of the body of an entity. The body name of an entity is EntityName_BodyName.
+afMass - The mass to get.
+Props
+void SetPropEffectActive(string &in asName, bool abActive, bool abFadeAndPlaySounds);
+Turns the texture illumination, billboards, particles, light flicker, and sounds of a prop on or off.
+
+Can be used on coal to give it the black color it should have.
+
+asName - internal name
+abActive - active state
+abFadeAndPlaySounds - if all effects should fade in/out or not
+void SetPropActiveAndFade(string &in asName, bool abActive, float afFadeTime);
+Activates/deactivates a prop.
+
+asName - internal name
+abActive - nothing to add
+afFadeTime - time in seconds until prop fully fades
+void SetPropStaticPhysics(string &in asName, bool abX);
+Activates/deactivates the physics of a prop, setting the mass to 0. Setting as true will make entities static in midair.
+
+bool GetPropIsInteractedWith(string &in asName);
+Checks whether a prop is interacted with.
+
+void RotatePropToSpeed(string &in asName, float afAcc, float afGoalSpeed, float afAxisX, float afAxisY, float afAxisZ, bool abResetSpeed, string &in asOffsetArea);
+Rotates the prop up to a set speed.
+
+asName - internal name
+afAcc - acceleration
+afGoalSpeed - desired speed
+afAxisX - rotation around X axis
+afAxisY - rotation around Y axis
+afAxisZ - rotation around Z axis
+abResetSpeed - determines whether the speed is resetted after goal speed is reached
+asOffsetArea - the area to rotate around, if empty, then the center of the body is used Note: The entity you want to rotate MUST be a "StaticObject" entity!
+void StopPropMovement(string &in asName);
+Stops all movement of a prop.
+
+void AddAttachedPropToProp(string &in asPropName, string &in asAttachName, string &in asAttachFile, float afPosX, float afPosY, float afPosZ, float afRotX, float afRotY, float afRotZ);
+Attaches a prop to another prop.
+
+asPropName- the prop to attach another prop at
+asAttachName - internal name of the prop that gets attached
+asAttachFile - the prop that gets attached extension .ent
+afPosX - X position of the attach from the prop
+afPosY - Y position of the attach from the prop
+afPosZ - Z position of the attach from the prop
+afRotX - rotation around X axis of the attach
+afRotY - rotation around Y axis of the attach
+afRotZ - rotation around ZX axis of the attach
+Note: for the purposes of AddEntityCollideCallback, attached props will not call the callback function if they collide with a "static_object" or a "StaticProp" entity type!
+
+Icon bug.png
+Bug: afRotZ is used for both the ZX rotation and the Z position of the attached prop. Unwanted rotation can be avoided by using:
+AddAttachedPropToProp(asPropName, asAttachName, asAttachFile, afPosX, afPosY, 0, afPosZ, 90.0f, afPosZ)
+
+
+
+Icon bug.png
+Bug: Attaching a breakable prop to a physically active prop, and then breaking the attached prop, will cause the game to crash, should the parent object be moved or reset.
+
+
+
+void AttachPropToProp(string &in asPropName, string &in asAttachName, string &in asAttachFile, float afPosX, float afPosY, float afPosZ, float afRotX, float afRotY, float afRotZ);
+Alert icon.png Requires version 1.3
+
+Attaches a prop to another prop. Fixed version of AddAttachedPropToProp.
+
+asPropName - the prop to attach another prop at
+asAttachName - internal name of the prop that gets attached
+asAttachFile - the prop that gets attached extension .ent
+afPosX - X position of the attach from the prop
+afPosY - Y position of the attach from the prop
+afPosZ - Z position of the attach from the prop
+afRotX - rotation around X axis of the attach
+afRotY - rotation around Y axis of the attach
+afRotZ - rotation around ZX axis of the attach
+Note: for the purposes of AddEntityCollideCallback, attached props will not call the callback function if they collide with a "static_object" or a "StaticProp" entity type!
+
+void RemoveAttachedPropFromProp(string &in asPropName, string &in asAttachName);
+Detaches a prop from a prop.
+
+void SetPropHealth(string &in asName, float afHealth);
+void AddPropHealth(string &in asName, float afHealth);
+float GetPropHealth(string &in asName);
+Modifies/returns the health of a prop.
+
+void ResetProp(string &in asName);
+Resets a prop's state to the original one when the map was loaded.
+
+void PlayPropAnimation(string &in asProp, string &in asAnimation, float afFadeTime, bool abLoop, string &in asCallback);
+Makes the prop play an animation and calls a function when it stops.
+Callback syntax: void MyFunc(string &in asProp)
+
+asProp - internal name of the prop
+asAnimation - animation to play
+afFadeTime - Fade time between current and new animations
+abLoop - determines whether the animation loops
+asCallback - function to call when the animation ends
+void AddPropForce(string &in asName, float afX, float afY, float afZ, string &in asCoordSystem);
+void AddPropImpulse(string &in asName, float afX, float afY, float afZ, string &in asCoordSystem);
+void AddBodyForce(string &in asName, float afX, float afY, float afZ, string &in asCoordSystem);
+void AddBodyImpulse(string &in asName, float afX, float afY, float afZ, string &in asCoordSystem);
+These functions push objects. Note that rather high values are needed when applying forces (on the order of ~100 (weak) to ~10000 (strong)), but not impulses (values less than 10 can be appropriate). Forces are external influences, and will have different effect depending on the mass of the object they are being applied to; impulses disregard mass, and can cause objects to break, as if hit. A "Body" is a physics-related helper object, to which a force or an impulse can be applied. Entities can consist of several bodies, interconnected in various ways (you can create/examine bodies in the model editor).
+
+asName - the object to push; for bodies, use this format: "entityName_bodyName"
+afX - magnitude along the X-axis
+afY - magnitude along the Y-axis
+afZ - magnitude along the Z-axis
+asCoordSystem - determines which coordinate system is used, "local" or "world"
+All of these functions are additive - when called consecutively, for each call, the vectors defined by (afX, afY, afZ) will be added together, and a resultant force/impulse will be calculated before any physics simulation is applied to the target object.
+
+Connections
+void InteractConnectPropWithRope(string &in asName, string &in asPropName, string &in asRopeName, bool abInteractOnly, float afSpeedMul, float afToMinSpeed, float afToMaxSpeed, bool abInvert, int alStatesUsed);
+Connects a prop with the movement of a rope (i.e. turn a wheel to move a rope). For Levers, the rope only moves when the Lever is at the min, max, or middle.
+
+asName- The name of the connection
+asPropName - The name of the prop; can be a Lever or Wheel
+asRopeName - The name of the rope
+abInteractOnly - If the connection is only affected by interacting with the prop directly
+afSpeedMul - Speed multiplier of how quickly the rope moves
+afToMinSpeed - The slowest the rope can move
+afToMaxSpeed - The fastest the rope can move
+abInvert - Whether to invert the direction the rope moves
+alStatesUsed - The state to use, ignoring the other (1=max only, -1=min only, 0=both)
+void InteractConnectPropWithMoveObject(string &in asName, string &in asPropName, string &in asMoveObjectName, bool abInteractOnly, bool abInvert, int alStatesUsed);
+This one should only be used if there must be an exact correspondence to prop "amount" and the MoveObject open amount. It is best used for Wheel-door connections, where the MoveObject moves continuously along with the Wheel. For Levers, the MoveObject only moves when the Lever is at the min, max, or middle.
+
+asName - The name of the connection
+asPropName - The entity that controls the movement; can be a Lever or Wheel
+asMoveObject - The MoveObject to move
+abInteractOnly - If the connection is only affected by interacting with the prop directly
+abInvert - If the state is inverted, making the MoveObject move in the opposite direction
+alStatesUsed - The state to use, ignoring the other (1=max only, -1=min only, 0=both)
+void ConnectEntities(string &in asName, string &in asMainEntity, string &in asConnectEntity, bool abInvertStateSent, int alStatesUsed, string &in asCallbackFunc);
+Connects two entities together so that changing the state of the main entity changes the state of the connected entity.
+
+Entity Type	Max State (1)	Min State (-1)
+Lamp	Lit	Unlit
+MoveObject	Open	Close
+SwingDoor	Locked	Unlocked
+Chest
+Button	Switched on	Switched off
+Lever	Unstuck	Stuck (at min)
+Wheel
+asName - The name of the connection
+asMainEntity - The entity that causes the change; can be a Lever, Wheel, Button, or Photocell
+asConnectEntity - The entity that is affected by the change
+abInvertStateSent - If the state is inverted, making the connected entity change to the opposite state
+alStatesUsed - The state to use, ignoring the other (1=max only, -1=min only, 0=both)
+asCallbackFunc - The name of the connection callback
+Callback syntax: void MyFunc(string &in asConnectionName, string &in asMainEntity, string &in asConnectEntity, int alState)
+alState is what is sent to connection entity and will be inverted if abInvertStateSent = true!
+
+Lamps
+void SetLampLit(string &in asName, bool abLit, bool abEffects);
+Turns a lamp on or off.
+
+asName - Name of the lamp
+abLit - Set true if you want the lamp to be lit, set to false if you want the lamp to be unlit
+abEffects - If you want to have the lamp fade in/out when it gets lit/unlit
+Doors
+void SetSwingDoorLocked(string &in asName, bool abLocked, bool abEffects);
+Locks a SwingDoor.
+
+asName - Name of the door
+abLocked - Locked/unlocked
+abEffects - If sounds are played when the door is locked/unlocked
+void SetSwingDoorClosed(string &in asName, bool abClosed, bool abEffects);
+Closes a SwingDoor.
+
+asName - Name of the door
+abClosed - Closed/open
+abEffects - If sounds are played when the door is closed/opened
+bool GetSwingDoorLocked(string &in asName);
+bool GetSwingDoorClosed(string &in asName);
+Checks whether a swing door is locked/closed.
+
+void SetSwingDoorDisableAutoClose(string &in asName, bool abDisableAutoClose);
+Deactivates the "auto-close" when a door is nearly closed.
+
+int GetSwingDoorState(string &in asName);
+Returns an integer depending on how far the door is opened.
+-1 = angle is close to 0°, 1 = angle is 70% or higher of max, 0 = inbetween -1 and 1.
+
+void SetLevelDoorLocked(string &in asName, bool abLocked);
+Locks a level door. Note that level doors are NOT swing doors.
+
+void SetLevelDoorLockedSound(string &in asName, string &in asSound);
+Determines which sound is played when interacting with a locked level door.
+
+void SetLevelDoorLockedText(string &in asName, string &in asTextCat, string &in asTextEntry);
+Displays a message when interacting with a locked level door.
+
+asName - internal name
+asTextCat - the category in the .lang file
+asTextEntry - the entry in the .lang file
+void SetMoveObjectState(string &in asName, float afState);
+Moves an object to a certain state.
+
+asName - internal name
+afState - state of the object, 0 = closed, 1 = open, values inbetween (and above, for example, the bridge_metal_vert) are valid too!
+void SetMoveObjectStateExt(string &in asName, float afState, float afAcc, float afMaxSpeed, float afSlowdownDist, bool abResetSpeed);
+Moves an object to a certain state, extended method.
+
+asName - internal name
+afState - state of the object, 0 = closed, 1 = open, values inbetween are valid too!
+afAcc - acceleration
+afMaxSpeed - maximum speed
+afSlowdownDist - Distance to the target state before deceleration occurs.
+abResetSpeed - Set to true if the prop's speed should be reset before performing the movement, else the prop will accelerate from its current speed to afMaxSpeed.
+Levers, wheels and buttons
+void SetPropObjectStuckState(string &in asName, int alState);
+void SetWheelStuckState(string &in asName, int alState, bool abEffects);
+void SetLeverStuckState(string &in asName, int alState, bool abEffects);
+Makes an object/wheel/lever stuck in a certain state.
+
+asName - internal name
+alState - 0 = not stuck, 1 = at max, -1 = at min
+abEffects - play sound effects
+void SetWheelAngle(string &in asName, float afAngle, bool abAutoMove);
+Moves a wheel to a certain angle.
+
+asName - internal name
+afAngle - angle
+abAutoMove - true = wheel physically moves to the new angle; false = angle is changed without moving the wheel
+void SetWheelInteractionDisablesStuck(string &in asName, bool abX);
+void SetLeverInteractionDisablesStuck(string &in asName, bool abX);
+Allows the player to make a wheel/lever unstuck when interacted with.
+
+int GetLeverState(string &in asName);
+Returns the state of the lever.
+0 = not stuck, 1 = at max, -1 = at min
+
+void SetMultiSliderStuckState(string &in asName, int alStuckState, bool abEffects);
+Makes a MultiSlider stuck in a certain state.
+
+void SetMultiSliderCallback(string &in asName, string &in asCallback);
+Calls a function when state changes.
+Callback syntax: void MyFunc(string &in asEntity, int alState)
+
+void SetButtonSwitchedOn(string &in asName, bool abSwitchedOn, bool abEffects);
+Sticky areas
+void SetAllowStickyAreaAttachment(bool abX);
+Allows entities to stick to a StickyArea.
+
+void AttachPropToStickyArea(string &in asAreaName, string &in asProp);
+void AttachBodyToStickyArea(string &in asAreaName, string &in asBody);
+Attaches a prop/body to a StickyArea.
+
+void DetachFromStickyArea(string &in asAreaName);
+Detaches everything from a StickyArea.
+
+NPCs
+void SetNPCAwake(string &in asName, bool abAwake, bool abEffects);
+Wakes/sleeps a NPC.
+
+asName - The name of the NPC
+abAwake - true to awaken, false to sleep
+abEffects - Play the "Awake" or "Sleep" animations
+void SetNPCFollowPlayer(string &in asName, bool abX);
+Sets a NPC's head to follow the player's movements.
+
+Enemies
+void SetEnemyDisabled(string &in asName, bool abDisabled);
+Disables an enemy.
+
+void SetEnemyIsHallucination(string &in asName, bool abX);
+Makes an enemy a hallucination. Hallucinations fade to smoke when they get near the player.
+
+void FadeEnemyToSmoke(string &in asName, bool abPlaySound);
+Instantly fades an enemy to smoke.
+
+void ShowEnemyPlayerPosition(string &in asName);
+Makes the enemy run to the player, no matter where he is.
+
+void AlertEnemyOfPlayerPresence(string &in asName);
+Alert icon.png Requires version 1.3
+
+Gives the specified enemy the player's current position and makes it search the area.
+
+void SetEnemyDisableTriggers(string &in asName, bool abX);
+Enables or disables enemy triggers. If disabled, enemy will not react to player or attack.
+
+void AddEnemyPatrolNode(string &in asName, string &in asNodeName, float afWaitTime, string &in asAnimation);
+Adds a patrol node to the enemy's path.
+
+asName- Internal name of the enemy
+asNodeName - Path node
+afWaitTime - Time in seconds that the enemy waits at the path node before continuing. If 0, randomized between 1-3.
+asAnimation - The animation the enemy uses when reaching the path node
+void ClearEnemyPatrolNodes(string &in asEnemyName);
+Clears the current path of patrol nodes of the enemy.
+
+void SetEnemySanityDecreaseActive(string &in asName, bool abX);
+Alert icon.png Requires version 1.3
+
+Enables/disables whether an enemy activates the player's sanity drain when stared at.
+
+asName - Internal name of the enemy
+abX - Enabled/disabled
+void TeleportEnemyToNode(string &in asEnemyName, string &in asNodeName, bool abChangeY);
+Alert icon.png Requires version 1.3
+
+Teleports an enemy to a specific PathNode.
+
+asEnemyName - Internal name of the enemy
+asNodeName - Internal name of the node to teleport to
+abChangeY - Whether the Y position of the node will be used when teleporting the enemy
+void TeleportEnemyToEntity(string &in asEnemyName, string &in asTargetEntity, string &in asTargetBody, bool abChangeY);
+Alert icon.png Requires version 1.3
+
+Teleports an enemy to a specific entity.
+
+asEnemyName - Internal name of the enemy
+asTargetEntity - Internal name of the entity to teleport to
+asTargetBody - Internal name of the entity's body name to teleport to. If empty, the first body will be used (might be unstable, recommended to input a body anyway)
+abChangeY - Whether the Y position of the entity will be used when teleporting the enemy
+void ChangeManPigPose(string &in asName, string &in asPoseType);
+Alert icon.png Requires version 1.3
+
+Changes the pose a specified ManPig.
+
+asName - Internal name of the enemy
+asPoseType - Name of the ManPig pose to use. Can be "Biped" or "Quadruped"
+void SetTeslaPigFadeDisabled(string &in asName, bool abX);
+Alert icon.png Requires version 1.3
+
+Enables/disables whether a specified Tesla ManPig should fade the player's view in and out.
+
+asName - Internal name of the enemy
+abX - Enabled/disabled
+void SetTeslaPigSoundDisabled(string &in asName, bool abX);
+Alert icon.png Requires version 1.3
+
+Enables/disables whether a specified Tesla ManPig should play the proximity sounds.
+
+asName - Internal name of the enemy
+abX - Enabled/disabled
+void SetTeslaPigEasyEscapeDisabled(string &in asName, bool abX);
+Alert icon.png Requires version 1.3
+
+Enables/disables whether a specified Tesla ManPig should be easier to escape from when hunted. If not disabled, easy escape is activated if the player is more than 12.35 meters away, the enemy can't see the player, and the player has less than 75 health. When this occurs, the enemy is forced to stop hunting and wait for half a second.
+
+asName - Internal name of the enemy
+abX - Enabled/disabled
+void ForceTeslaPigSighting(string &in asName);
+Alert icon.png Requires version 1.3
+
+Forces a Tesla ManPig to be visible for a short time.
+
+asName - Internal name of the enemy
+string& GetEnemyStateName(string &in asName);
+Alert icon.png Requires version 1.3
+
+Returns the name of the state a specified enemy is current in.
+
+asName - Internal name of the enemy
+Possible states for all enemies:
+
+Idle
+Wait
+Patrol
+Investigate
+Alert
+Search
+Hurt
+Hunt
+HuntPause
+HuntWander
+AttackMeleeShort
+AttackMeleeLong
+BreakDoor
+Dead
+Waterlurker-only states:
+
+GoHome
+Eat
+ManPig-only states:
+
+Flee
+Stalk
+Track
+Unused states:
+
+AttackRange
