@@ -167,32 +167,6 @@ bool ScriptDebugOn();
 Checks whether the debug mode is enabled.
 See "Setting up Development Environment" to setup debug mode on your own computer.
 
-Variables
-Alert icon.png Warning: Regular variables (int, float, etc.) are not saved by the game. Using them in important parts of yor script will break it upon loading a game save. In HPL, those variables should only be used for disposable counters, like spawning objects in a "for" loop. For variables which need to be saved, use the wrappers as described below.
-Local
-Local variables can be used throughout the same script file.
-
-void SetLocalVarInt(string &in asName, int alVal);
-void AddLocalVarInt(string &in asName, int alVal);
-int GetLocalVarInt(string &in asName);
-void SetLocalVarFloat(string &in asName, float afVal);
-void AddLocalVarFloat(string &in asName, float afVal);
-float GetLocalVarFloat(string &in asName);
-void SetLocalVarString(string &in asName, const string &in asVal);
-void AddLocalVarString(string &in asName, string &in asVal);
-string& GetLocalVarString(string &in asName);
-Global
-Global variables can be used throughout several maps and can be accessed by several script files.
-
-void SetGlobalVarInt(string &in asName, int alVal);
-void AddGlobalVarInt(string &in asName, int alVal);
-int GetGlobalVarInt(string &in asName);
-void SetGlobalVarFloat(string &in asName, float afVal);
-void AddGlobalVarFloat(string &in asName, float afVal);
-float GetGlobalVarFloat(string &in asName);
-void SetGlobalVarString(string &in asName, const string &in asVal);
-void AddGlobalVarString(string &in asName, string &in asVal);
-string& GetGlobalVarString(string &in asName);
 Particle Systems
 void PreloadParticleSystem(string &in asPSFile);
 Preloads a particle system.

@@ -1,0 +1,335 @@
+// ============================================================
+// variables.hps
+// HPL2 VARIABLE SYSTEMS
+// Target: HPL2 1.0 - 1.2
+//
+// PURPOSE:
+// AI grounding and scripting structure reference.
+//
+// This file documents:
+// - local variables
+// - global variables
+// - save persistence behavior
+// - HPL2 variable wrappers
+// - regular AngelScript variables, less commonly used in HPL2
+//
+// IMPORTANT:
+// HPL2 persistence is heavily dependent on the
+// LocalVar and GlobalVar systems.
+// Avoid relying on regular variables for progression.
+// Regular variables are NOT save-safe.
+//
+// Use:
+// - SetLocalVar*
+// - SetGlobalVar*
+// for persistent progression/state.
+// ============================================================
+
+
+
+// ============================================================
+// LOCAL VARIABLES
+// ============================================================
+
+// Local variables persist in save files.
+//
+// Local variables are only accessible within
+// the current script/map context.
+//
+// Common usage:
+// - map progression
+// - puzzle states
+// - local encounter tracking
+// - persistent map events
+
+
+
+// Sets a local integer variable.
+void SetLocalVarInt(
+    string &in asName,
+    int alVal);
+
+// asName - variable name
+// alVal - value to set
+
+
+// Adds to a local integer variable.
+void AddLocalVarInt(
+    string &in asName,
+    int alVal);
+
+// asName - variable name
+// alVal - value to add
+
+
+// Returns a local integer variable.
+int GetLocalVarInt(string &in asName);
+
+// asName - variable name
+
+
+
+// Sets a local float variable.
+void SetLocalVarFloat(
+    string &in asName,
+    float afVal);
+
+// asName - variable name
+// afVal - value to set
+
+
+// Adds to a local float variable.
+void AddLocalVarFloat(
+    string &in asName,
+    float afVal);
+
+// asName - variable name
+// afVal - value to add
+
+
+// Returns a local float variable.
+float GetLocalVarFloat(string &in asName);
+
+// asName - variable name
+
+
+
+// Sets a local string variable.
+void SetLocalVarString(
+    string &in asName,
+    const string &in asVal);
+
+// asName - variable name
+// asVal - value to set
+
+
+// Adds to a local string variable.
+void AddLocalVarString(
+    string &in asName,
+    string &in asVal);
+
+// asName - variable name
+// asVal - value to add
+
+
+// Returns a local string variable.
+string& GetLocalVarString(string &in asName);
+
+// asName - variable name
+
+
+
+// ============================================================
+// GLOBAL VARIABLES
+// ============================================================
+
+// Global variables persist between maps
+// and can be accessed by multiple scripts.
+//
+// Common usage:
+// - story progression
+// - campaign progression
+// - persistent player choices
+// - cross-map systems
+// - hub progression
+
+
+
+// Sets a global integer variable.
+void SetGlobalVarInt(
+    string &in asName,
+    int alVal);
+
+// asName - variable name
+// alVal - value to set
+
+
+// Adds to a global integer variable.
+void AddGlobalVarInt(
+    string &in asName,
+    int alVal);
+
+// asName - variable name
+// alVal - value to add
+
+
+// Returns a global integer variable.
+int GetGlobalVarInt(string &in asName);
+
+// asName - variable name
+
+
+
+// Sets a global float variable.
+void SetGlobalVarFloat(
+    string &in asName,
+    float afVal);
+
+// asName - variable name
+// afVal - value to set
+
+
+// Adds to a global float variable.
+void AddGlobalVarFloat(
+    string &in asName,
+    float afVal);
+
+// asName - variable name
+// afVal - value to add
+
+
+// Returns a global float variable.
+float GetGlobalVarFloat(string &in asName);
+
+// asName - variable name
+
+
+
+// Sets a global string variable.
+void SetGlobalVarString(
+    string &in asName,
+    const string &in asVal);
+
+// asName - variable name
+// asVal - value to set
+
+
+// Adds to a global string variable.
+void AddGlobalVarString(
+    string &in asName,
+    string &in asVal);
+
+// asName - variable name
+// asVal - value to add
+
+
+// Returns a global string variable.
+string& GetGlobalVarString(string &in asName);
+
+// asName - variable name
+
+
+/ ============================================================
+// REGULAR VARIABLES
+// ============================================================
+
+// IMPORTANT:
+//
+// Regular variables are NOT saved by the engine.
+//
+// In HPL2, regular variables should generally only
+// be used for disposable runtime logic.
+//
+// Common usage:
+// - temporary counters
+// - loop variables
+// - short-lived calculations
+// - temporary runtime states
+
+
+// Regular variable examples
+
+int iCounter = 0;
+
+float fMoveSpeed = 1.0f;
+
+bool bActive = false;
+
+string sCurrentState = "";
+
+// REGULAR ARRAY VARIABLES
+// AngelScript array syntax.
+
+array<string> asEnemyList;
+
+array<int> alDoorStates;
+
+array<float> afTimers;
+
+// REMINDER
+
+// BAD:
+bool bDoorUnlocked = true;
+
+// GOOD:
+SetLocalVarInt("DoorUnlocked", 1);
+
+// ============================================================
+// VARIABLE NAMING CONVENTIONS
+// ============================================================
+
+// Common HPL2-style prefixes:
+//
+// b = bool
+// i = int
+// f = float
+// s = string
+//
+// Arrays:
+//
+// ab = bool array
+// al = int array
+// af = float array
+// as = string array
+
+
+
+// ============================================================
+// SAVE PERSISTENCE NOTES
+// ============================================================
+
+// IMPORTANT:
+//
+// HPL2 save persistence only applies to:
+//
+// - LocalVars
+// - GlobalVars
+//
+// NOT regular AngelScript variables / arrays.
+// When a persistant array is needed it's advised to truncate,
+// add them to a VarString.
+//
+// Using them as part of logic and important calculations only,
+// something that - as far as persistence is concerned - is returned immediately,
+// otherwise may break progression after loading saves.
+//
+// ------------------------------------------------------------
+//
+// LocalVars:
+// - map-specific
+// - persist through saves
+// - isolated to current script context
+//
+// GlobalVars:
+// - accessible between maps
+// - persist globally
+// - ideal for campaign progression
+//
+// ------------------------------------------------------------
+//
+// Common mistake:
+//
+// Using:
+//
+// bool bPuzzleSolved = true;
+//
+// instead of:
+//
+// SetLocalVarInt("PuzzleSolved", 1);
+//
+// This WILL break after loading a save.
+// Use SetLocalVarInt in all these cases.
+//
+// ------------------------------------------------------------
+//
+// GOOD PRACTICE:
+//
+// Use LocalVars and GlobalVars for:
+//
+// - progression
+// - puzzle completion
+// - encounter states
+// - quest logic
+// - important gameplay conditions
+//
+// ============================================================
