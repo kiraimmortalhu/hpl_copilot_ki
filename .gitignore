@@ -1,0 +1,7 @@
+*.msh
+*.bak
+*.map_cache
+*asd.expobj
+*asd.map
+*asd.hps
+/wip
