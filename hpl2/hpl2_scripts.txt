@@ -496,15 +496,6 @@ Alert icon.png Requires version 1.3
 
 Stops the currently playing insanity event.
 
-
-void SetPlayerLampOil(float afOil);
-void AddPlayerLampOil(float afOil);
-float GetPlayerLampOil();
-Modifies/returns the lamp oil of the player.
-
-Sanity drain is reenabled on loading a save, as the game is unable to load the value properly from the save data.
-
-
 void SetPlayerJumpForceMul(float afMul);
 Alert icon.png Requires version 1.3
 
