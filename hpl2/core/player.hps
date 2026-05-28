@@ -1,0 +1,413 @@
+// ============================================================
+// player.hps
+// HPL2 PLAYER SYSTEMS
+// Source: HPL2 1.0 - 1.2
+//
+// PURPOSE:
+// AI grounding and scripting structure reference.
+//
+// This file documents:
+// - player movement
+// - player state control
+// - health and sanity systems
+// - lantern systems
+// - player movement modifiers
+// - camera/player effects
+// - player damage systems
+//
+// IMPORTANT:
+// The player's maximum Health and Sanity is 100.
+// ============================================================
+
+
+
+// ============================================================
+// PLAYER STATE
+// ============================================================
+
+// Enables/Disables player controlled movement.
+void SetPlayerActive(bool abActive);
+
+// abActive - true = active, false = inactive
+
+
+// Resets the player's state.
+void ChangePlayerStateToNormal();
+
+// Forces the player to stop interacting with objects.
+// Clears currently selected inventory items.
+// Dismounts the player from ladders.
+
+
+// ============================================================
+// PLAYER MOVEMENT
+// ============================================================
+
+// Pushes the player into a certain direction.
+
+void AddPlayerBodyForce(
+    float afX,
+    float afY,
+    float afZ,
+    bool abUseLocalCoords);
+
+// afX - amount along the X-axis
+// afY - amount along the Y-axis
+// afZ - amount along the Z-axis
+// abUseLocalCoords - if true, axes are based on where the player is facing
+
+// IMPORTANT:
+// Values below ~2000 usually have very little effect.
+
+
+// Moves the player forward.
+
+void MovePlayerForward(float afAmount);
+
+// afAmount - movement amount
+
+// IMPORTANT:
+// Intended to be called in rapidly updating timers.
+
+
+// Instantly teleports the player to the target StartPos.
+void TeleportPlayer(string &in asStartPosName);
+
+// asStartPosName - target StartPos
+
+
+// ============================================================
+// PLAYER SPEED
+// ============================================================
+
+// IMPORTANT:
+// DEFAULT SPEED: 1.0f
+
+// Changes the player's movement speed multiplier.
+void SetPlayerMoveSpeedMul(float afMul);
+
+// afMul - multiplier of default movement speed
+
+// Changes the player's running speed multiplier.
+void SetPlayerRunSpeedMul(float afMul);
+
+// afMul - multiplier of default running speed
+
+
+// Changes the player's look speed multiplier.
+void SetPlayerLookSpeedMul(float afMul);
+
+// afMul - multiplier of default look speed
+
+
+// Returns the player's current movement speed.
+float GetPlayerSpeed();
+
+
+// Returns the player's current vertical speed.
+float GetPlayerYSpeed();
+
+
+
+// ============================================================
+// PLAYER JUMP / CROUCH
+// ============================================================
+
+// Enables/Disables the player's ability to jump.
+void SetPlayerJumpDisabled(bool abX);
+
+// abX - true = disabled, false = enabled
+
+// Forces the player to crouch.
+void SetPlayerCrouching(bool abCrouch);
+
+// abCrouch - true = crouching, false = standing
+
+
+// Enables/Disables the player's ability to crouch.
+void SetPlayerCrouchDisabled(bool abX);
+
+// abX - true = disabled, false = enabled
+
+
+// ============================================================
+// PLAYER CAMERA / VIEW
+// ============================================================
+
+// Changes the player's field of view.
+//
+// A shorter FOV creates a zoom effect.
+void FadePlayerFOVMulTo(
+    float afX,
+    float afSpeed);
+
+// afX - multiplier of default FOV
+// afSpeed - speed of change
+
+
+// Changes the aspect ratio of the player.
+//
+// Stretches or narrows the screen horizontally.
+void FadePlayerAspectMulTo(
+    float afX,
+    float afSpeed);
+
+// afX - multiplier of default aspect
+// afSpeed - speed of change
+
+
+// Rotates the camera on the player's body.
+void FadePlayerRollTo(
+    float afX,
+    float afSpeedMul,
+    float afMaxSpeed);
+
+// afX - angle of rotation
+// afSpeedMul - rotation speed multiplier
+// afMaxSpeed - maximum rotation speed
+
+
+// Changes the camera position on the player's body.
+void MovePlayerHeadPos(
+    float afX,
+    float afY,
+    float afZ,
+    float afSpeed,
+    float afSlowDownDist);
+
+// afX - amount along X-axis
+// afY - amount along Y-axis
+// afZ - amount along Z-axis
+// afSpeed - movement speed
+// afSlowDownDist - distance before slowdown begins
+
+
+
+// ============================================================
+// PLAYER LOOKAT FUNCTIONS
+// ============================================================
+
+// Forces the player to look at a certain entity
+// until StopPlayerLookAt() is used.
+void StartPlayerLookAt(
+    string &in asEntityName,
+    float afSpeedMul,
+    float afMaxSpeed,
+    string &in asAtTargetCallback);
+
+// asEntityName - entity to look at
+// afSpeedMul - look speed multiplier
+// afMaxSpeed - maximum speed allowed
+// asAtTargetCallback - callback function
+
+
+// Stops the player from looking at the target.
+void StopPlayerLookAt();
+
+
+// Callback function
+// Calls a function when the player looks at a certain entity.
+void SetEntityPlayerLookAtCallback(string &in asName, string &in asCallback, bool abRemoveWhenLookedAt);
+
+// IMPORTANT: 
+// Could work in unintended ways, like looking through walls may also trigger it
+// also it is generally quite inaccurate to rely upon for precision, like aiming
+
+// detailed in callbacks_core.hps
+
+
+// ============================================================
+// PLAYER CROSSHAIR
+// ============================================================
+
+// Enables/Disables focus icons.
+void ShowPlayerCrossHairIcons(bool abX);
+
+// abX - true = enabled, false = disabled
+
+
+// Changes the crosshair that is used
+// when focusing an entity.
+void SetEntityCustomFocusCrossHair(
+    string &in asName,
+    string &in asCrossHair);
+
+// asName - internal name
+// asCrossHair - desired crosshair
+
+// Available crosshair values:
+//
+// Default - no crosshair
+// Grab
+// Push
+// Ignite
+// Pick
+// LevelDoor
+// Ladder
+
+// IMPORTANT:
+// - Changing the crosshair only works on AREA type entities
+// - Reloading a save resets the crosshair to default
+// It would be advised to set it back via other triggers, such
+// as a LookAtCallback
+
+// ============================================================
+// PLAYER HEALTH
+// ============================================================
+
+// Returns the player's current health.
+float GetPlayerHealth();
+
+
+// Sets the player's health.
+void SetPlayerHealth(float afHealth);
+
+// afHealth - health value
+
+
+// Adds health to the player.
+void AddPlayerHealth(float afHealth);
+
+// afHealth - health amount
+
+
+// Damages the player.
+void GivePlayerDamage(
+    float afAmount,
+    string &in asType,
+    bool abSpinHead,
+    bool abLethal);
+
+// afAmount - amount of damage
+// asType - BloodSplat, Claws, Slash
+// abSpinHead - applies camera movement effect
+// abLethal - determines whether this damage can kill player
+
+
+// ============================================================
+// PLAYER SANITY
+// ============================================================
+
+// Returns the player's current sanity.
+float GetPlayerSanity();
+
+// Sets the player's sanity.
+void SetPlayerSanity(float afSanity);
+
+// afSanity - sanity value
+
+
+// Adds sanity to the player.
+void AddPlayerSanity(float afSanity);
+
+// afSanity - sanity amount
+
+
+// Enables/Disables sanity drain from darkness.
+void SetSanityDrainDisabled(bool abX);
+
+// abX - true = disabled, false = enabled
+
+// IMPORTANT:
+//
+// Bug:
+// Sanity drain may re-enable after loading a save,
+// as the game does not properly preserve this value.
+// Worth disabling again upon certain important events.
+
+// Boosts sanity depending on current sanity level.
+void GiveSanityBoost();
+
+// 0-24 	100
+// 25-49	90
+// 50-74	80
+// 75-100	+5
+
+// Gives a smaller sanity boost.
+void GiveSanityBoostSmall();
+
+// 0-24 	+20
+// 25-49	+15
+// 50-75	+10
+// 75-100	+5
+
+// Reduces sanity by a specific value.
+void GiveSanityDamage(
+    float afAmount,
+    bool abUseEffect);
+
+// afAmount - sanity damage amount
+// abUseEffect - enables screen/sound effects
+
+
+// ============================================================
+// PLAYER LANTERN
+// ============================================================
+
+
+// Returns whether the lantern is active.
+bool GetLanternActive();
+
+
+// Makes the player turn on the lantern.
+void SetLanternActive(
+    bool abX,
+    bool abUseEffects);
+
+// abX - true = active, false = inactive
+// abUseEffects - plays lantern sounds
+
+
+// Enables/Disables the player's lantern usage.
+void SetLanternDisabled(bool abX);
+
+// abX - true = disabled, false = enabled
+
+
+// Sets a function to call when the player uses the lantern.
+void SetLanternLitCallback(string &in asCallback);
+
+// detailed in callbacks_core.hps
+
+
+// ============================================================
+// MESSAGES FOR THE PLAYER
+// ============================================================
+
+// Displays a message on the screen.
+void SetMessage(
+    string &in asTextCategory,
+    string &in asTextEntry,
+    float afTime);
+
+// asTextCategory - .lang category
+// asTextEntry - .lang entry
+// afTime - display duration
+
+
+// Sets the death hint message.
+void SetDeathHint(
+    string &in asTextCategory,
+    string &in asTextEntry);
+
+// asTextCategory - usually "Hints"
+// asTextEntry - .lang entry
+
+
+// Disables the death start sound.
+
+void DisableDeathStartSound();
+
+// IMPORTANT:
+// Must be called directly before player death.
+
+
+// Sets the sound played after death during permadeath.
+void SetPlayerPermaDeathSound(string &in asSound);
+
+// asSound - voice-type sound
+
+// IMPORTANT:
+// Permadeath is only active when the game is launched with the ptest command line parameter. 
+// Only used for the post-death Suitor lines in Amnesia Justine.
+// Has a possibility to work upon 1.4 version Hard mode death - as of yet untested.

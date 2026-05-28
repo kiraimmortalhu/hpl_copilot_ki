@@ -1,7 +1,7 @@
 // ============================================================
 // callbacks.hps
 // HPL2 CALLBACK REFERENCE + STRUCTURE GROUNDING
-// Target: Amnesia TDD / HPL2 1.0 - 1.2
+// Source: Amnesia TDD / HPL2 1.0 - 1.2
 //
 // PURPOSE:
 // This file exists primarily for AI grounding and autocomplete.
