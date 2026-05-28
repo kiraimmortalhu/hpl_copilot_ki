@@ -1,0 +1,79 @@
+We are building an AI-grounded HPL2 modding workspace primarily for GitHub Copilot inside VSCode.
+
+CORE ARCHITECTURE
+
+* Real HPL2 mod folder is the VSCode workspace root.
+* Real gameplay scripts live in maps/ as .hps files.
+* .hps is the important gameplay scripting layer.
+* .as/.html only exist for minimal AngelScript grounding.
+* We are NOT recreating a fake SDK architecture.
+
+PROJECT STRUCTURE
+.github/
+shared/angelscript/
+hpl2/
+maps/
+
+GOAL
+This project is NOT for learning AngelScript internals.
+It is for retrieval grounding and semantic context for Copilot.
+
+Authentic HPL2 scripting behavior is more valuable than large documentation dumps.
+
+STYLE RULES
+
+* Use real verified HPL2 functions only.
+* Never invent helper functions.
+* Never infer APIs from engine conventions.
+* Prefer wiki wording where possible.
+* Focus heavily on real engine behavior and quirks.
+* Preserve version compatibility boundaries.
+* Avoid tutorial-style examples.
+* Avoid fake gameplay scenarios unless necessary.
+* Keep callbacks in their conceptual owner category.
+* Keep comments concise and practical.
+
+FORMAT STYLE
+Each section follows this structure:
+
+1. Section title
+2. Brief function description
+3. Function syntax
+4. Parameter descriptions
+5. Important behavior notes
+6. Callback syntax only if conceptually owned by the category
+
+Example formatting:
+
+// Changes the crosshair that is used
+// when focusing an entity.
+void SetEntityCustomFocusCrossHair(
+string &in asName,
+string &in asCrossHair);
+
+// asName - internal name
+// asCrossHair - desired crosshair
+
+CURRENT FILES COMPLETED
+
+* callbacks_core.hps
+* variables.hps
+* player.hps
+* map_basics.hps
+
+VERSION RULES
+Target currently:
+HPL2 1.0 - 1.2 only.
+
+Do NOT include:
+
+* 1.3 functions
+* 1.4 functions
+* deprecated/internal functions unless explicitly requested.
+
+ANTI-HALLUCINATION RULES
+
+* Only document functions verified from hpl2_scripts.txt or official wiki.
+* If uncertain whether a function exists, DO NOT include it.
+* Do not invent convenience APIs.
+* Prefer omission over speculation.

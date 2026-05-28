@@ -336,6 +336,7 @@ void StartCredits(
 // alEndNum - ending number
 // Amnesia has 3 different endings and displays a code at the bottom. 
 // Determines which code is displayed. 0-2 will display codes, any other integer will not.
+// USELESS for mods, worth using number 3 or larger by default.
 
 
 // DEPRECATED, Starts the demo end sequence.
