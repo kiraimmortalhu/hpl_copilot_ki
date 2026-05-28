@@ -304,81 +304,9 @@ Activates flickering on a light.
 
 asLightName - The internal light name
 abActive - true = active, false = inactive
-Game scripts
-General
-void StartCredits(string &in asMusic, bool abLoopMusic, string &in asTextCat, string &in asTextEntry, int alEndNum);
-Starts the end credits screen.
 
-asMusic - the music to play (including .ogg)
-abLoopMusic - determines whether the music should loop
-asTextCat - the category to be used in the .lang file, usually "Ending"
-asTextEntry - the entry in the .lang file
-alEndNum - Amnesia has 3 different endings and displays a code at the bottom. Determines which code is displayed. 0-2 will display codes, any other integer will not.
-void StartDemoEnd();
-Shows the demo end screen. The background and UI elements are defined in demo.cfg, with the text using the entries in the "Demo" category of the .lang file.
-
-void AutoSave();
-Creates an auto save file.
-
-void ChangeMap(string &in asMapName, string &in asStartPos, string &in asStartSound, string &in asEndSound);
-Loads another map after a 1.5 second fade out.
-
-asMapName - the file to load
-asStartPos - the name of the StartPos in the next map
-asStartSound - the sound that is played when the change starts
-asEndSound - the sound that is played when the new map is loaded
-void ClearSavedMaps();
-Clears the "history" of the save, useful to do when you know the player will not be able to go back anymore. Makes the next save much smaller in size.
-
-void CreateDataCache();
-void DestroyDataCache();
-This caches all current textures and models and they are not released until destroy is called. If there is already cached data it is destroyed. Create caches to enable faster loading when going back to a map. Destroy the cache if you know the player won't go back to that map.
-
-void SetMapDisplayNameEntry(string &in asNameEntry);
-Sets the map name shown in save file names. If none is set NULL is assumed.
-
-asNameEntry - the entry to display, category must be "Levels"!
-void SetSkyBoxActive(bool abActive);
-Enables/Disables the skybox.
-
-abActive - true = active, false = inactive
-void SetSkyBoxTexture(string &in asTexture);
-Sets the texture of the skybox.
-
-asTexture - The texture file to set. Extension: .dds
-void SetSkyBoxColor(float afR, float afG, float afB, float afA);
-Sets the solid color of the skybox rather than a texture.
-
-afR - red value
-afG - green value
-afB - blue value
-afA - alpha value
-void SetFogActive(bool abActive);
-Enables/Disables the global fog.
-
-abActive - true = active, false = inactive
-void SetFogColor(float afR, float afG, float afB, float afA);
-Sets the color to use for the global fog.
-
-afR - red value
-afG - green value
-afB - blue value
-afA - alpha value
-void SetFogProperties(float afStart, float afEnd, float afFalloffExp, bool abCulling);
-Sets the properties for the global fog.
-
-afStart - how many meters from the camera should the fog begin
-afEnd - how many meters from the camera should the fog reach full thickness
-afFalloffExp - the amount by which the thinkness increases
-abCulling - whether occlusion culling is active for the fog; this prevents objects behind the fog from being loaded
-void SetupLoadScreen(string &in asTextCat, string &in asTextEntry, int alRandomNum, string &in asImageFile);
-Determines which loading screen will be shown when changing maps.
-
-asTextCat - the category of the loading text in the .lang file to be shown on the loading screen, usually "LoadingText"
-asTextEntry - the entry in the .lang file
-alRandomNum - if greater 1, then it will randomize between 1 and alRandom for each LoadScreen giving entry the suffix XX (eg 01). If < =1 then no suffix is added
-asImageFile - the image to be shown (optional)
 void UnlockAchievement(string &in asName);
+1.4 only
 Unlocks the specified achievement. Only able to be used for the ending achievements.
 
 asName - The name of the achievement. Only the following strings are valid:

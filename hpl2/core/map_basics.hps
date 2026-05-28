@@ -1,0 +1,385 @@
+// ============================================================
+// map_basics.hps
+// HPL2 LEVEL / MAP BASICS
+// Source: HPL2 1.0 - 1.2
+//
+// PURPOSE:
+// AI grounding and scripting structure reference.
+//
+// This file documents:
+// - map transitions and states
+// - autosaving
+// - fog settings
+// - skybox control
+// - loading screens
+// - map ambience
+// - general level environment systems
+// ============================================================
+
+// ============================================================
+// MAP LIFECYCLE CALLBACKS
+// ============================================================
+
+// Runs once when map loads for the first time.
+// IMPORTANT:
+//
+// OnStart() only runs the FIRST time the map loads.
+//
+// If a player revisits the map later,
+// logic inside OnStart() will NOT run again.
+//
+// Some state-enforcement functions therefore belong
+// inside OnEnter() instead.
+void OnStart()
+{
+    // Common usage:
+    // - initialize local variables
+    // - setup callbacks
+    // - setup timers
+    // - set entity states
+    // - preload sounds / particles
+}
+
+// Runs every time player enters the map.
+void OnEnter()
+{
+    // Common usage:
+    // - resume map logic
+    // - restore ambience
+    // - play music
+	
+	// Example:
+	// SetEntityInteractionDisabled(string &in asName, bool abDisabled);
+	//
+	// If called only in OnStart(), interaction state may
+	// become inconsistent after leaving and re-entering
+	// the map.
+}
+
+// Runs whenever player leaves the map.
+void OnLeave()
+{
+    // Common usage:
+    // - stop sounds/music
+    // - cleanup temporary systems
+	// - set loading screen image
+}
+
+
+// ============================================================
+// CHECKPOINT SYSTEM
+// ============================================================
+
+// Sets a checkpoint at which the player will respawn in case he dies.
+// IMPORTANT - not the same as AutoSave() - which actually creates a save file!
+void CheckPoint(
+    string &in asName,
+    string &in asStartPos,
+    string &in asCallback,
+    string &in asDeathHintCat,
+    string &in asDeathHintEntry);
+
+// asName - the internal name
+// asStartPos - the name of the StartPos in the editor
+// asCallback - the function to call when the player dies/respawns
+// asDeathHintCat - the category of the death hint message to be used in the .lang file
+// asDeathHintEntry - the entry in the .lang file
+
+
+// Callback syntax
+// X can be a unique name for the checkpoint
+void CheckpointXCallback(
+    string &in asName,
+    int alCount)
+{
+    // Common usage:
+    // - restore progression and enemy encounters
+    // - alter encounters
+    // - reset scripted events
+}
+
+// alCount:
+// 0 = first checkpoint load
+// 1+ = subsequent checkpoint loads
+
+
+// ============================================================
+// SKYBOX
+// ============================================================
+
+// Enables/Disables the skybox in the level.
+void SetSkyBoxActive(bool abX);
+
+// abX - true = enabled, false = disabled
+
+// Sets the active skybox texture.
+void SetSkyBox(string &in asTexture);
+
+// asTexture - skybox texture name
+// usually found in textures/evnmaps
+// path does not need to be provided, format is dds cubemap
+
+// Sets the skybox color.
+// Applies a certain tint over the skybox texture if present.
+void SetSkyBoxColor(
+    float afR,
+    float afG,
+    float afB,
+    float afA);
+
+// afR - red value
+// afG - green value
+// afB - blue value
+// afA - alpha value
+
+// ============================================================
+// FOG
+// ============================================================
+
+// Enables/Disables the fog in the level.
+void SetFogActive(bool abActive);
+
+// abActive - true = enabled, false = disabled
+
+// Sets the fog color.
+void SetFogColor(
+    float afR,
+    float afG,
+    float afB,
+    float afA);
+
+// afR - red value
+// afG - green value
+// afB - blue value
+// afA - alpha value
+
+
+// Sets the fog properties.
+void SetFogProperties(
+    float afStart,
+    float afEnd,
+    float afFalloffExp,
+    bool abCulling);
+
+// afStart - distance where fog begins
+// afEnd - distance where fog becomes fully opaque
+// afFalloffExp - fog falloff exponent
+// abCulling - enables fog culling
+
+
+// IMPORTANT:
+//
+// Fog heavily affects:
+// - atmosphere
+// - visibility
+// - performance
+// - horror pacing
+//
+// It is generally advised to configure fog
+// with colors and distances matching the
+// ambient lighting and skybox.
+
+
+// ============================================================
+// MUSIC
+// ============================================================
+
+// Plays music.
+void PlayMusic(
+    string &in asMusic,
+    bool abLoop,
+    float afVolume,
+    float afFadeTime,
+    int alPrio,
+    bool abResume);
+
+// asMusic - music file
+// abLoop - determines whether music loops
+// afVolume - volume multiplier
+// afFadeTime - fade duration
+// alPrio - playback priority
+// abResume - resumes previous playback state
+
+
+// Stops music.
+void StopMusic(float afFadeTime);
+
+// afFadeTime - fade out duration
+
+// Bug: When loading a map from the debug menu, 
+// music from the previously loaded map cannot be stopped! 
+// It can only be overridden by playing another instance of music 
+// at the same priority level.
+
+// To work around this, call PlayMusic first, where the volume is greater than 0
+// and the priority matches the previous map's music, then call StopMusic 
+// immediately afterward.
+
+// ============================================================
+// MAP STATE AND TRANSITIONS
+// ============================================================
+
+// Creates an autosave.
+void AutoSave();
+
+// EXTREMELY IMPORTANT:
+//
+// AutoSave() needs to be the last line in any encompassing function.
+// When reloading a save from the menu, every subsequent line 
+// will be ignored and not executted - can lead to softlocks.
+
+
+// IMPORTANT:
+//
+// AutoSave() is NOT the same as CheckPoint().
+//
+// AutoSave():
+// - saves current exact state
+// - preserves player position/state
+//
+// CheckPoint():
+// - respawns player at StartPos
+// - used mainly for death recovery and restoring enemy/audio logic
+
+
+// Changes the current map to another one.
+void ChangeMap(
+    string &in asMap,
+    string &in asStartPos,
+    string &in asStartSound,
+    string &in asEndSound);
+
+// asMap - map file to load
+// asStartPos - StartPos name in destination map
+// asStartSound - sound played before transition
+// asEndSound - sound played after transition
+
+
+// IMPORTANT:
+//
+// Maps are loaded from:
+//
+// maps/MapName.map
+//
+// The .map extension need NOT to be included
+// when using ChangeMap().
+
+
+// Sets the image shown during level transitions.
+void SetLoadScreenImage(string &in asImage);
+
+// asImage - loading screen image file
+
+
+// IMPORTANT:
+//
+// - Needs a different trigger if there are multiple leveldoors,
+//   where the loading screen should differ.
+//
+// - Images are usually loaded from: graphics/general
+// Example:
+// graphics/general/menu_loading_screen.jpg
+
+
+// Sets the translated map display name.
+void SetMapDisplayNameEntry(
+    string &in asCategory,
+    string &in asEntry);
+
+// asCategory - .lang category
+// asEntry - .lang entry
+
+
+// IMPORTANT:
+//
+// This changes the displayed map name shown
+// in Load Game descriptions, not the actual
+// internal map filename.
+
+// Clears the "history" of the save
+void ClearSavedMaps();
+// Useful to do when you know the player will not be able to go back to previous levels.
+// Makes the next save much smaller in size.
+
+
+// Creates a cache of resources for faster loading.
+void CreateDataCache();
+
+// Destroys the current data cache.
+void DestroyDataCache();
+
+// IMPORTANT:
+// This caches all current textures and models and they are not released
+// until destroy is called. If there is already cached data it is destroyed.
+// Create caches to enable faster loading when going back to a map. 
+// Destroy the cache if you know the player won't go back to that map.
+
+
+
+// ============================================================
+// CREDITS
+// ============================================================
+
+// Starts the credits sequence.
+void StartCredits(
+    string &in asMusic,
+    bool abLoopMusic,
+    string &in asTextCat,
+    string &in asTextEntry,
+    int alEndNum);
+
+// asMusic - music file
+// abLoopMusic - determines whether music loops
+// asTextCat - .lang category
+// asTextEntry - .lang entry
+
+// alEndNum - ending number
+// Amnesia has 3 different endings and displays a code at the bottom. 
+// Determines which code is displayed. 0-2 will display codes, any other integer will not.
+
+
+// DEPRECATED, Starts the demo end sequence.
+// void StartDemoEnd();
+// Originally used for the Amnesia demo ending. DO NOT USE IT normally.
+
+
+// ============================================================
+// GAMEPLAY NOTES
+// ============================================================
+
+// HPL2 levels are heavily atmosphere-driven.
+//
+// Core environmental systems:
+//
+// - fog
+// - ambient sound
+// - music
+// - lighting
+// - skyboxes
+// - loading transitions
+//
+// are often combined together to control:
+//
+// - tension
+// - pacing
+// - visibility
+// - player comfort
+// - encounter buildup
+//
+// ------------------------------------------------------------
+//
+// IMPORTANT:
+//
+// Environmental transitions are commonly gradual.
+//
+// Sudden changes to:
+//
+// - fog
+// - sky
+// - music
+//
+// may feel unnatural unless intentionally used
+// for horror/shock effects. 
+// Worth coding a fading effect or do them off screen.
+//
+// ============================================================

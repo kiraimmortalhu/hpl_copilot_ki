@@ -1,5 +1,5 @@
 // ============================================================
-// callbacks.hps
+// callbacks_core.hps
 // HPL2 CALLBACK REFERENCE + STRUCTURE GROUNDING
 // Source: Amnesia TDD / HPL2 1.0 - 1.2
 //
@@ -7,8 +7,7 @@
 // This file exists primarily for AI grounding and autocomplete.
 //
 // It documents:
-// - core map lifecycle callbacks
-// - timer callbacks
+// - global game variable setup
 // - interaction callbacks
 // - collision callbacks
 // - entity state callbacks
@@ -17,59 +16,6 @@
 // IMPORTANT:
 // These are examples/interfaces, NOT engine implementations.
 // ============================================================
-
-
-
-// ============================================================
-// MAP LIFECYCLE CALLBACKS
-// ============================================================
-
-// Runs once when map loads for the first time.
-// IMPORTANT:
-//
-// OnStart() only runs the FIRST time the map loads.
-//
-// If a player revisits the map later,
-// logic inside OnStart() will NOT run again.
-//
-// Some state-enforcement functions therefore belong
-// inside OnEnter() instead.
-void OnStart()
-{
-    // Common usage:
-    // - initialize local variables
-    // - setup callbacks
-    // - setup timers
-    // - set entity states
-    // - preload sounds / particles
-}
-
-// Runs every time player enters the map.
-void OnEnter()
-{
-    // Common usage:
-    // - resume map logic
-    // - restore ambience
-    // - play music
-	
-	// Example:
-	// SetEntityInteractionDisabled(string &in asName, bool abDisabled);
-	//
-	// If called only in OnStart(), interaction state may
-	// become inconsistent after leaving and re-entering
-	// the map.
-}
-
-// Runs whenever player leaves the map.
-void OnLeave()
-{
-    // Common usage:
-    // - stop sounds/music
-    // - cleanup temporary systems
-	// - set loading screen image
-}
-
-
 
 // ============================================================
 // GLOBAL GAME START CALLBACK
@@ -83,8 +29,6 @@ void OnGameStart()
     // - initialize global variables
     // - setup progression flags
 }
-
-
 
 // ============================================================
 // ENTITY INTERACTION CALLBACKS
@@ -313,40 +257,6 @@ void CombineXwithYCallback(
 // Removes a combine callback.
 void RemoveCombineCallback(string &in asName);
 
-// ============================================================
-// CHECKPOINT CALLBACKS
-// ============================================================
-
-// Sets a checkpoint at which the player will respawn in case he dies.
-// IMPORTANT - not the same as AutoSave() - which actually creates a save file!
-void CheckPoint(
-    string &in asName,
-    string &in asStartPos,
-    string &in asCallback,
-    string &in asDeathHintCat,
-    string &in asDeathHintEntry);
-
-// asName - the internal name
-// asStartPos - the name of the StartPos in the editor
-// asCallback - the function to call when the player dies/respawns
-// asDeathHintCat - the category of the death hint message to be used in the .lang file
-// asDeathHintEntry - the entry in the .lang file
-
-
-// Callback syntax
-void CheckpointXCallback(
-    string &in asName,
-    int alCount)
-{
-    // Common usage:
-    // - restore progression and enemy encounters
-    // - alter encounters
-    // - reset scripted events
-}
-
-// alCount:
-// 0 = first checkpoint load
-// 1+ = subsequent checkpoint loads
 
 /// ============================================================
 // PROP ANIMATION CALLBACKS
