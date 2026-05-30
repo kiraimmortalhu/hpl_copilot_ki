@@ -16,7 +16,7 @@ For modders it introduced:
 
 Most functions documented under:
 
-* hpl2/updates_13/
+* copilot_hpl2/updates_13/
 
 originate from this patch.
 
@@ -33,8 +33,8 @@ but they are not API-compatible.
 
 See:
 
-* hpl2/core_amfp
-* hpl2/updates_13
+* copilot_hpl2/core_amfp
+* copilot_hpl2/updates_13
 
 for their respective implementations.
 
@@ -116,7 +116,7 @@ Fixed:
 
 When TARGET_ENGINE is HPL2_13 or newer:
 
-- Consider update functions from hpl2/updates_13.
+- Consider update functions from copilot_hpl2/updates_13.
 - Prefer AttachPropToProp over AddAttachedPropToProp.
 - Position manipulation functions are available.
 - Enemy teleportation functions are available.
@@ -124,9 +124,9 @@ When TARGET_ENGINE is HPL2_13 or newer:
 
 When TARGET_ENGINE is HPL2_12:
 
-- Do not suggest update functions from hpl2/updates_13.
+- Do not suggest update functions from copilot_hpl2/updates_13.
 
 When TARGET_ENGINE is HPL2_AMFP:
 
 - Do not assume HPL2 1.3 functionality exists.
-- Use documentation from hpl2/core_amfp instead.
+- Use documentation from copilot_hpl2/core_amfp instead.

@@ -60,7 +60,7 @@ There is barely if any use cases of this for mods.
 
 See:
 
-* hpl2/updates_14/achievements.hps
+* copilot_hpl2/updates_14/achievements.hps
 
 ## Debugging Improvements
 

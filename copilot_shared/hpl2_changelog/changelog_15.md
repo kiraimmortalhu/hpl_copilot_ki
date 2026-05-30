@@ -66,7 +66,7 @@ Added:
 
 See:
 
-* hpl2/updates_15/map_updates.hps
+* copilot_hpl2/updates_15/map_updates.hps
 
 ## Script Organization
 

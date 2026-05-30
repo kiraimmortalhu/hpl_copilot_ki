@@ -6,7 +6,7 @@ You are an HPL engine scripting assistant.
 
 * Use AngelScript-compatible syntax only.
 * Prefer HPL public script functions whenever possible.
-* Prefer APIs defined in local `hpl2/api/` stubs over inferred implementations.
+* Prefer APIs defined in local `copilot_hpl2/core/` stubs over inferred implementations.
 * If a requested feature cannot be implemented using known HPL2 public APIs, clearly state this instead of inventing unsupported functionality.
 * When functionality appears impossible or incomplete, explain what engine access, public functions, callbacks, or exposed systems would be required for implementation.
 * Match the scripting style of Frictional Games titles.
@@ -22,8 +22,8 @@ Focus primarily on the following files and folders when generating scripting sug
 
 * `README.md`
 * `.github/copilot-instructions.md`
-* `shared/`
-* `hpl2/`
+* `copilot_shared/`
+* `copilot_hpl2/`
 * `maps/`
 
 Prefer `.hps` files as the primary source of HPL-compatible scripting patterns.
@@ -54,7 +54,7 @@ Other unlisted folders may also exist as part of the mod structure and should ge
 
 Before using any HPL2 API documentation, read:
 
-shared/project_config.cfg
+copilot_shared/project_config.cfg
 
 The TARGET_ENGINE value is authoritative.
 
@@ -94,7 +94,7 @@ Do not mix APIs from excluded folders.
 HPL2_AMFP is a separate engine branch.
 
 Functions, parameters and syntax documented
-under hpl2/core_amfp must never be suggested
+under copilot_hpl2/core_amfp must never be suggested
 for HPL2_13, HPL2_14 or HPL2_15 projects.
 
 Likewise, update folders must never be used
@@ -105,65 +105,65 @@ for HPL2_AMFP projects.
 HPL2_12
 
 Use:
-- hpl2/core
+- copilot_hpl2/core
 
 Do Not Use:
-- hpl2/core_amfp
-- hpl2/updates_13
-- hpl2/updates_14
-- hpl2/updates_15
+- copilot_hpl2/core_amfp
+- copilot_hpl2/updates_13
+- copilot_hpl2/updates_14
+- copilot_hpl2/updates_15
 
 --------------------------------------------------
 
 HPL2_AMFP
 
 Use:
-- hpl2/core
-- hpl2/core_amfp
+- copilot_hpl2/core
+- copilot_hpl2/core_amfp
 
 Do Not Use:
-- hpl2/updates_13
-- hpl2/updates_14
-- hpl2/updates_15
+- copilot_hpl2/updates_13
+- copilot_hpl2/updates_14
+- copilot_hpl2/updates_15
 
 --------------------------------------------------
 
 HPL2_13
 
 Use:
-- hpl2/core
-- hpl2/updates_13
+- copilot_hpl2/core
+- copilot_hpl2/updates_13
 
 Do Not Use:
-- hpl2/core_amfp
-- hpl2/updates_14
-- hpl2/updates_15
+- copilot_hpl2/core_amfp
+- copilot_hpl2/updates_14
+- copilot_hpl2/updates_15
 
 --------------------------------------------------
 
 HPL2_14
 
 Use:
-- hpl2/core
-- hpl2/updates_13
-- hpl2/updates_14
+- copilot_hpl2/core
+- copilot_hpl2/updates_13
+- copilot_hpl2/updates_14
 
 Do Not Use:
-- hpl2/core_amfp
-- hpl2/updates_15
+- copilot_hpl2/core_amfp
+- copilot_hpl2/updates_15
 
 --------------------------------------------------
 
 HPL2_15
 
 Use:
-- hpl2/core
-- hpl2/updates_13
-- hpl2/updates_14
-- hpl2/updates_15
+- copilot_hpl2/core
+- copilot_hpl2/updates_13
+- copilot_hpl2/updates_14
+- copilot_hpl2/updates_15
 
 Do Not Use:
-- hpl2/core_amfp
+- copilot_hpl2/core_amfp
 
 ### HPL2 1.5 Script Organization
 

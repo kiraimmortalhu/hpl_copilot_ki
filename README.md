@@ -58,7 +58,7 @@ IMPORTANT:
 
 ## Core Principles
 
-- Prefer APIs defined in local hpl2/api/ stubs over inferred implementations
+- Prefer APIs defined in local copilot_hpl2/api/ stubs over inferred implementations
 - Prefer existing engine systems over custom systems
 - Prefer readable gameplay scripting over abstraction
 - Prefer callbacks over update loops
@@ -90,8 +90,8 @@ Focus:
 my_mod/
 ├── .github/
 │   └── copilot-instructions.md
-├── shared/
-├── hpl2/
+├── copilot_shared/
+├── copilot_hpl2/
 │   ├── core/
 │   ├── examples_maps/
 │   ├── updates_*/
@@ -106,10 +106,10 @@ my_mod/
 * `.github/copilot-instructions.md`
   Repository-level Copilot behavior instructions and scripting constraints.
 
-* `shared/`
+* `copilot_shared/`
   Shared AngelScript conventions, scripting patterns, and reusable AI grounding references. Changelogs for the engine updates.
 
-* `hpl2/`
+* `copilot_hpl2/`
   HPL2-specific AI grounding infrastructure, including API stubs, examples, and overall engine documentation.
   Updates folders contain new functionality introduced in official patches.
 
