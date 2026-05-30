@@ -48,6 +48,12 @@ The repository is designed to encourage AI assistants to:
 * Generate concise and readable AngelScript code
 * Avoid unrelated game engine APIs and patterns
 
+IMPORTANT:
+
+* The game/engine doesn't have any dedicated testing framework.
+* The user needs to test the changes in game and provide feedback
+* Copying error messages on the screen may be used to help solve issues
+
 ---
 
 ## Core Principles
@@ -164,6 +170,12 @@ The primary focus is practical compatibility with existing HPL scripting pattern
 ---
 
 ## Short-Term Goals
+
+### Error handling
+
+* Generate template guidelines to help sovlve certain known error messages.
+* Help troubleshoot with suggestions before errors even happen.
+* Warn the user of possible editor or logical mistakes.
 
 ### HPL3 compatibility
 
