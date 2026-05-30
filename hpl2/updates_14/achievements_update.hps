@@ -1,0 +1,43 @@
+//////////////////////////////////////////////////////////////
+// HPL2 1.4 Achievement Functions
+//
+// Continuation/extension of HPL2 1.3.
+//
+// Requires:
+//
+// TARGET_ENGINE=HPL2_14
+// TARGET_ENGINE=HPL2_15
+//
+// Do not use for:
+//
+// TARGET_ENGINE=HPL2_12
+// TARGET_ENGINE=HPL2_13
+// TARGET_ENGINE=HPL2_AMFP
+//
+//////////////////////////////////////////////////////////////
+
+// Unlocks the specified achievement.
+//
+// Only ending achievements can be unlocked
+// through script.
+void UnlockAchievement(string &in asName);
+
+// asName - Achievement identifier.
+//
+// Valid values:
+//
+// Benefactor
+// Survivor
+// Sacrifice
+// Quitter
+// Egotist
+// Altruist
+// Vacillator
+
+// Has barely any functionality for modding.
+// DO NOT SUGGEST USING IT unless the user requests.
+//
+// This function is intended for ending
+// achievement progression and should not
+// be assumed to support arbitrary custom
+// achievements.

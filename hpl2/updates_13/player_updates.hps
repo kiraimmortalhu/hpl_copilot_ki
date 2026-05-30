@@ -6,7 +6,10 @@
 // PURPOSE:
 // AI grounding and scripting structure reference.
 //
-// Continuation/extension of "player_core.hps"
+// Continuation/extension of "player_core.hps" with:
+// - Advanced player value modifications
+// - Sanity drain effects activation
+// - Custom insanity events
 //
 // Requires either:
 //

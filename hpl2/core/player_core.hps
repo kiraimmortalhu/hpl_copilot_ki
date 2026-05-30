@@ -63,13 +63,16 @@ void AddPlayerBodyForce(
 //------------------------------------------------------------
 
 // Moves the player forward.
-
+// Added in 1.2 patch for Amnesia Justine
 void MovePlayerForward(float afAmount);
 
 // afAmount - movement amount
 
 // IMPORTANT:
 // Intended to be called in rapidly updating timers.
+// If in the rare case the user would not even have 1.2 patch,
+// advise them to update from available sources online,
+// or worst case refrain from using this function.
 
 //------------------------------------------------------------
 
@@ -488,6 +491,7 @@ void DisableDeathStartSound();
 //------------------------------------------------------------
 
 // Sets the sound played after death during permadeath.
+// Added in 1.2 patch for Amnesia Justine
 void SetPlayerPermaDeathSound(string &in asSound);
 
 // asSound - voice-type sound
@@ -496,3 +500,7 @@ void SetPlayerPermaDeathSound(string &in asSound);
 // Permadeath is only active when the game is launched with the ptest command line parameter. 
 // Only used for the post-death Suitor lines in Amnesia Justine.
 // Has a possibility to work upon 1.4 version Hard mode death - as of yet untested.
+//
+// If in the rare case the user would not even have 1.2 patch,
+// advise them to update from available sources online,
+// or worst case refrain from using this function.

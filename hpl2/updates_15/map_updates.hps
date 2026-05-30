@@ -1,0 +1,101 @@
+//////////////////////////////////////////////////////////////
+// HPL2 1.5 Map Update Functions
+//
+// Continuation/extension of "map_core.hps" with:
+//
+// HPL2 1.5 additions related to:
+//
+// - Script update callbacks
+// - Screen image rendering
+// - Multi-file script organization
+//
+// Requires:
+//
+// TARGET_ENGINE=HPL2_15
+//
+// Do not use for:
+//
+// TARGET_ENGINE=HPL2_12
+// TARGET_ENGINE=HPL2_13
+// TARGET_ENGINE=HPL2_14
+// TARGET_ENGINE=HPL2_AMFP
+//
+//////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////
+// Update Callback
+//////////////////////////////////////////////////////////////
+
+// Executed every game update or "tick".
+//
+// Can be used for rapid updates instead of
+// looping timers.
+//
+// Excessive usage may affect performance.
+void OnUpdate(float afStep);
+
+// afStep - Time elapsed in seconds since
+// the previous frame.
+//
+// Movement, speed and distance calculations
+// should generally be multiplied by afStep
+// to avoid framerate-dependent behavior.
+
+//////////////////////////////////////////////////////////////
+// Screen Images
+//////////////////////////////////////////////////////////////
+
+// Displays an image directly on the screen.
+void ShowScreenImage(
+string &in asImageName,
+float afX,
+float afY,
+float afScale,
+bool abUseRelativeCoordinates,
+float afDuration,
+float afFadeIn,
+float afFadeOut);
+
+// asImageName - Image file to display.
+//
+// Supported formats:
+//
+// .jpg
+// .png
+// .tga
+// .dds
+//
+// afX - X position.
+// afY - Y position.
+//
+// afScale - Image size in pixels.
+//
+// Negative values use the original
+// image size.
+//
+// abUseRelativeCoordinates - Whether
+// coordinates are relative to screen
+// resolution.
+//
+// afDuration - Display duration.
+//
+// afFadeIn - Fade-in time.
+//
+// afFadeOut - Fade-out time.
+
+//////////////////////////////////////////////////////////////
+// Script Includes
+//////////////////////////////////////////////////////////////
+
+// Includes another .hps file.
+//
+// Must be declared before script code.
+#include "file.hps"
+
+// Allows a level script to be split into
+// multiple .hps files.
+//
+// Only available in HPL2 1.5.
+//
+// Prior versions should assume a single
+// script file per level.
