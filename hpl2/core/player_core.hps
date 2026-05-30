@@ -1,5 +1,5 @@
 // ============================================================
-// player.hps
+// player_core.hps
 // HPL2 PLAYER SYSTEMS
 // Source: HPL2 1.0 - 1.2
 //
@@ -30,6 +30,7 @@ void SetPlayerActive(bool abActive);
 
 // abActive - true = active, false = inactive
 
+//------------------------------------------------------------
 
 // Resets the player's state.
 void ChangePlayerStateToNormal();
@@ -59,6 +60,7 @@ void AddPlayerBodyForce(
 // IMPORTANT:
 // Values below ~2000 usually have very little effect.
 
+//------------------------------------------------------------
 
 // Moves the player forward.
 
@@ -69,6 +71,7 @@ void MovePlayerForward(float afAmount);
 // IMPORTANT:
 // Intended to be called in rapidly updating timers.
 
+//------------------------------------------------------------
 
 // Instantly teleports the player to the target StartPos.
 void TeleportPlayer(string &in asStartPosName);
@@ -88,21 +91,26 @@ void SetPlayerMoveSpeedMul(float afMul);
 
 // afMul - multiplier of default movement speed
 
+//------------------------------------------------------------
+
 // Changes the player's running speed multiplier.
 void SetPlayerRunSpeedMul(float afMul);
 
 // afMul - multiplier of default running speed
 
+//------------------------------------------------------------
 
 // Changes the player's look speed multiplier.
 void SetPlayerLookSpeedMul(float afMul);
 
 // afMul - multiplier of default look speed
 
+//------------------------------------------------------------
 
 // Returns the player's current movement speed.
 float GetPlayerSpeed();
 
+//------------------------------------------------------------
 
 // Returns the player's current vertical speed.
 float GetPlayerYSpeed();
@@ -118,11 +126,14 @@ void SetPlayerJumpDisabled(bool abX);
 
 // abX - true = disabled, false = enabled
 
+//------------------------------------------------------------
+
 // Forces the player to crouch.
 void SetPlayerCrouching(bool abCrouch);
 
 // abCrouch - true = crouching, false = standing
 
+//------------------------------------------------------------
 
 // Enables/Disables the player's ability to crouch.
 void SetPlayerCrouchDisabled(bool abX);
@@ -145,6 +156,8 @@ void FadePlayerFOVMulTo(
 // afSpeed - speed of change
 
 
+//------------------------------------------------------------
+
 // Changes the aspect ratio of the player.
 //
 // Stretches or narrows the screen horizontally.
@@ -155,6 +168,7 @@ void FadePlayerAspectMulTo(
 // afX - multiplier of default aspect
 // afSpeed - speed of change
 
+//------------------------------------------------------------
 
 // Rotates the camera on the player's body.
 void FadePlayerRollTo(
@@ -166,6 +180,7 @@ void FadePlayerRollTo(
 // afSpeedMul - rotation speed multiplier
 // afMaxSpeed - maximum rotation speed
 
+//------------------------------------------------------------
 
 // Changes the camera position on the player's body.
 void MovePlayerHeadPos(
@@ -200,10 +215,12 @@ void StartPlayerLookAt(
 // afMaxSpeed - maximum speed allowed
 // asAtTargetCallback - callback function
 
+//------------------------------------------------------------
 
 // Stops the player from looking at the target.
 void StopPlayerLookAt();
 
+//------------------------------------------------------------
 
 // Callback function
 // Calls a function when the player looks at a certain entity.
@@ -225,6 +242,7 @@ void ShowPlayerCrossHairIcons(bool abX);
 
 // abX - true = enabled, false = disabled
 
+//------------------------------------------------------------
 
 // Changes the crosshair that is used
 // when focusing an entity.
@@ -258,18 +276,21 @@ void SetEntityCustomFocusCrossHair(
 // Returns the player's current health.
 float GetPlayerHealth();
 
+//------------------------------------------------------------
 
 // Sets the player's health.
 void SetPlayerHealth(float afHealth);
 
 // afHealth - health value
 
+//------------------------------------------------------------
 
 // Adds health to the player.
 void AddPlayerHealth(float afHealth);
 
 // afHealth - health amount
 
+//------------------------------------------------------------
 
 // Damages the player.
 void GivePlayerDamage(
@@ -313,17 +334,21 @@ void GivePlayerDamage(
 // Returns the player's current sanity.
 float GetPlayerSanity();
 
+//------------------------------------------------------------
+
 // Sets the player's sanity.
 void SetPlayerSanity(float afSanity);
 
 // afSanity - sanity value
 
+//------------------------------------------------------------
 
 // Adds sanity to the player.
 void AddPlayerSanity(float afSanity);
 
 // afSanity - sanity amount
 
+//------------------------------------------------------------
 
 // Enables/Disables sanity drain from darkness.
 void SetSanityDrainDisabled(bool abX);
@@ -337,13 +362,18 @@ void SetSanityDrainDisabled(bool abX);
 // as the game does not properly preserve this value.
 // Worth disabling again upon certain important events.
 
+//------------------------------------------------------------
+
 // Boosts sanity depending on current sanity level.
 void GiveSanityBoost();
 
+// Currenty sanity level vs. end result after applying
 // 0-24 	100
 // 25-49	90
 // 50-74	80
 // 75-100	+5
+
+//------------------------------------------------------------
 
 // Gives a smaller sanity boost.
 void GiveSanityBoostSmall();
@@ -353,6 +383,8 @@ void GiveSanityBoostSmall();
 // 50-75	+10
 // 75-100	+5
 
+//------------------------------------------------------------
+
 // Reduces sanity by a specific value.
 void GiveSanityDamage(
     float afAmount,
@@ -361,6 +393,8 @@ void GiveSanityDamage(
 // afAmount - sanity damage amount
 // abUseEffect - enables screen/sound effects
 
+//------------------------------------------------------------
+
 // Starts a random insanity event from the available sets.
 void StartRandomInsanityEvent();
 
@@ -368,80 +402,6 @@ void StartRandomInsanityEvent();
 // Checks whether an insanity event is currently in effect.
 // Not useful at all due to having a return type of void when it should be bool.
 // WE DO NOT USE IT, it is here only for documentation purposes.
-
-// Starts a screen effect.
-//
-// Common sanity-related effects:
-// - sanity blur
-// - camera distortion
-// - hallucination effects
-void StartScreenEffect(
-    string &in asName,
-    float afFadeInTime,
-    float afTime,
-    float afFadeOutTime,
-    bool abLoop);
-
-// asName - effect name
-// afFadeInTime - fade in duration
-// afTime - active duration
-// afFadeOutTime - fade out duration
-// abLoop - determines whether effect loops
-
-
-// Stops a screen effect.
-void StopScreenEffect(string &in asName);
-
-// asName - effect name
-
-
-// ============================================================
-// PLAYER OIL AND LANTERN
-// ============================================================
-
-// Returns the player's current lantern oil amount.
-float GetPlayerLampOil();
-
-
-// Sets the player's lantern oil amount.
-void SetPlayerLampOil(float afOil);
-
-// afOil - oil amount
-
-
-// Adds lantern oil to the player.
-void AddPlayerLampOil(float afOil);
-
-// afOil - oil amount
-
-// IMPORTANT:
-//
-// Lantern oil ranges from 0 to 100.
-
-
-// Returns whether the lantern is active.
-bool GetLanternActive();
-
-
-// Makes the player turn on the lantern.
-void SetLanternActive(
-    bool abX,
-    bool abUseEffects);
-
-// abX - true = active, false = inactive
-// abUseEffects - plays lantern sounds
-
-
-// Enables/Disables the player's lantern usage.
-void SetLanternDisabled(bool abX);
-
-// abX - true = disabled, false = enabled
-
-
-// Sets a function to call when the player uses the lantern.
-void SetLanternLitCallback(string &in asCallback);
-
-// Callback syntax detailed in callbacks_core.hps
 
 
 // ============================================================
@@ -458,6 +418,56 @@ void SetMessage(
 // asTextEntry - .lang entry
 // afTime - display duration
 
+//------------------------------------------------------------
+
+// Displays a hint.
+void GiveHint(
+string &in asName,
+string &in asMessageCat,
+string &in asMessageEntry,
+float afTimeShown);
+
+// asName - internal name
+// asMessageCat - the category in the .lang file, usually "Hints"
+// asMessageEntry - language entry
+
+// afTimeShown - display time
+// If time is <= 0 then the life time is calculated based on string length.
+
+//------------------------------------------------------------
+
+// Blocks a (default or custom) hint from being shown on the screen.
+void BlockHint(
+string &in asName);
+
+// asName - internal name
+
+// Blocked hints are included in savefiles, so they should persist between levels.
+
+//------------------------------------------------------------
+
+// Unblocks the hint from being shown.
+void UnBlockHint(
+string &in asName);
+
+// asName - internal name
+
+// Basic game hints use the same name as their respective lang entries, 
+// with the exception of "numbered" hints.
+// For example, EntityGrab blocks the EntityGrab01 and EntityGrab02 entries.
+
+//------------------------------------------------------------
+
+// Removes the hint from the list of already shown hints, allowing it to appear again.
+void RemoveHint(
+string &in asName);
+
+// asName - internal name
+
+
+// ============================================================
+// PLAYER DEATH
+// ============================================================
 
 // Sets the death hint message.
 void SetDeathHint(
@@ -467,14 +477,15 @@ void SetDeathHint(
 // asTextCategory - usually "Hints"
 // asTextEntry - .lang entry
 
+//------------------------------------------------------------
 
 // Disables the death start sound.
-
 void DisableDeathStartSound();
 
 // IMPORTANT:
 // Must be called directly before player death.
 
+//------------------------------------------------------------
 
 // Sets the sound played after death during permadeath.
 void SetPlayerPermaDeathSound(string &in asSound);

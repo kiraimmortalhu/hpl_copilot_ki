@@ -83,6 +83,14 @@ When generating code:
 * Avoid unnecessary helper systems unless requested.
 * Match original Amnesia scripting conventions where possible.
 
+### IMPORTANT
+
+* Whenever "internal name" is used in hps documentation, make sure the user
+* is alerted to create or make sure those objects exists inside the level editor,
+* defined in configs or entity/object parameters.
+* Exception is if they are created within the same hps / function context.
+* Advise only first time, or later when asked or if the user reports related problems.
+
 ---
 
 ## Workspace Purpose

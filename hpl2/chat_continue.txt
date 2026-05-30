@@ -58,12 +58,14 @@ CURRENT FILES COMPLETED
 
 * callbacks_core.hps
 * variables.hps
-* player.hps
-* map_basics.hps
+* player_core.hps
+* player_tools.hps
+* map_core.hps
 * audio.hps
 * visual_effects.hps
 * math_core.hps
 * entities_core.hps
+* entities_interactive.hps
 
 VERSION RULES
 Target currently:

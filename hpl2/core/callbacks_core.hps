@@ -54,6 +54,7 @@ void TimerXFunc(string &in asTimer)
     }
 }
 
+//------------------------------------------------------------
 
 // Common pattern:
 // repeating timer loop
@@ -224,12 +225,15 @@ void CollideXwithYCallback(
 // 1 = enter
 // -1 = leave
 
+//------------------------------------------------------------
+
 
 // Removes an EntityCollideCallback.
 void RemoveEntityCollideCallback(
     string &in asParentName,
     string &in asChildName);
 
+//------------------------------------------------------------
 
 // Checks whether two entities collide. This function does NOT support asterix (*) or "Player"!
 bool GetEntitiesCollide(string &in asEntityA, string &in asEntityB);
@@ -263,6 +267,8 @@ void UseItemXonYCallback(
     // - puzzle items
     // - machinery activation
 }
+
+//------------------------------------------------------------
 
 // Removes an item callback.
 void RemoveUseItemCallback(string &in asName);
@@ -298,6 +304,8 @@ void CombineXwithYCallback(
     // - puzzle assembly
 }
 
+//------------------------------------------------------------
+
 // Removes a combine callback.
 void RemoveCombineCallback(string &in asName);
 
@@ -329,30 +337,6 @@ void AnimationPlayedOnPropXCallback(string &in asProp)
     // - machinery
     // - cinematic sequences
 }
-
-// ============================================================
-// LANTERN CALLBACKS
-// ============================================================
-
-// Sets the function to call when the player uses the lantern.
-void SetLanternLitCallback(string &in asCallback);
-
-// asCallback - function to call
-
-
-// Callback syntax
-void LanternCallback(bool abLit)
-{
-    // Common usage:
-    // - darkness mechanics
-    // - scripted encounters
-    // - monster reactions
-}
-
-// abLit:
-// true = lantern lit
-// false = lantern unlit
-
 
 // ============================================================
 // CONNECTION CALLBACKS

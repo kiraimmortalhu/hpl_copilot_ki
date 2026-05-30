@@ -1,0 +1,310 @@
+// ============================================================
+// player_tools.hps
+// HPL2 LEVEL / MAP BASICS
+// Source: HPL2 1.0 - 1.2
+//
+// PURPOSE:
+// AI grounding and scripting structure reference.
+//
+// Continuation/extension of "player_core.hps" with:
+// - Inventory general functions
+// - oil and lantern
+// - journal and quests
+
+// ============================================================
+
+//////////////////////////////////////////////////////////////
+// Inventory
+//////////////////////////////////////////////////////////////
+
+// Closes the inventory.
+void ExitInventory();
+
+
+//------------------------------------------------------------
+
+// Disables inventory access.
+void SetInventoryDisabled(
+bool abX);
+
+// abX - disabled state
+
+
+//------------------------------------------------------------
+
+// Displays an inventory message.
+void SetInventoryMessage(
+string &in asTextCategory,
+string &in asTextEntry,
+float afTime);
+
+// asTextCategory - language category
+// asTextEntry - language entry
+// afTime - display time
+
+// Used for specific feedback messages, for ex: failing to combine items.
+// Combine callbacks are usually defined in the mod/game's inventory.hps
+
+//------------------------------------------------------------
+
+// Gives an item.
+void GiveItem(
+string &in asName,
+string &in asType,
+string &in asSubTypeName,
+string &in asImageName,
+float afAmount);
+
+// asName - internal name
+
+// asType - asType - item type to give
+// 
+// Available types are:
+// Puzzle 
+// Lantern 
+// Health 
+// Sanity 
+// LampOil 
+// Tinderbox
+
+// asSubTypeName - item name for .lang file
+
+// asImageName - inventory image
+// Info for user: usually located in graphics/item
+// .tga format is standard, but others may also work
+
+// afAmount - item amount for stackable items
+
+// IMPORTANT:
+// - Giving an inventory item with no name or image might crash the game.
+
+//------------------------------------------------------------
+
+// Removes an item.
+void RemoveItem(
+string &in asName);
+
+// asName - internal name
+
+
+//------------------------------------------------------------
+
+// Checks whether the player
+// has an item.
+bool HasItem(
+string &in asName);
+
+// asName - internal name
+
+
+//------------------------------------------------------------
+
+// Gives an item from an
+// entity file.
+void GiveItemFromFile(
+string &in asName,
+string &in asFileName);
+
+// asName - internal name
+// asFileName - item file (.ent)
+
+// IMPORTANT:
+// - Giving an inventory item with no name or image might crash the game.
+// - User makes sure the entity file in use have everything correctly defined
+
+// ============================================================
+// PLAYER OIL AND LANTERN
+// ============================================================
+
+// Returns the player's current lantern oil amount.
+float GetPlayerLampOil();
+
+//------------------------------------------------------------
+
+// Sets the player's lantern oil amount.
+void SetPlayerLampOil(float afOil);
+
+// afOil - oil amount
+
+//------------------------------------------------------------
+
+// Adds lantern oil to the player.
+void AddPlayerLampOil(float afOil);
+
+// afOil - oil amount
+
+// IMPORTANT:
+//
+// Lantern oil ranges from 0 to 100.
+
+//------------------------------------------------------------
+
+// Returns whether the lantern is active.
+bool GetLanternActive();
+
+//------------------------------------------------------------
+
+// Makes the player turn on the lantern.
+void SetLanternActive(
+    bool abX,
+    bool abUseEffects);
+
+// abX - true = active, false = inactive
+// abUseEffects - plays lantern sounds
+
+//------------------------------------------------------------
+
+// Enables/Disables the player's lantern usage.
+void SetLanternDisabled(bool abX);
+
+// abX - true = disabled, false = enabled
+
+//------------------------------------------------------------
+
+// Sets the function to call when the player uses the lantern.
+void SetLanternLitCallback(string &in asCallback);
+
+// asCallback - function to call
+
+
+// Callback syntax
+void LanternCallback(bool abLit)
+{
+    // Common usage:
+    // - darkness mechanics
+    // - scripted encounters
+    // - monster reactions
+}
+
+// abLit:
+// true = lantern lit
+// false = lantern unlit
+
+//////////////////////////////////////////////////////////////
+// Journal
+//////////////////////////////////////////////////////////////
+
+// Adds a note to the journal.
+void AddNote(
+string &in asNameAndTextEntry,
+string &in asImage);
+
+// asNameAndTextEntry - journal entry in the .lang file
+// Must end with _Name and _Text and be in category "Journal"!
+
+// asImage - background image, ideally in .tga format
+// images need to be located in "graphics/journal"
+
+// IMPORTANT EXAMPLE:
+// If you want to add the "customnote01" to the player, it needs to have
+// - "customnote01_icon.tga" for browsing the list in the journal
+// - "customnote01_large.tga" for the background when the note is opened
+// User should be advised of this when asked or they run into relatedissues.
+
+
+//------------------------------------------------------------
+
+// Adds a diary to the journal.
+void AddDiary(
+string &in asNameAndTextEntry,
+string &in asImage);
+
+// asNameAndTextEntry - diary entry
+// Must end with _NameX and _TextY whereas X and Y are numbers of the parts 
+// (_Name1: first diary, _Text1: first page) and be in category "Journal"!
+// IMPORANT TO NOTE for the user:
+// Diary pages placed in the editor are always presented in order,
+// despite what order the player finds them in.
+
+// asImage - background image
+// Image format and details are similar to that of Note
+
+//------------------------------------------------------------
+
+// Controls whether a picked-up
+// diary automatically opens.
+void ReturnOpenJournal(
+bool abOpenJournal);
+
+// abOpenJournal - open state
+
+
+//////////////////////////////////////////////////////////////
+// Quests
+//////////////////////////////////////////////////////////////
+
+// Adds a quest to the Journal's Mementos section.
+void AddQuest(
+string &in asName,
+string &in asNameAndTextEntry);
+
+// asName - internal name
+// asNameAndTextEntry - journal entry
+// Must start with "Quest_<texthere>_Text”, and be in category “Journal”!
+
+
+//------------------------------------------------------------
+
+// Completes a quest.
+void CompleteQuest(
+string &in asName,
+string &in asNameAndTextEntry);
+
+// asName - internal name
+// asNameAndTextEntry - journal entry
+// Must match text given in "AddQuest"
+
+
+//------------------------------------------------------------
+
+// Checks whether a quest
+// has been completed.
+bool QuestIsCompleted(
+string &in asName);
+
+// asName - internal name
+
+
+//------------------------------------------------------------
+
+// Checks whether a quest
+// has been added.
+bool QuestIsAdded(
+string &in asName);
+
+// asName - internal name
+
+
+//------------------------------------------------------------
+
+// Sets the number of quests
+// in the current map.
+//void SetNumberOfQuestsInMap(
+//int alNumberOfQuests);
+
+// alNumberOfQuests - quest count
+// Obsolete/DEPRECATED; 
+// formerly used to calculate a completion percentage when looking at a level door.
+
+
+//////////////////////////////////////////////////////////////
+// Notes
+//////////////////////////////////////////////////////////////
+
+// Completed quests cannot
+// be added again.
+//
+// Completing a quest before
+// adding it prevents it from
+// being added later.
+//
+// Hint blocking persists in
+// save files.
+//
+// ReturnOpenJournal is only
+// used from diary pickup
+// callbacks.
+//
+// GiveItem can create inventory
+// items without a corresponding
+// world entity.

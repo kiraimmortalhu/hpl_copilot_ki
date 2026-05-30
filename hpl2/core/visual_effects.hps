@@ -1,5 +1,5 @@
 // ============================================================
-// map_basics.hps
+// visual_effects.hps
 // HPL2 LEVEL / MAP BASICS
 // Source: HPL2 1.0 - 1.2
 //
@@ -255,7 +255,6 @@ string &in asSound);
 // Checks whether a flashback
 // effect is active.
 bool GetFlashbackIsActive();
-
 
 //------------------------------------------------------------
 

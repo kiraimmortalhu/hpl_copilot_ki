@@ -1,5 +1,5 @@
 // ============================================================
-// map_basics.hps
+// map_core.hps
 // HPL2 LEVEL / MAP BASICS
 // Source: HPL2 1.0 - 1.2
 //
@@ -40,6 +40,8 @@ void OnStart()
     // - preload sounds / particles
 }
 
+//------------------------------------------------------------
+
 // Runs every time player enters the map.
 void OnEnter()
 {
@@ -55,6 +57,8 @@ void OnEnter()
 	// become inconsistent after leaving and re-entering
 	// the map.
 }
+
+//------------------------------------------------------------
 
 // Runs whenever player leaves the map.
 void OnLeave()
@@ -112,12 +116,16 @@ void SetSkyBoxActive(bool abX);
 
 // abX - true = enabled, false = disabled
 
+//------------------------------------------------------------
+
 // Sets the active skybox texture.
 void SetSkyBox(string &in asTexture);
 
 // asTexture - skybox texture name
 // usually found in textures/evnmaps
 // path does not need to be provided, format is dds cubemap
+
+//------------------------------------------------------------
 
 // Sets the skybox color.
 // Applies a certain tint over the skybox texture if present.
@@ -141,6 +149,8 @@ void SetFogActive(bool abActive);
 
 // abActive - true = enabled, false = disabled
 
+//------------------------------------------------------------
+
 // Sets the fog color.
 void SetFogColor(
     float afR,
@@ -153,6 +163,7 @@ void SetFogColor(
 // afB - blue value
 // afA - alpha value
 
+//------------------------------------------------------------
 
 // Sets the fog properties.
 void SetFogProperties(
@@ -200,6 +211,7 @@ void PlayMusic(
 // alPrio - playback priority
 // abResume - resumes previous playback state
 
+//------------------------------------------------------------
 
 // Stops music.
 void StopMusic(float afFadeTime);
@@ -241,6 +253,7 @@ void AutoSave();
 // - respawns player at StartPos
 // - used mainly for death recovery and restoring enemy/audio logic
 
+//------------------------------------------------------------
 
 // Changes the current map to another one.
 void ChangeMap(
@@ -264,6 +277,7 @@ void ChangeMap(
 // The .map extension need NOT to be included
 // when using ChangeMap().
 
+//------------------------------------------------------------
 
 // Sets the image shown during level transitions.
 void SetLoadScreenImage(string &in asImage);
@@ -280,6 +294,7 @@ void SetLoadScreenImage(string &in asImage);
 // Example:
 // graphics/general/menu_loading_screen.jpg
 
+//------------------------------------------------------------
 
 // Sets the translated map display name.
 void SetMapDisplayNameEntry(
@@ -296,14 +311,19 @@ void SetMapDisplayNameEntry(
 // in Load Game descriptions, not the actual
 // internal map filename.
 
+//------------------------------------------------------------
+
 // Clears the "history" of the save
 void ClearSavedMaps();
 // Useful to do when you know the player will not be able to go back to previous levels.
 // Makes the next save much smaller in size.
 
+//------------------------------------------------------------
 
 // Creates a cache of resources for faster loading.
 void CreateDataCache();
+
+//------------------------------------------------------------
 
 // Destroys the current data cache.
 void DestroyDataCache();

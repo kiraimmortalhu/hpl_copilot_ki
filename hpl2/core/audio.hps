@@ -1,5 +1,5 @@
 // ============================================================
-// map_basics.hps
+// audio.hps
 // HPL2 LEVEL / MAP BASICS
 // Source: HPL2 1.0 - 1.2
 //
@@ -10,7 +10,7 @@
 // - sound functionality
 // - effect voices for voice acting
 // - global audio values
-// - music (but details elsewhere in map_basics.hps)
+// - music (but details elsewhere in map_core.hps)
 
 // ============================================================
 
@@ -176,4 +176,4 @@ void PlayMusic(string &in asMusic,
 
 void StopMusic(float afFadeTime);
 
-// Full syntax and details in map_basics.hps
+// Full syntax and details in map_core.hps
