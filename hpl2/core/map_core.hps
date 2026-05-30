@@ -363,6 +363,9 @@ void StartCredits(
 // void StartDemoEnd();
 // Originally used for the Amnesia demo ending. DO NOT USE IT normally.
 
+// DEPRECATED, Easter Egg related in Justine
+// void AddKeyPart(...)
+// DO NOT USE IT
 
 // ============================================================
 // GAMEPLAY NOTES
