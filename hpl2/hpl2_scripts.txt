@@ -307,10 +307,6 @@ Adds a single item to the player's inventory. This is meant to be used for debug
 asName - internal name
 asFileName - item to give + extension (.ent)
 
-Entities
-General
-void SetEntityActive(string &in asName, bool abActive);
-Activates/deactivates an entity.
 
 void SetEntityVisible(string &in asName, bool abVisible);
 Alert icon.png Requires version 1.3
@@ -319,16 +315,7 @@ Activates/deactivates an entity's visual mesh. The collision body remains.
 
 asName - Name of the entity.
 abActive - Activate/deactivate mesh.
-bool GetEntityExists(string &in asName);
-Checks whether an entity exists.
 
-void CreateEntityAtArea(string &in asEntityName, string &in asEntityFile, string &in asAreaName, bool abFullGameSave);
-Creates an entity at an area. When creating an enemy though, it cannot chase properly along PathNodes (using for example ShowEnemyPlayerPosition).
-
-asEntityName - internal name
-asEntityFile - entity to be used extension .ent
-asAreaName - the area to create the entity at
-abFullGameSave - determines whether an entity "remembers" its state
 void ReplaceEntity(string &in asName, string &in asBodyName, string &in asNewEntityName, string &in asNewEntityFile, bool abFullGameSave);
 Alert icon.png Requires version 1.3
 
@@ -366,12 +353,6 @@ Returns an entity's position in the level on the specified axis.
 
 asName - Name of the entity.
 
-void SetEntityInteractionDisabled(string &in asName, bool abDisabled);
-Disallows interaction with an entity.
-
-void BreakJoint (string &in asName);
-Breaks a joint. Do not use this on joints in SwingDoors, Levers, Wheels, etc. where the joint is part of an interaction. That will make the game crash.
-
 void SetBodyMass(string &in asName, float afMass);
 Alert icon.png Requires version 1.3
 
@@ -387,64 +368,6 @@ Gets the mass of an entity's body.
 asName - Name of the body of an entity. The body name of an entity is EntityName_BodyName.
 afMass - The mass to get.
 Props
-void SetPropEffectActive(string &in asName, bool abActive, bool abFadeAndPlaySounds);
-Turns the texture illumination, billboards, particles, light flicker, and sounds of a prop on or off.
-
-Can be used on coal to give it the black color it should have.
-
-asName - internal name
-abActive - active state
-abFadeAndPlaySounds - if all effects should fade in/out or not
-void SetPropActiveAndFade(string &in asName, bool abActive, float afFadeTime);
-Activates/deactivates a prop.
-
-asName - internal name
-abActive - nothing to add
-afFadeTime - time in seconds until prop fully fades
-void SetPropStaticPhysics(string &in asName, bool abX);
-Activates/deactivates the physics of a prop, setting the mass to 0. Setting as true will make entities static in midair.
-
-bool GetPropIsInteractedWith(string &in asName);
-Checks whether a prop is interacted with.
-
-void RotatePropToSpeed(string &in asName, float afAcc, float afGoalSpeed, float afAxisX, float afAxisY, float afAxisZ, bool abResetSpeed, string &in asOffsetArea);
-Rotates the prop up to a set speed.
-
-asName - internal name
-afAcc - acceleration
-afGoalSpeed - desired speed
-afAxisX - rotation around X axis
-afAxisY - rotation around Y axis
-afAxisZ - rotation around Z axis
-abResetSpeed - determines whether the speed is resetted after goal speed is reached
-asOffsetArea - the area to rotate around, if empty, then the center of the body is used Note: The entity you want to rotate MUST be a "StaticObject" entity!
-void StopPropMovement(string &in asName);
-Stops all movement of a prop.
-
-void AddAttachedPropToProp(string &in asPropName, string &in asAttachName, string &in asAttachFile, float afPosX, float afPosY, float afPosZ, float afRotX, float afRotY, float afRotZ);
-Attaches a prop to another prop.
-
-asPropName- the prop to attach another prop at
-asAttachName - internal name of the prop that gets attached
-asAttachFile - the prop that gets attached extension .ent
-afPosX - X position of the attach from the prop
-afPosY - Y position of the attach from the prop
-afPosZ - Z position of the attach from the prop
-afRotX - rotation around X axis of the attach
-afRotY - rotation around Y axis of the attach
-afRotZ - rotation around ZX axis of the attach
-Note: for the purposes of AddEntityCollideCallback, attached props will not call the callback function if they collide with a "static_object" or a "StaticProp" entity type!
-
-Icon bug.png
-Bug: afRotZ is used for both the ZX rotation and the Z position of the attached prop. Unwanted rotation can be avoided by using:
-AddAttachedPropToProp(asPropName, asAttachName, asAttachFile, afPosX, afPosY, 0, afPosZ, 90.0f, afPosZ)
-
-
-
-Icon bug.png
-Bug: Attaching a breakable prop to a physically active prop, and then breaking the attached prop, will cause the game to crash, should the parent object be moved or reset.
-
-
 
 void AttachPropToProp(string &in asPropName, string &in asAttachName, string &in asAttachFile, float afPosX, float afPosY, float afPosZ, float afRotX, float afRotY, float afRotZ);
 Alert icon.png Requires version 1.3
@@ -461,148 +384,6 @@ afRotX - rotation around X axis of the attach
 afRotY - rotation around Y axis of the attach
 afRotZ - rotation around ZX axis of the attach
 Note: for the purposes of AddEntityCollideCallback, attached props will not call the callback function if they collide with a "static_object" or a "StaticProp" entity type!
-
-void RemoveAttachedPropFromProp(string &in asPropName, string &in asAttachName);
-Detaches a prop from a prop.
-
-void SetPropHealth(string &in asName, float afHealth);
-void AddPropHealth(string &in asName, float afHealth);
-float GetPropHealth(string &in asName);
-Modifies/returns the health of a prop.
-
-void ResetProp(string &in asName);
-Resets a prop's state to the original one when the map was loaded.
-
-void AddPropForce(string &in asName, float afX, float afY, float afZ, string &in asCoordSystem);
-void AddPropImpulse(string &in asName, float afX, float afY, float afZ, string &in asCoordSystem);
-void AddBodyForce(string &in asName, float afX, float afY, float afZ, string &in asCoordSystem);
-void AddBodyImpulse(string &in asName, float afX, float afY, float afZ, string &in asCoordSystem);
-These functions push objects. Note that rather high values are needed when applying forces (on the order of ~100 (weak) to ~10000 (strong)), but not impulses (values less than 10 can be appropriate). Forces are external influences, and will have different effect depending on the mass of the object they are being applied to; impulses disregard mass, and can cause objects to break, as if hit. A "Body" is a physics-related helper object, to which a force or an impulse can be applied. Entities can consist of several bodies, interconnected in various ways (you can create/examine bodies in the model editor).
-
-asName - the object to push; for bodies, use this format: "entityName_bodyName"
-afX - magnitude along the X-axis
-afY - magnitude along the Y-axis
-afZ - magnitude along the Z-axis
-asCoordSystem - determines which coordinate system is used, "local" or "world"
-All of these functions are additive - when called consecutively, for each call, the vectors defined by (afX, afY, afZ) will be added together, and a resultant force/impulse will be calculated before any physics simulation is applied to the target object.
-
-Connections
-void InteractConnectPropWithRope(string &in asName, string &in asPropName, string &in asRopeName, bool abInteractOnly, float afSpeedMul, float afToMinSpeed, float afToMaxSpeed, bool abInvert, int alStatesUsed);
-Connects a prop with the movement of a rope (i.e. turn a wheel to move a rope). For Levers, the rope only moves when the Lever is at the min, max, or middle.
-
-asName- The name of the connection
-asPropName - The name of the prop; can be a Lever or Wheel
-asRopeName - The name of the rope
-abInteractOnly - If the connection is only affected by interacting with the prop directly
-afSpeedMul - Speed multiplier of how quickly the rope moves
-afToMinSpeed - The slowest the rope can move
-afToMaxSpeed - The fastest the rope can move
-abInvert - Whether to invert the direction the rope moves
-alStatesUsed - The state to use, ignoring the other (1=max only, -1=min only, 0=both)
-void InteractConnectPropWithMoveObject(string &in asName, string &in asPropName, string &in asMoveObjectName, bool abInteractOnly, bool abInvert, int alStatesUsed);
-This one should only be used if there must be an exact correspondence to prop "amount" and the MoveObject open amount. It is best used for Wheel-door connections, where the MoveObject moves continuously along with the Wheel. For Levers, the MoveObject only moves when the Lever is at the min, max, or middle.
-
-asName - The name of the connection
-asPropName - The entity that controls the movement; can be a Lever or Wheel
-asMoveObject - The MoveObject to move
-abInteractOnly - If the connection is only affected by interacting with the prop directly
-abInvert - If the state is inverted, making the MoveObject move in the opposite direction
-alStatesUsed - The state to use, ignoring the other (1=max only, -1=min only, 0=both)
-
-Lamps
-void SetLampLit(string &in asName, bool abLit, bool abEffects);
-Turns a lamp on or off.
-
-asName - Name of the lamp
-abLit - Set true if you want the lamp to be lit, set to false if you want the lamp to be unlit
-abEffects - If you want to have the lamp fade in/out when it gets lit/unlit
-Doors
-void SetSwingDoorLocked(string &in asName, bool abLocked, bool abEffects);
-Locks a SwingDoor.
-
-asName - Name of the door
-abLocked - Locked/unlocked
-abEffects - If sounds are played when the door is locked/unlocked
-void SetSwingDoorClosed(string &in asName, bool abClosed, bool abEffects);
-Closes a SwingDoor.
-
-asName - Name of the door
-abClosed - Closed/open
-abEffects - If sounds are played when the door is closed/opened
-bool GetSwingDoorLocked(string &in asName);
-bool GetSwingDoorClosed(string &in asName);
-Checks whether a swing door is locked/closed.
-
-void SetSwingDoorDisableAutoClose(string &in asName, bool abDisableAutoClose);
-Deactivates the "auto-close" when a door is nearly closed.
-
-int GetSwingDoorState(string &in asName);
-Returns an integer depending on how far the door is opened.
--1 = angle is close to 0°, 1 = angle is 70% or higher of max, 0 = inbetween -1 and 1.
-
-void SetLevelDoorLocked(string &in asName, bool abLocked);
-Locks a level door. Note that level doors are NOT swing doors.
-
-void SetLevelDoorLockedSound(string &in asName, string &in asSound);
-Determines which sound is played when interacting with a locked level door.
-
-void SetLevelDoorLockedText(string &in asName, string &in asTextCat, string &in asTextEntry);
-Displays a message when interacting with a locked level door.
-
-asName - internal name
-asTextCat - the category in the .lang file
-asTextEntry - the entry in the .lang file
-void SetMoveObjectState(string &in asName, float afState);
-Moves an object to a certain state.
-
-asName - internal name
-afState - state of the object, 0 = closed, 1 = open, values inbetween (and above, for example, the bridge_metal_vert) are valid too!
-void SetMoveObjectStateExt(string &in asName, float afState, float afAcc, float afMaxSpeed, float afSlowdownDist, bool abResetSpeed);
-Moves an object to a certain state, extended method.
-
-asName - internal name
-afState - state of the object, 0 = closed, 1 = open, values inbetween are valid too!
-afAcc - acceleration
-afMaxSpeed - maximum speed
-afSlowdownDist - Distance to the target state before deceleration occurs.
-abResetSpeed - Set to true if the prop's speed should be reset before performing the movement, else the prop will accelerate from its current speed to afMaxSpeed.
-Levers, wheels and buttons
-void SetPropObjectStuckState(string &in asName, int alState);
-void SetWheelStuckState(string &in asName, int alState, bool abEffects);
-void SetLeverStuckState(string &in asName, int alState, bool abEffects);
-Makes an object/wheel/lever stuck in a certain state.
-
-asName - internal name
-alState - 0 = not stuck, 1 = at max, -1 = at min
-abEffects - play sound effects
-void SetWheelAngle(string &in asName, float afAngle, bool abAutoMove);
-Moves a wheel to a certain angle.
-
-asName - internal name
-afAngle - angle
-abAutoMove - true = wheel physically moves to the new angle; false = angle is changed without moving the wheel
-void SetWheelInteractionDisablesStuck(string &in asName, bool abX);
-void SetLeverInteractionDisablesStuck(string &in asName, bool abX);
-Allows the player to make a wheel/lever unstuck when interacted with.
-
-int GetLeverState(string &in asName);
-Returns the state of the lever.
-0 = not stuck, 1 = at max, -1 = at min
-
-void SetMultiSliderStuckState(string &in asName, int alStuckState, bool abEffects);
-Makes a MultiSlider stuck in a certain state.
-
-void SetButtonSwitchedOn(string &in asName, bool abSwitchedOn, bool abEffects);
-Sticky areas
-void SetAllowStickyAreaAttachment(bool abX);
-Allows entities to stick to a StickyArea.
-
-void AttachPropToStickyArea(string &in asAreaName, string &in asProp);
-void AttachBodyToStickyArea(string &in asAreaName, string &in asBody);
-Attaches a prop/body to a StickyArea.
-
-void DetachFromStickyArea(string &in asAreaName);
-Detaches everything from a StickyArea.
 
 NPCs
 void SetNPCAwake(string &in asName, bool abAwake, bool abEffects);

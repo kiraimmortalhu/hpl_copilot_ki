@@ -1,0 +1,337 @@
+// ============================================================
+// entities_interactive.hps
+// HPL2 LEVEL / MAP BASICS
+// Source: HPL2 1.0 - 1.2
+//
+// PURPOSE:
+// AI grounding and scripting structure reference.
+//
+// This file documents:
+// - entity basics
+// - props, prop movement and alteration functions
+
+// ============================================================
+
+
+
+//////////////////////////////////////////////////////////////
+// Entities
+//////////////////////////////////////////////////////////////
+
+// Activates or deactivates an entity.
+void SetEntityActive(
+string &in asName,
+bool abActive);
+
+// asName - internal name
+// abActive - active state
+
+
+//------------------------------------------------------------
+
+// Checks whether an entity exists.
+bool GetEntityExists(
+string &in asName);
+
+// asName - internal name
+
+
+// Creates an entity at an area.
+void CreateEntityAtArea(
+string &in asEntityName,
+string &in asEntityFile,
+string &in asAreaName,
+bool abFullGameSave);
+
+// asEntityName - internal name
+// asEntityFile - entity file (.ent)
+// asAreaName - target area
+// abFullGameSave - save full entity state
+
+// Disables interaction with an entity.
+void SetEntityInteractionDisabled(
+string &in asName,
+bool abDisabled);
+
+// asName - internal name
+// abDisabled - disabled state
+
+
+// Breaks a joint in an object with physics.
+void BreakJoint(
+string &in asName);
+
+// asName - joint name
+
+
+//////////////////////////////////////////////////////////////
+// Props
+//////////////////////////////////////////////////////////////
+
+// Enables or disables prop effects.
+void SetPropEffectActive(
+string &in asName,
+bool abActive,
+bool abFadeAndPlaySounds);
+
+// asName - internal name
+// abActive - active state
+// abFadeAndPlaySounds - fade effects
+// and play sounds
+
+
+//------------------------------------------------------------
+
+// Activates or deactivates a prop.
+void SetPropActiveAndFade(
+string &in asName,
+bool abActive,
+float afFadeTime);
+
+// asName - internal name
+// abActive - active state
+// afFadeTime - fade time
+// in seconds
+
+
+//------------------------------------------------------------
+
+// Enables or disables
+// static prop physics.
+void SetPropStaticPhysics(
+string &in asName,
+bool abX);
+
+// asName - internal name
+// abX - enabled state
+
+
+//------------------------------------------------------------
+
+// Checks whether a prop
+// is being interacted with.
+bool GetPropIsInteractedWith(
+string &in asName);
+
+// asName - internal name
+
+
+//////////////////////////////////////////////////////////////
+// Prop Movement
+//////////////////////////////////////////////////////////////
+
+// Rotates a prop toward
+// a target speed.
+void RotatePropToSpeed(
+string &in asName,
+float afAcc,
+float afGoalSpeed,
+float afAxisX,
+float afAxisY,
+float afAxisZ,
+bool abResetSpeed,
+string &in asOffsetArea);
+
+// asName - internal name
+// afAcc - acceleration
+// afGoalSpeed - target speed
+// afAxisX - X axis rotation
+// afAxisY - Y axis rotation
+// afAxisZ - Z axis rotation
+// abResetSpeed - reset speed
+// when target is reached
+// asOffsetArea - rotation origin
+
+
+//------------------------------------------------------------
+
+// Stops all prop movement.
+void StopPropMovement(
+string &in asName);
+
+// asName - internal name
+
+
+//////////////////////////////////////////////////////////////
+// Attached Props
+//////////////////////////////////////////////////////////////
+
+// Attaches a prop to a prop.
+void AddAttachedPropToProp(
+string &in asPropName,
+string &in asAttachName,
+string &in asAttachFile,
+float afPosX,
+float afPosY,
+float afPosZ,
+float afRotX,
+float afRotY,
+float afRotZ);
+
+// asPropName - parent prop
+// asAttachName - internal name
+// asAttachFile - prop file (.ent)
+// afPosX - X position
+// afPosY - Y position
+// afPosZ - Z position
+// afRotX - X rotation
+// afRotY - Y rotation
+// afRotZ - Z rotation
+
+// Note: for the purposes of AddEntityCollideCallback, attached props will not call 
+// the callback function if they collide with a "static_object" or a "StaticProp" entity type!
+//
+// Bug: afRotZ is used for both the ZX rotation and the Z position of the attached prop.
+// Unwanted rotation can be avoided by using:
+// AddAttachedPropToProp(asPropName, 
+// asAttachName, asAttachFile, afPosX, afPosY, 0, afPosZ, 90.0f, afPosZ)
+//
+// Bug: Attaching a breakable prop to a physically active prop, and then breaking 
+// the attached prop, will cause the game to crash, should the parent object be moved 
+// or reset.
+//
+// Note: For an improved version, on 1.3 patch and beyond use:
+// AttachPropToProp(...)
+
+//------------------------------------------------------------
+
+// Detaches a prop from a prop.
+void RemoveAttachedPropFromProp(
+string &in asPropName,
+string &in asAttachName);
+
+// asPropName - parent prop
+// asAttachName - attached prop
+
+
+//////////////////////////////////////////////////////////////
+// Prop Health
+//////////////////////////////////////////////////////////////
+
+// Sets prop health.
+void SetPropHealth(
+string &in asName,
+float afHealth);
+
+// asName - internal name
+// afHealth - health value
+
+
+//------------------------------------------------------------
+
+// Adds health to a prop.
+void AddPropHealth(
+string &in asName,
+float afHealth);
+
+// asName - internal name
+// afHealth - health amount
+
+
+//------------------------------------------------------------
+
+// Gets prop health.
+float GetPropHealth(
+string &in asName);
+
+// asName - internal name
+
+
+//------------------------------------------------------------
+
+// Resets a prop to its
+// original map loading state.
+void ResetProp(
+string &in asName);
+
+// asName - internal name
+
+
+//////////////////////////////////////////////////////////////
+// Forces & Impulses
+//////////////////////////////////////////////////////////////
+
+// Applies force to a prop.
+void AddPropForce(
+string &in asName,
+float afX,
+float afY,
+float afZ,
+string &in asCoordSystem);
+
+// asName - internal name
+// afX - X force
+// afY - Y force
+// afZ - Z force
+// asCoordSystem - local/world
+
+
+//------------------------------------------------------------
+
+// Applies impulse to a prop.
+void AddPropImpulse(
+string &in asName,
+float afX,
+float afY,
+float afZ,
+string &in asCoordSystem);
+
+// asName - internal name
+// afX - X impulse
+// afY - Y impulse
+// afZ - Z impulse
+// asCoordSystem - local/world
+
+
+//------------------------------------------------------------
+
+// Applies force to a body.
+void AddBodyForce(
+string &in asName,
+float afX,
+float afY,
+float afZ,
+string &in asCoordSystem);
+
+// asName - body name
+// afX - X force
+// afY - Y force
+// afZ - Z force
+// asCoordSystem - local/world
+
+
+//------------------------------------------------------------
+
+// Applies impulse to a body.
+void AddBodyImpulse(
+string &in asName,
+float afX,
+float afY,
+float afZ,
+string &in asCoordSystem);
+
+// asName - body name
+// afX - X impulse
+// afY - Y impulse
+// afZ - Z impulse
+// asCoordSystem - local/world
+
+
+//////////////////////////////////////////////////////////////
+// Notes
+//////////////////////////////////////////////////////////////
+
+// RotatePropToSpeed only works
+// on entities with "StaticPhysics" applied.
+//
+// AddAttachedPropToProp contains
+// known engine bugs related to
+// position and rotation handling.
+//
+// Breaking joints used by
+// interactive entities such as
+// SwingDoors, Levers or Wheels
+// can cause crashes.
+//
+// Forces are mass-dependent.
+// Impulses are not.

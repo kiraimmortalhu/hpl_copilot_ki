@@ -60,6 +60,10 @@ CURRENT FILES COMPLETED
 * variables.hps
 * player.hps
 * map_basics.hps
+* audio.hps
+* visual_effects.hps
+* math_core.hps
+* entities_core.hps
 
 VERSION RULES
 Target currently:

@@ -1,0 +1,401 @@
+// ============================================================
+// entities_interactive.hps
+// HPL2 LEVEL / MAP BASICS
+// Source: HPL2 1.0 - 1.2
+//
+// PURPOSE:
+// AI grounding and scripting structure reference.
+//
+// Continuation/extension of "entities_core.hps" with:
+// - lamps
+// - doors
+// - moveobjects, levers, button, wheels
+// - ropes
+// - sticky areas
+
+// ============================================================
+
+//////////////////////////////////////////////////////////////
+// Lamps
+//////////////////////////////////////////////////////////////
+
+// Turns a lamp on or off.
+void SetLampLit(
+string &in asName,
+bool abLit,
+bool abEffects);
+
+// asName - internal name
+// abLit - lit state
+// abEffects - fade and sound effects
+
+
+//////////////////////////////////////////////////////////////
+// Swing Doors
+//////////////////////////////////////////////////////////////
+
+// Locks or unlocks a swing door.
+void SetSwingDoorLocked(
+string &in asName,
+bool abLocked,
+bool abEffects);
+
+// asName - internal name
+// abLocked - locked state
+// abEffects - play sound effects
+
+
+//------------------------------------------------------------
+
+// Closes or opens a swing door.
+void SetSwingDoorClosed(
+string &in asName,
+bool abClosed,
+bool abEffects);
+
+// asName - internal name
+// abClosed - closed state
+// abEffects - play sound effects
+
+
+//------------------------------------------------------------
+
+// Checks whether a swing door
+// is locked.
+bool GetSwingDoorLocked(
+string &in asName);
+
+// asName - internal name
+
+
+//------------------------------------------------------------
+
+// Checks whether a swing door
+// is closed.
+bool GetSwingDoorClosed(
+string &in asName);
+
+// asName - internal name
+
+
+//------------------------------------------------------------
+
+// Disables automatic closing
+// behavior for a swing door.
+void SetSwingDoorDisableAutoClose(
+string &in asName,
+bool abDisableAutoClose);
+
+// asName - internal name
+// abDisableAutoClose - disable state
+
+
+//------------------------------------------------------------
+
+// Returns the current door state.
+//
+// -1 = near minimum angle
+//  0 = between min and max
+//  1 = near maximum angle
+int GetSwingDoorState(
+string &in asName);
+
+// asName - internal name
+
+
+//////////////////////////////////////////////////////////////
+// Level Doors
+//////////////////////////////////////////////////////////////
+
+// Locks or unlocks a level door.
+void SetLevelDoorLocked(
+string &in asName,
+bool abLocked);
+
+// asName - internal name
+// abLocked - locked state
+
+
+//------------------------------------------------------------
+
+// Sets the locked sound
+// for a level door.
+void SetLevelDoorLockedSound(
+string &in asName,
+string &in asSound);
+
+// asName - internal name
+// asSound - sound file
+
+
+//------------------------------------------------------------
+
+// Sets the locked message
+// for a level door.
+void SetLevelDoorLockedText(
+string &in asName,
+string &in asTextCat,
+string &in asTextEntry);
+
+// asName - internal name
+// asTextCat - language category
+// asTextEntry - language entry
+
+
+//////////////////////////////////////////////////////////////
+// Button, Lever & Wheel States
+//////////////////////////////////////////////////////////////
+
+// Sets whether a button
+// is switched on.
+void SetButtonSwitchedOn(
+string &in asName,
+bool abSwitchedOn,
+bool abEffects);
+
+// asName - internal name
+// abSwitchedOn - switch state
+// abEffects - play sound effects
+
+//------------------------------------------------------------
+
+// Makes a prop object stuck.
+void SetPropObjectStuckState(
+string &in asName,
+int alState);
+
+// asName - internal name
+// alState - stuck state
+
+
+//------------------------------------------------------------
+
+// Makes a wheel stuck.
+void SetWheelStuckState(
+string &in asName,
+int alState,
+bool abEffects);
+
+// asName - internal name
+// alState - stuck state
+// abEffects - play sound effects
+
+
+//------------------------------------------------------------
+
+// Makes a lever stuck.
+void SetLeverStuckState(
+string &in asName,
+int alState,
+bool abEffects);
+
+// asName - internal name
+// alState - stuck state
+// abEffects - play sound effects
+
+
+//------------------------------------------------------------
+
+// Sets a wheel angle.
+void SetWheelAngle(
+string &in asName,
+float afAngle,
+bool abAutoMove);
+
+// asName - internal name
+// afAngle - target angle
+// abAutoMove - physical movement
+
+
+//------------------------------------------------------------
+
+// Allows wheel interaction
+// to remove the stuck state.
+void SetWheelInteractionDisablesStuck(
+string &in asName,
+bool abX);
+
+// asName - internal name
+// abX - enabled state
+
+
+//------------------------------------------------------------
+
+// Allows lever interaction
+// to remove the stuck state.
+void SetLeverInteractionDisablesStuck(
+string &in asName,
+bool abX);
+
+// asName - internal name
+// abX - enabled state
+
+
+//------------------------------------------------------------
+
+// Returns the current lever state.
+//
+// -1 = minimum
+//  0 = not stuck
+//  1 = maximum
+int GetLeverState(
+string &in asName);
+
+// asName - internal name
+
+//------------------------------------------------------------
+
+// Makes a MultiSlider stuck.
+void SetMultiSliderStuckState(
+string &in asName,
+int alStuckState,
+bool abEffects);
+
+// asName - internal name
+// alStuckState - stuck state
+// abEffects - play sound effects
+
+//////////////////////////////////////////////////////////////
+// Move Objects
+//////////////////////////////////////////////////////////////
+
+// Moves an object to a state.
+void SetMoveObjectState(
+string &in asName,
+float afState);
+
+// asName - internal name
+// afState - target state
+
+
+//------------------------------------------------------------
+
+// Moves an object to a state
+// with extended movement control.
+void SetMoveObjectStateExt(
+string &in asName,
+float afState,
+float afAcc,
+float afMaxSpeed,
+float afSlowdownDist,
+bool abResetSpeed);
+
+// asName - internal name
+// afState - target state
+// afAcc - acceleration
+// afMaxSpeed - maximum speed
+// afSlowdownDist - slowdown distance
+// afResetSpeed - reset speed
+
+
+//////////////////////////////////////////////////////////////
+// Connections
+//////////////////////////////////////////////////////////////
+
+// Connects a prop to a rope.
+void InteractConnectPropWithRope(
+string &in asName,
+string &in asPropName,
+string &in asRopeName,
+bool abInteractOnly,
+float afSpeedMul,
+float afToMinSpeed,
+float afToMaxSpeed,
+bool abInvert,
+int alStatesUsed);
+
+// asName - connection name
+// asPropName - controlling prop
+// asRopeName - rope
+// abInteractOnly - interaction only
+// afSpeedMul - speed multiplier
+// afToMinSpeed - minimum speed
+// afToMaxSpeed - maximum speed
+// abInvert - invert direction
+// alStatesUsed - states used
+
+
+//------------------------------------------------------------
+
+// Connects a prop to a MoveObject.
+void InteractConnectPropWithMoveObject(
+string &in asName,
+string &in asPropName,
+string &in asMoveObjectName,
+bool abInteractOnly,
+bool abInvert,
+int alStatesUsed);
+
+// asName - connection name
+// asPropName - controlling prop
+// asMoveObjectName - MoveObject
+// abInteractOnly - interaction only
+// abInvert - invert state
+// alStatesUsed - states used
+
+
+//////////////////////////////////////////////////////////////
+// Sticky Areas
+//////////////////////////////////////////////////////////////
+
+// Enables StickyArea attachment.
+void SetAllowStickyAreaAttachment(
+bool abX);
+
+// abX - enabled state
+
+
+//------------------------------------------------------------
+
+// Attaches a prop to a StickyArea.
+void AttachPropToStickyArea(
+string &in asAreaName,
+string &in asProp);
+
+// asAreaName - StickyArea
+// asProp - prop name
+
+
+//------------------------------------------------------------
+
+// Attaches a body to a StickyArea.
+void AttachBodyToStickyArea(
+string &in asAreaName,
+string &in asBody);
+
+// asAreaName - StickyArea
+// asBody - body name
+
+
+//------------------------------------------------------------
+
+// Detaches everything from
+// a StickyArea.
+void DetachFromStickyArea(
+string &in asAreaName);
+
+// asAreaName - StickyArea
+
+
+//////////////////////////////////////////////////////////////
+// Notes
+//////////////////////////////////////////////////////////////
+
+// Level doors are separate
+// from SwingDoors and use
+// their own API.
+//
+// SetMoveObjectState accepts
+// values outside the normal
+// 0.0 - 1.0 range for certain
+// MoveObjects.
+//
+// Lever and wheel stuck states:
+//
+// -1 = minimum
+//  0 = not stuck
+//  1 = maximum
+//
+// InteractConnectPropWithMoveObject
+// should be used when exact state
+// correspondence is required.
