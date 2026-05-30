@@ -86,10 +86,9 @@ my_mod/
 │   └── copilot-instructions.md
 ├── shared/
 ├── hpl2/
-│   ├── api/
-│   ├── docs/
-│   ├── examples/
-│   └── templates/
+│   ├── core/
+│   ├── examples_maps/
+│   ├── updates_*/
 ├── maps/
 ├── custom_story_settings.cfg
 └── README.md
@@ -102,16 +101,18 @@ my_mod/
   Repository-level Copilot behavior instructions and scripting constraints.
 
 * `shared/`
-  Shared AngelScript conventions, scripting patterns, and reusable AI grounding references.
+  Shared AngelScript conventions, scripting patterns, and reusable AI grounding references. Changelogs for the engine updates.
 
 * `hpl2/`
-  HPL2-specific AI grounding infrastructure, including API stubs, examples, templates, and engine documentation.
+  HPL2-specific AI grounding infrastructure, including API stubs, examples, and overall engine documentation.
+  Updates folders contain new functionality introduced in official patches.
 
 * `maps/`
-  Primary gameplay scripting location containing real HPL map scripts and implementation logic. Gameplay scripting files are primarily .hps files. Other map-related file types such as .map, .nodes, and similar files are generally editor or design data and are not primary scripting references.
+  Primary gameplay scripting location containing real project map files and implementation logic. Gameplay scripting files are primarily .hps files. Other map-related file types such as .map, .nodes, and similar files are generally editor or design data and are not primary scripting references.
 
 * `custom_story_settings.cfg`
   Mod configuration file indicating that `my_mod/` is the root directory of the active HPL2 custom story project.
+  It missing should not influence copilot functionality however.
 
 Other folders and files may exist as part of the actual mod structure, but are generally not primary scripting or AI grounding references unless directly relevant to the current task.
 
