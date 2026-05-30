@@ -1,0 +1,131 @@
+// ============================================================
+// math_updates.hps
+// HPL2 LEVEL / MAP BASICS
+// Source: HPL2 1.3
+//
+// PURPOSE:
+// AI grounding and scripting structure reference.
+//
+// Continuation/extension of "math_core.hps" with:
+// - String conversion utilities
+// - Mathematical operations
+//
+// Requires either:
+//
+// TARGET_ENGINE=HPL2_13
+// TARGET_ENGINE=HPL2_14
+// TARGET_ENGINE=HPL2_15
+//
+// Do not use for:
+//
+// TARGET_ENGINE=HPL2_12
+// TARGET_ENGINE=HPL2_AMFP
+//
+
+//////////////////////////////////////////////////////////////
+// String Conversion Functions
+//////////////////////////////////////////////////////////////
+
+// If possible, returns an integer converted
+// from a string. Otherwise returns 0.
+//
+// asString - String to convert.
+int StringToInt(string &in asString);
+
+// If possible, returns a float converted
+// from a string. Otherwise returns 0.
+//
+// asString - String to convert.
+float StringToFloat(string &in asString);
+
+// If possible, returns a boolean converted
+// from a string. Otherwise returns false.
+//
+// asString - String to convert.
+bool StringToBool(string &in asString);
+
+//////////////////////////////////////////////////////////////
+// Mathematical Operations
+//////////////////////////////////////////////////////////////
+
+// Returns the sine of the specified value.
+//
+// afX - Value to operate.
+float MathSin(float afX);
+
+// Returns the cosine of the specified value.
+//
+// afX - Value to operate.
+float MathCos(float afX);
+
+// Returns the tangent of the specified value.
+//
+// afX - Value to operate.
+float MathTan(float afX);
+
+// Returns the arc sine of the specified value.
+//
+// afX - Value to operate.
+float MathAsin(float afX);
+
+// Returns the arc cosine of the specified value.
+//
+// afX - Value to operate.
+float MathAcos(float afX);
+
+// Returns the arc tangent of the specified value.
+//
+// afX - Value to operate.
+float MathAtan(float afX);
+
+// Calculates and returns the arc tangent
+// of the specified values.
+//
+// afX - First value.
+// afY - Second value.
+float MathAtan2(float afX, float afY);
+
+// Returns the square root of the specified value.
+//
+// afX - Value to operate.
+float MathSqrt(float afX);
+
+// Returns the value of afBase raised
+// to the power of afExp.
+//
+// afBase - Base value.
+// afExp - Exponent value.
+float MathPow(float afBase, float afExp);
+
+// Returns the lowest value.
+//
+// afA - First value.
+// afB - Second value.
+float MathMin(float afA, float afB);
+
+// Returns the highest value.
+//
+// afA - First value.
+// afB - Second value.
+float MathMax(float afA, float afB);
+
+// Returns afX clamped between afMin and afMax.
+//
+// If afX is less than afMin,
+// afMin is returned.
+//
+// If afX is greater than afMax,
+// afMax is returned.
+//
+// afX - Value to clamp.
+// afMin - Minimum value.
+// afMax - Maximum value.
+float MathClamp(
+float afX,
+float afMin,
+float afMax);
+
+// Returns the absolute value.
+//
+// afX - Value to operate.
+float MathAbs(float afX);

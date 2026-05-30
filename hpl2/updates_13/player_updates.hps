@@ -1,0 +1,132 @@
+// ============================================================
+// player_updates.hps
+// HPL2 LEVEL / MAP BASICS
+// Source: HPL2 1.3
+//
+// PURPOSE:
+// AI grounding and scripting structure reference.
+//
+// Continuation/extension of "player_core.hps"
+//
+// Requires either:
+//
+// TARGET_ENGINE=HPL2_13
+// TARGET_ENGINE=HPL2_14
+// TARGET_ENGINE=HPL2_15
+//
+// Do not use for:
+//
+// TARGET_ENGINE=HPL2_12
+// TARGET_ENGINE=HPL2_AMFP
+//
+
+//////////////////////////////////////////////////////////////
+// Player State & Movement
+//////////////////////////////////////////////////////////////
+
+// Returns the player's position on the X axis.
+float GetPlayerPosX();
+
+//------------------------------------------------------------
+
+// Returns the player's position on the Y axis.
+float GetPlayerPosY();
+
+//------------------------------------------------------------
+
+// Returns the player's position on the Z axis.
+float GetPlayerPosZ();
+
+// Sets the player's position within the level.
+void SetPlayerPos(
+float afX,
+float afY,
+float afZ);
+
+// afX - X coordinate position.
+// afY - Y coordinate position.
+// afZ - Z coordinate position.
+
+//------------------------------------------------------------
+
+// Changes the player's jump multiplier.
+void SetPlayerJumpForceMul(float afMul);
+
+// afMul - Jump force multiplier.
+
+// Higher values result in higher jumps.
+// Default value is 1.
+
+//------------------------------------------------------------
+
+// Enables or disables the player's ability
+// to take fall damage.
+void SetPlayerFallDamageDisabled(bool abX);
+
+// abX - Enable or disable fall damage.
+
+
+//////////////////////////////////////////////////////////////
+// Sanity & Insanity Effects
+//////////////////////////////////////////////////////////////
+
+// Enables or disables the sanity drain and
+// night vision effects while in darkness.
+void SetInDarknessEffectsActive(bool abX);
+
+// abX - Enable or disable effects.
+
+//------------------------------------------------------------
+
+// Stops the currently playing insanity event.
+void StopCurrentInsanityEvent();
+
+// Works for both Default and Custom sets.
+
+//------------------------------------------------------------
+
+// Starts a specified insanity event.
+void StartInsanityEvent(string &in asEventName);
+
+// asEventName - Insanity event to play.
+// asEventName should match the event
+// identifier defined in main_sanity_events.cfg.
+
+// Insanity events are not defined in script.
+//
+// They are configured through:
+// "misc/main_sanity_events.cfg"
+//
+// StartInsanityEvent() only triggers an
+// event that already exists in that file.
+// An example custom sanity events looks like this:
+//
+// 	<SoundStream
+//		Name = "Stream_Monster_Roar04"
+//		Set = "Custom"
+//		MaxSanity = "70"
+//		
+//		File = "insanity_monster_roar04.ogg"
+//		Volume = "1"
+//		SoundDelayTime = "0.2"
+//		
+//		FadeScreen = "true"
+//		FadeColor = "1 0 0 0.8"
+//		FadeInTime = "2"
+//		FadeOutTime = "1"
+//		
+//		FadeImageFile = ""
+//		DisablePlayer = "false"
+//
+//      SubtitleCat = "Voice"
+//      SubtitleEntry = "voicetextexample"
+//	/>
+//
+// Custom events commonly use the same text
+// for both "Name" and "Set".
+//
+// Some parameters are optional.
+//
+// However, omitted parameters will use
+// engine defaults, which may not match
+// the intended behavior by the user.

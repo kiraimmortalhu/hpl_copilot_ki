@@ -1,0 +1,201 @@
+// ============================================================
+// entities_updates.hps
+// HPL2 LEVEL / MAP BASICS
+// Source: HPL2 1.3
+//
+// PURPOSE:
+// AI grounding and scripting structure reference.
+//
+// Continuation/extension of "entities_core.hps" with:
+// - Entity positioning
+// - Entity visibility
+// - Entity placement / replacement
+// - Body mass manipulation
+// - Prop attachment (fixed)
+//
+// Requires either:
+//
+// TARGET_ENGINE=HPL2_13
+// TARGET_ENGINE=HPL2_14
+// TARGET_ENGINE=HPL2_15
+//
+// Do not use for:
+//
+// TARGET_ENGINE=HPL2_12
+// TARGET_ENGINE=HPL2_AMFP
+//
+//////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////
+// Position Functions
+//////////////////////////////////////////////////////////////
+
+// Moves an entity to a position within the level.
+void SetEntityPos(
+string &in asName,
+float afX,
+float afY,
+float afZ);
+
+// asName - Name of the entity.
+// afX - X coordinate position.
+// afY - Y coordinate position.
+// afZ - Z coordinate position.
+
+//------------------------------------------------------------
+
+// Returns an entity's position on the X axis.
+float GetEntityPosX(string &in asName);
+
+// asName - Name of the entity.
+
+//------------------------------------------------------------
+
+// Returns an entity's position on the Y axis.
+float GetEntityPosY(string &in asName);
+
+// asName - Name of the entity.
+
+//------------------------------------------------------------
+
+// Returns an entity's position on the Z axis.
+float GetEntityPosZ(string &in asName);
+
+// asName - Name of the entity.
+
+//////////////////////////////////////////////////////////////
+// Visibility
+//////////////////////////////////////////////////////////////
+
+// Activates or deactivates an entity's visual mesh.
+//
+// The collision body remains active.
+void SetEntityVisible(
+string &in asName,
+bool abVisible);
+
+// asName - Name of the entity.
+// abVisible - Activate or deactivate mesh.
+
+//////////////////////////////////////////////////////////////
+// Placement & Replacement
+//////////////////////////////////////////////////////////////
+
+// Removes an entity and places a new
+// entity in its place.
+void ReplaceEntity(
+string &in asName,
+string &in asBodyName,
+string &in asNewEntityName,
+string &in asNewEntityFile,
+bool abFullGameSave);
+
+// asName - Name of the entity to replace.
+// asBodyName - Name of the body to place the
+// new entity at.
+//
+// If empty, the first body is used.
+// This may be unreliable. Naming a body
+// explicitly is recommended.
+//
+// asNewEntityName - Name of the new entity.
+//
+// asNewEntityFile - Name of the new entity
+// file (.ent).
+//
+// abFullGameSave - Whether all properties
+// of this entity should be saved throughout
+// levels.
+
+//------------------------------------------------------------
+
+// Places an entity at the position of
+// another entity.
+void PlaceEntityAtEntity(
+string &in asName,
+string &in asTargetEntity,
+string &in asTargetBodyName,
+bool abUseRotation);
+
+// asName - Name of the entity to place.
+//
+// asTargetEntity - Name of the target entity.
+//
+// asTargetBodyName - Name of the target body.
+//
+// If empty, the first body is used.
+// This may be unreliable. Naming a body
+// explicitly is recommended.
+//
+// abUseRotation - Whether the entity should
+// use the target entity's rotation.
+//
+// Does not work for enemies.
+// Use TeleportEnemyToEntity instead - found in "enemy_updates.hps".
+
+//////////////////////////////////////////////////////////////
+// Physics Bodies
+//////////////////////////////////////////////////////////////
+
+// Gets the mass of an entity body.
+float GetBodyMass(string &in asName);
+
+// asName - Name of the body.
+//
+// Entity body names use the format:
+// EntityName_BodyName
+
+//------------------------------------------------------------
+
+// Sets the mass of an entity body.
+void SetBodyMass(
+string &in asName,
+float afMass);
+
+// asName - Name of the body.
+//
+// Entity body names use the format:
+// EntityName_BodyName
+//
+// afMass - Mass to set.
+
+//////////////////////////////////////////////////////////////
+// Prop Attachment
+//////////////////////////////////////////////////////////////
+
+// Attaches a prop to another prop.
+// Fixed version of AddAttachedPropToProp.
+void AttachPropToProp(
+string &in asPropName,
+string &in asAttachName,
+string &in asAttachFile,
+float afPosX,
+float afPosY,
+float afPosZ,
+float afRotX,
+float afRotY,
+float afRotZ);
+
+// asPropName - Prop to attach another
+// prop to.
+//
+// asAttachName - Internal name of the
+// attached prop.
+//
+// asAttachFile - Attached prop file (.ent).
+//
+// afPosX - X position offset.
+// afPosY - Y position offset.
+// afPosZ - Z position offset.
+//
+// afRotX - Rotation around the X axis.
+// afRotY - Rotation around the Y axis.
+// afRotZ - Rotation around the Z axis.
+
+// Note:
+//
+// For the purposes of
+// AddEntityCollideCallback(),
+// attached props will not call the callback
+// if they collide with a "static_object"
+// or a "StaticProp" entity type.
