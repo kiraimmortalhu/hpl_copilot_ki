@@ -48,6 +48,136 @@ These folders do not need to be scanned for gameplay code generation unless expl
 
 Other unlisted folders may also exist as part of the mod structure and should generally be ignored for scripting analysis unless explicitly referenced by the user.
 
+---
+
+## Project Target Detection
+
+Before using any HPL2 API documentation, read:
+
+shared/project_config.cfg
+
+The TARGET_ENGINE value is authoritative.
+
+Valid values:
+
+- HPL2_12
+- HPL2_13
+- HPL2_14
+- HPL2_15
+- HPL2_AMFP
+
+If TARGET_ENGINE is UNDEFINED, missing, or invalid:
+
+- Ask the user which target engine is being used.
+- Do not assume compatibility with newer APIs.
+- Do not suggest version-specific functions until clarified.
+
+Treat HPL2_AMFP as a separate engine branch.
+
+Do not combine HPL2_AMFP documentation with
+HPL2_13, HPL2_14 or HPL2_15 documentation.
+
+---
+
+## Documentation Sources
+
+The TARGET_ENGINE selection is authoritative.
+
+If documentation from multiple folders conflicts,
+prefer the folder(s) assigned to the selected
+TARGET_ENGINE.
+
+Do not mix APIs from excluded folders.
+
+--------------------------------------------------
+
+HPL2_AMFP is a separate engine branch.
+
+Functions, parameters and syntax documented
+under hpl2/core_amfp must never be suggested
+for HPL2_13, HPL2_14 or HPL2_15 projects.
+
+Likewise, update folders must never be used
+for HPL2_AMFP projects.
+
+--------------------------------------------------
+
+HPL2_12
+
+Use:
+- hpl2/core
+
+Do Not Use:
+- hpl2/core_amfp
+- hpl2/updates_13
+- hpl2/updates_14
+- hpl2/updates_15
+
+--------------------------------------------------
+
+HPL2_AMFP
+
+Use:
+- hpl2/core
+- hpl2/core_amfp
+
+Do Not Use:
+- hpl2/updates_13
+- hpl2/updates_14
+- hpl2/updates_15
+
+--------------------------------------------------
+
+HPL2_13
+
+Use:
+- hpl2/core
+- hpl2/updates_13
+
+Do Not Use:
+- hpl2/core_amfp
+- hpl2/updates_14
+- hpl2/updates_15
+
+--------------------------------------------------
+
+HPL2_14
+
+Use:
+- hpl2/core
+- hpl2/updates_13
+- hpl2/updates_14
+
+Do Not Use:
+- hpl2/core_amfp
+- hpl2/updates_15
+
+--------------------------------------------------
+
+HPL2_15
+
+Use:
+- hpl2/core
+- hpl2/updates_13
+- hpl2/updates_14
+- hpl2/updates_15
+
+Do Not Use:
+- hpl2/core_amfp
+
+### HPL2 1.5 Script Organization
+
+Only when TARGET_ENGINE=HPL2_15:
+
+- #include "examplefile.hps" may be used.
+- #include directives must appear before any script code.
+- A level script may include multiple .hps files this way.
+- Suggest modular script organization when scripts become large and 1.5 is used.
+
+For all other target engines:
+
+- Assume a single level script.
+- Do not suggest #include usage.
 
 ---
 
