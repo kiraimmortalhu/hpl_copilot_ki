@@ -1,0 +1,285 @@
+// ============================================================
+// map_basics.hps
+// HPL2 LEVEL / MAP BASICS
+// Source: HPL2 1.0 - 1.2
+//
+// PURPOSE:
+// AI grounding and scripting structure reference.
+//
+// This file documents:
+// - light functions
+// - particle systems
+// - screen effects
+
+// ============================================================
+
+
+
+//////////////////////////////////////////////////////////////
+// Lights
+//////////////////////////////////////////////////////////////
+
+// Enables or disables a light.
+void SetLightVisible(
+string &in asLightName,
+bool abVisible);
+
+// asLightName - internal name
+// abVisible - visible state
+
+
+//------------------------------------------------------------
+
+// Changes the properties of a light.
+void FadeLightTo(
+string &in asLightName,
+float afR,
+float afG,
+float afB,
+float afA,
+float afRadius,
+float afTime);
+
+// asLightName - internal name
+// afR - red color value
+// afG - green value
+// afB - blue value
+// afA - alpha value
+// afRadius - radius
+//            (-1 keeps current radius)
+// afTime - transition time in seconds
+
+
+//------------------------------------------------------------
+
+// Activates or deactivates
+// light flickering.
+void SetLightFlickerActive(
+string &in asLightName,
+bool abActive);
+
+// asLightName - internal name
+// abActive - active state
+//          (true = active, false = inactive)
+
+//////////////////////////////////////////////////////////////
+// Particle Systems
+//////////////////////////////////////////////////////////////
+
+// Preloads a particle system.
+void PreloadParticleSystem(
+string &in asPSFile);
+
+// asPSFile - particle system file (.ps)
+
+// IMPORTANT: almost specifically used in OnStart()
+
+
+// Creates a particle system on an entity.
+void CreateParticleSystemAtEntity(
+string &in asPSName,
+string &in asPSFile,
+string &in asEntity,
+bool abSavePS);
+
+// asPSName - internal name
+// asPSFile - particle system file (.ps)
+// asEntity - target entity to spawn the PS at
+// abSavePS - save state between visiting other maps
+
+
+// Creates a particle system on an entity
+// with extended rendering options.
+void CreateParticleSystemAtEntityExt(
+string &in asPSName,
+string &in asPSFile,
+string &in asEntity,
+bool abSavePS,
+float afR,
+float afG,
+float afB,
+float afA,
+bool abFadeAtDistance,
+float afFadeMinEnd,
+float afFadeMinStart,
+float afFadeMaxStart,
+float afFadeMaxEnd);
+
+// asPSName - internal name
+// asPSFile - particle system file (.ps)
+// asEntity - target entity
+// abSavePS - save state between map visits
+// afR - red value
+// afG - green value
+// afB - blue value
+// afA - alpha value
+// abFadeAtDistance - enable distance fading
+// afFadeMinEnd - minimum fade end distance
+// afFadeMinStart - minimum fade start distance
+// afFadeMaxStart - maximum fade start distance
+// afFadeMaxEnd - maximum fade end distance
+
+//------------------------------------------------------------
+
+// Destroys a particle system.
+void DestroyParticleSystem(
+string &in asName);
+
+// asName - internal name
+
+//////////////////////////////////////////////////////////////
+// Player Particle Effects
+//////////////////////////////////////////////////////////////
+
+// Continuously spawns particle
+// systems around the player.
+void StartPlayerSpawnPS(
+string &in asSPSFile);
+
+// asSPSFile - particle spawn
+// system file (.sps)
+
+// Example .sps files are located in the /misc folder in the main game directory.
+// Custom .sps files can be created by hand in a text editor 
+// (see existing ones and mimic how those are written). 
+// Since StopPlayerSpawnPS() doesn't seem to work, to stop an SPS 
+// you must create an .sps file with an empty particle field field and
+// override the old SPS by calling StartPlayerSpawnPS again.
+
+
+//------------------------------------------------------------
+
+// Stops the current player
+// particle spawn system.
+void StopPlayerSpawnPS();
+
+
+//////////////////////////////////////////////////////////////
+// Screen Effects
+//////////////////////////////////////////////////////////////
+
+// Fades the screen to black.
+void FadeOut(
+float afTime);
+
+// afTime - time in seconds until
+// the screen is completely black
+
+
+//------------------------------------------------------------
+
+// Fades the screen back to normal.
+void FadeIn(
+float afTime);
+
+// afTime - time in seconds until
+// the screen returns to normal
+
+
+//------------------------------------------------------------
+
+// Applies the image trail effect.
+void FadeImageTrailTo(
+float afAmount,
+float afSpeed);
+
+// afAmount - effect intensity
+// afSpeed - transition time
+// in seconds
+
+
+//------------------------------------------------------------
+
+// Applies the sepia color effect.
+void FadeSepiaColorTo(
+float afAmount,
+float afSpeed);
+
+// afAmount - effect intensity
+// afSpeed - transition time
+// in seconds
+
+
+//------------------------------------------------------------
+
+// Applies radial blur.
+void FadeRadialBlurTo(
+float afSize,
+float afSpeed);
+
+// afSize - effect intensity
+// afSpeed - transition time
+// in seconds
+
+
+//------------------------------------------------------------
+
+// Sets the distance at which
+// radial blur begins.
+void SetRadialBlurStartDist(
+float afStartDist);
+
+// afStartDist - start distance
+
+
+//------------------------------------------------------------
+
+// Fades the screen to white.
+void StartEffectFlash(
+float afFadeIn,
+float afWhite,
+float afFadeOut);
+
+// afFadeIn - fade in time
+// afWhite - white intensity
+// (1.0 = completely white)
+// afFadeOut - fade out time
+
+
+//------------------------------------------------------------
+
+// Fades the screen to white and
+// displays a text message.
+void StartEffectEmotionFlash(
+string &in asTextCat,
+string &in asTextEntry,
+string &in asSound);
+
+// asTextCat - language category
+// asTextEntry - language entry
+// asSound - sound to play
+
+
+//------------------------------------------------------------
+
+// Checks whether a flashback
+// effect is active.
+bool GetFlashbackIsActive();
+
+
+//------------------------------------------------------------
+
+// Shakes the screen.
+void StartScreenShake(
+float afAmount,
+float afTime,
+float afFadeInTime,
+float afFadeOutTime);
+
+// afAmount - shake intensity
+// afTime - duration
+// afFadeInTime - fade in time
+// afFadeOutTime - fade out time
+
+// Notes:
+//
+// * FadeOut and FadeIn affect the
+//   entire screen.
+//
+// * StartEffectFlash and
+//   StartEffectEmotionFlash are
+//   separate effects.
+//
+// * GetFlashbackIsActive checks
+//   whether a flashback effect
+//   is currently active.

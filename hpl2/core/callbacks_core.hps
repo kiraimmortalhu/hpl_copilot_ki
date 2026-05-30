@@ -31,6 +31,50 @@ void OnGameStart()
 }
 
 // ============================================================
+// TIMER CALLBACKS
+// ============================================================
+
+// Timer callback syntax:
+//
+AddTimer("timer_name", 3.0f, "TimerFunc");
+//
+// Called automatically when timer expires.
+void TimerXFunc(string &in asTimer)
+{
+    if(asTimer == "monster_spawn")
+    {
+        // Example:
+        // SetEntityActive("enemy_grunt_1", true);
+    }
+
+    if(asTimer == "door_close")
+    {
+        // Example:
+        // SetSwingDoorClosed("door_1", true, true);
+    }
+}
+
+
+// Common pattern:
+// repeating timer loop
+void RepeatingXTimer(string &in asTimer)
+{
+    // Do logic here.
+
+    // Restart timer.
+    AddTimer(asTimer, 0.1f, "RepeatingTimer");
+}
+
+// IMPORTANT:
+// - Avoid repeating timers with interval values smaller than 0.5f
+//   unless extremely necessary, or requested by the user for
+//   more precision
+// - From 1.5 patch functions, OnUpdate() may be used for A FEW things instead
+// - In 1.5 patch timer implementation was fixed, so smaller intervals
+//   may be used more freely.
+
+
+// ============================================================
 // ENTITY INTERACTION CALLBACKS
 // ============================================================
 

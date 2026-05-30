@@ -1,0 +1,179 @@
+// ============================================================
+// map_basics.hps
+// HPL2 LEVEL / MAP BASICS
+// Source: HPL2 1.0 - 1.2
+//
+// PURPOSE:
+// AI grounding and scripting structure reference.
+//
+// This file documents:
+// - sound functionality
+// - effect voices for voice acting
+// - global audio values
+// - music (but details elsewhere in map_basics.hps)
+
+// ============================================================
+
+//////////////////////////////////////////////////////////////
+// Sounds
+//////////////////////////////////////////////////////////////
+
+
+// Preloads a sound.
+void PreloadSound(
+string &in asSoundFile);
+
+// asSoundFile - sound file (.snt extension optional)
+
+// IMPORTANT: almost specifically used in OnStart()
+
+//////////////////////////////////////////////////////////////
+// Playback
+//////////////////////////////////////////////////////////////
+
+// Plays a non-3D sound.
+void PlayGuiSound(
+string &in asSoundFile,
+float afVolume);
+
+// asSoundFile - sound file (.snt/.ogg extension optional)
+// afVolume - volume
+
+
+//------------------------------------------------------------
+
+// Creates a sound at an entity.
+void PlaySoundAtEntity(
+string &in asSoundName,
+string &in asSoundFile,
+string &in asEntity,
+float afFadeTime,
+bool abSaveSound);
+
+// asSoundName - internal name
+// asSoundFile - sound file (.snt extension optional)
+// asEntity - target entity, whose 3d position will be used
+// afFadeTime - fade time in seconds
+// abSaveSound - save playback state for next usage
+
+
+//////////////////////////////////////////////////////////////
+// Sound Control
+//////////////////////////////////////////////////////////////
+
+// Fades in a sound.
+void FadeInSound(
+string &in asSoundName,
+float afFadeTime,
+bool abPlayStart);
+
+// asSoundName - internal name
+// afFadeTime - fade time in seconds
+// abPlayStart - Play the sound defined in the <Start> 
+// section of the .snt before playing the main sound
+
+
+//------------------------------------------------------------
+
+// Stops a sound.
+void StopSound(
+string &in asSoundName,
+float afFadeTime);
+
+// asSoundName - internal name
+// afFadeTime - fade time in seconds
+
+
+//////////////////////////////////////////////////////////////
+// Effect Voices
+//////////////////////////////////////////////////////////////
+
+// Queues a voice with an optional effect sound.
+void AddEffectVoice(
+string &in asVoiceFile,
+string &in asEffectFile,
+string &in asTextCat,
+string &in asTextEntry,
+bool abUsePosition,
+string &in asPosEntity,
+float afMinDistance,
+float afMaxDistance);
+
+// asVoiceFile - voice audio file
+// asEffectFile - effect sound file
+// asTextCat - language category
+// asTextEntry - language entry
+// abUsePosition - use 3D positioning
+// asPosEntity - entity internal name, whose 3d position is used
+// afMinDistance - minimum distance
+// afMaxDistance - maximum distance
+
+
+//------------------------------------------------------------
+
+// Stops all queued effect voices.
+void StopAllEffectVoices(
+float afFadeOutTime);
+
+// afFadeOutTime - fade time in seconds
+
+
+//------------------------------------------------------------
+
+// Checks if any effect voices are active.
+bool GetEffectVoiceActive();
+
+
+//////////////////////////////////////////////////////////////
+// Callbacks
+//////////////////////////////////////////////////////////////
+
+// Sets the callback executed after all
+// effect voices have finished.
+void SetEffectVoiceOverCallback(
+string &in asFunc);
+
+// asFunc - callback function name
+
+// Callback syntax:
+// where X is a unique internal name for the process
+void EffectVoiceXFunc()...
+
+
+//////////////////////////////////////////////////////////////
+// Global Audio
+//////////////////////////////////////////////////////////////
+
+// Fades global world sound volume.
+void FadeGlobalSoundVolume(
+float afDestVolume,
+float afTime);
+
+// afDestVolume - target volume
+// afTime - fade time in seconds
+
+
+//------------------------------------------------------------
+
+// Fades global world sound speed.
+void FadeGlobalSoundSpeed(
+float afDestSpeed,
+float afTime);
+
+// afDestSpeed - target speed
+// afTime - fade time in seconds
+
+//////////////////////////////////////////////////////////////
+// Music
+//////////////////////////////////////////////////////////////
+
+void PlayMusic(string &in asMusic,
+    bool abLoop,
+    float afVolume,
+    float afFadeTime,
+    int alPrio,
+    bool abResume);
+
+void StopMusic(float afFadeTime);
+
+// Full syntax and details in map_basics.hps

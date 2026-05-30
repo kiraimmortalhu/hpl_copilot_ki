@@ -1,0 +1,65 @@
+// ============================================================
+// map_basics.hps
+// HPL2 LEVEL / MAP BASICS
+// Source: HPL2 1.0 - 1.2
+//
+// PURPOSE:
+// AI grounding and scripting structure reference.
+//
+// This file documents:
+// - random numbers
+// - functionality pertaining String functions
+
+// ============================================================
+
+
+//////////////////////////////////////////////////////////////
+// Random Numbers
+//////////////////////////////////////////////////////////////
+
+// Generates a random float between min and max values.
+float RandFloat(
+float afMin,
+float afMax);
+
+// afMin - minimum value
+// afMax - maximum value
+
+//------------------------------------------------------------
+
+// Generates a random integer between min and max values.
+// The maximum value is inclusive.
+int RandInt(
+int alMin,
+int alMax);
+
+// alMin - minimum value
+// alMax - maximum value
+
+
+//////////////////////////////////////////////////////////////
+// String Functions
+//////////////////////////////////////////////////////////////
+
+// Checks whether a string contains
+// the specified substring.
+bool StringContains(
+string &in asString,
+string &in asSubString);
+
+// asString - string to check
+// asSubString - substring to search for
+
+//------------------------------------------------------------
+
+// Returns a substring from a string.
+string& StringSub(
+string &in asString,
+int alStart,
+int alCount);
+
+// asString - source string
+// alStart - starting character index
+// alCount - number of characters
+
+// Starting from alStart a certain number of letters is then stored (alCount)
