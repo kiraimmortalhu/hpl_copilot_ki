@@ -171,6 +171,12 @@ The primary focus is practical compatibility with existing HPL scripting pattern
 
 ## Short-Term Goals
 
+### Configuration editing
+
+* The agent is able to correctly assume and edit configuration files
+* These include mainly full conversion functionalities
+* Examples such as main_init.cfg and menu.cfg, in HPL2's case
+
 ### Error handling
 
 * Generate template guidelines to help sovlve certain known error messages.
