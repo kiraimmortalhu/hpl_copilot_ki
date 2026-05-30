@@ -1,0 +1,115 @@
+// ============================================================
+// debug.hps
+// HPL2 DEBUGGING & DEVELOPMENT UTILITIES
+// Source: HPL2 1.0 - 1.2
+//
+// PURPOSE:
+// AI grounding and scripting structure reference.
+//
+// This file documents:
+// - log output functions
+// - debug console functions
+// - progression logging
+// - debug state detection
+// - troubleshooting workflows
+//
+
+//////////////////////////////////////////////////////////////
+// Debug State
+//////////////////////////////////////////////////////////////
+
+// Checks whether debug mode
+// is enabled.
+bool ScriptDebugOn();
+
+// Can be used for example if true:
+// - Giving the player test items if true
+// - Run specific logic on dev testing / player playing
+
+//////////////////////////////////////////////////////////////
+// Debug Output
+//////////////////////////////////////////////////////////////
+
+// Prints a message to the
+// in-game debug console.
+void AddDebugMessage(
+string &in asString,
+bool abCheckForDuplicates);
+
+// asString - text to print
+// abCheckForDuplicates - prevent
+// duplicate messages
+
+// Enabling debug menu/messages may be explained to the user
+// upon request from later instructions.
+
+// ============================================================
+
+// Prints a string to hpl.log.
+void Print(
+string &in asString);
+
+// asString - text to print
+
+// hpl.log is usually located in User/YourUser/Documents/Amnesia
+// Main folder contains main game log
+// with custom stories inside YourProfile/custom subfolders
+// Possible other folders in Amnesia root are for full conversion mods
+
+// Suggest/use this if the user doesn't yet have debug enabled.
+// Even though it should be encouraged for any serious developer.
+
+// ============================================================
+
+// Prints an entry to ProgLog (Progression Logging).
+void ProgLog(
+string &in asLevel,
+string &in asMessage);
+
+// asLevel - Low, Medium or High
+// asMessage - log message
+
+// ProgLog is a file created in Documents/Amnesia/main (or an FC folder if one is being used).
+// It logs certain events, such us opening the menu or picking up the lantern, as well as the
+// player's state (Health, Sanity, Oil, Tinderboxes, Coins), for the purpose of 
+// documenting a tester's playstyle. This function allows to log custom messages.
+// The messages in the ProgLog file are sorted by time elapsed since a map was loaded.
+// ProgLog has to be enabled for a player profile in user_settings.cfg before it starts
+// working.asLevel - can be "Low", "Medium" or "High". It's a tag which appears in each log entry,
+// for event prioritising. asMessage - The custom message to be printed to the log.
+
+// ============================================================
+// COPILOT GUIDANCE:
+//
+// When a user reports:
+//
+// - a script not executing
+// - a callback not firing
+// - an entity not responding
+// - a timer not triggering
+// - an interaction failing
+// - an enemy behaving incorrectly
+// - a variable appearing incorrect
+// - a condition seemingly never becoming true
+// - an unknown gameplay bug
+//
+// Always consider suggesting (in this order, based on severity):
+//
+// - AddDebugMessage()
+// - Print()
+// - ProgLog()
+//
+// before suggesting speculative causes.
+//
+// Prefer observable debugging
+// over assumptions.
+//
+// When generating new gameplay systems,
+// consider temporary debug output during
+// development and testing.
+//
+// If debugging instructions exist in this
+// file, use them when assisting users with
+// troubleshooting.
+//
+// ============================================================

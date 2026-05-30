@@ -66,6 +66,8 @@ CURRENT FILES COMPLETED
 * math_core.hps
 * entities_core.hps
 * entities_interactive.hps
+* enemies_core.hps
+* debug.hps
 
 VERSION RULES
 Target currently:

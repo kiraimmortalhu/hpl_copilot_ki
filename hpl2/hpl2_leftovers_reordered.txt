@@ -1,22 +1,11 @@
-This page documents all scripts available in Amnesia: The Dark Descent.
+====================
+REQUIRES VERSION 1.3
+====================
 
-Note icon.png Note: Some of the functions require the Amnesia 1.3 or 1.5 update. Steam and other online store copies should be automatically updated. Other copies can get 1.3 here.
-Directives
-First off, #include "file.hps" can be used to programmatically merge together multiple separate files to make organizing scripts easier.
-
-
-Alert icon.png Requires version 1.5
-
-Engine scripts
-Main
-The following functions are the main hps functions that the HPL2 engine looks to run on certain events - similar to the C++ int main() function.
-
-void OnUpdate(float afStep);
-Alert icon.png Requires version 1.5
-
-This function is executed for every game update or "tick". Can be used for rapid-firing updates instead of looping timers. Keep in mind that this can affect game performance if not used with care.
-
-afStep- Time elapsed in seconds since the last frame. Multiply speeds, distances etc. by this argument to avoid framerate dependence issues (for example: if you move something in this function with constant speed, it will move faster on computers which run the game with high FPS and slower on computers with low FPS).
+float GetPlayerPosX();
+float GetPlayerPosY();
+float GetEntityPosX(string &in asName);
+float GetEntityPosY(string &in asName);
 
 int StringToInt(string &in asString);
 Alert icon.png Requires version 1.3
@@ -122,85 +111,28 @@ Returns the absolute value.
 
 afX - Value to operate.
 Debugging
-void Print(string &in asString);
-Prints a string to the log file (hpl.log).
-
-void AddDebugMessage(string &in asString, bool abCheckForDuplicates);
-Prints a line of text to the debug console at the bottom left of the screen. Debug mode must be enabled for the console messages to be visible.
-
-asString - the string to print
-abCheckForDuplicates - if true, the string won't be printed more than once on screen until it disappears
-void ProgLog(string &in asLevel, string &in asMessage);
-Prints an entry to the ProgLog (progression log).
-ProgLog is a file created in Documents/Amnesia/main (or an FC folder if one is being used). It logs certain events, such us opening the menu or picking up the lantern, as well as the player's state (Health, Sanity, Oil, Tinderboxes, Coins), for the purpose of documenting a tester's playstyle.
-
-This function allows to log custom messages.The messages in the ProgLog file are sorted by time elapsed since a map was loaded.
-
-ProgLog has to be enabled for a player profile in user_settings.cfg before it starts working.
-
-asLevel - can be "Low", "Medium" or "High". It's a tag which appears in each log entry, for event prioritising.
-asMessage - The custom message to be printed to the log.
-bool ScriptDebugOn();
-Checks whether the debug mode is enabled.
-See "Setting up Development Environment" to setup debug mode on your own computer.
-
-void UnlockAchievement(string &in asName);
-1.4 only
-Unlocks the specified achievement. Only able to be used for the ending achievements.
-
-asName - The name of the achievement. Only the following strings are valid:
-Benefactor
-Survivor
-Sacrifice
-Quitter
-Egotist
-Altruist
-Vacillator
-
 void SetInDarknessEffectsActive(bool abX);
 Alert icon.png Requires version 1.3
 
 Enables/disables the sanity drain and night vision effects while in the darkness.
-
-bool abX - Enable/disable effects.
-
-void ShowScreenImage(string &in asImageName, float afX, float afY, float afScale, bool abUseRelativeCoordinates, float afDuration, float afFadeIn, float afFadeOut);
-Alert icon.png Requires version 1.5
-
-Displays an image file directly onto the screen. See ShowScreenImage() in the tutorials section for more information.
-
-asImageName - The image file to render (.jpg, .png, .tga, .dds)
-afX - The X position of the image
-afY - The Y position of the image
-afScale - The size of the image in pixels (not scale), or original image size if negative
-abUseRelativeCoordinates - Whether X and Y are relative to the screen resoltion, or pixel co-ordinates if not
-afDuration - The duration that the image is displayed for
-afFadeIn - The time, in seconds, to fade in the image
-afFadeOut - The time, in seconds, to fade out the image
-Insanity
-
 void StartInsanityEvent(string &in asEventName);
 Alert icon.png Requires version 1.3
 
 Starts a specified insanity event.
 
 asEventName - Insanity event to play.
-
 void StopCurrentInsanityEvent();
 Alert icon.png Requires version 1.3
 
 Stops the currently playing insanity event.
-
 void SetPlayerJumpForceMul(float afMul);
 Alert icon.png Requires version 1.3
 
 Changes the player's jump multiplier. Higher values = higher jumps. Default is 1.
-
 void SetPlayerFallDamageDisabled(bool abX);
 Alert icon.png Requires version 1.3
 
 Enables/disables the player's ability to take fall damage.
-
 void SetPlayerPos(float afX, float afY, float afZ);
 Alert icon.png Requires version 1.3
 
@@ -209,13 +141,10 @@ Sets the player's position within the level.
 afX - X co-ordinate position.
 afY - Y co-ordinate position.
 afZ - Z co-ordinate position.
-float GetPlayerPosX();
-float GetPlayerPosY();
 float GetPlayerPosZ();
 Alert icon.png Requires version 1.3
 
 Returns the player's position within the level on the specified axis.
-
 void SetEntityVisible(string &in asName, bool abVisible);
 Alert icon.png Requires version 1.3
 
@@ -223,7 +152,6 @@ Activates/deactivates an entity's visual mesh. The collision body remains.
 
 asName - Name of the entity.
 abActive - Activate/deactivate mesh.
-
 void ReplaceEntity(string &in asName, string &in asBodyName, string &in asNewEntityName, string &in asNewEntityFile, bool abFullGameSave);
 Alert icon.png Requires version 1.3
 
@@ -252,15 +180,12 @@ asName - Name of the entity to move.
 afX - X co-ordinate position.
 afY - Y co-ordinate position.
 afZ - Z co-ordinate position.
-float GetEntityPosX(string &in asName);
-float GetEntityPosY(string &in asName);
 float GetEntityPosZ(string &in asName);
 Alert icon.png Requires version 1.3
 
 Returns an entity's position in the level on the specified axis.
 
 asName - Name of the entity.
-
 void SetBodyMass(string &in asName, float afMass);
 Alert icon.png Requires version 1.3
 
@@ -276,7 +201,6 @@ Gets the mass of an entity's body.
 asName - Name of the body of an entity. The body name of an entity is EntityName_BodyName.
 afMass - The mass to get.
 Props
-
 void AttachPropToProp(string &in asPropName, string &in asAttachName, string &in asAttachFile, float afPosX, float afPosY, float afPosZ, float afRotX, float afRotY, float afRotZ);
 Alert icon.png Requires version 1.3
 
@@ -294,18 +218,8 @@ afRotZ - rotation around ZX axis of the attach
 Note: for the purposes of AddEntityCollideCallback, attached props will not call the callback function if they collide with a "static_object" or a "StaticProp" entity type!
 
 NPCs
-void SetNPCAwake(string &in asName, bool abAwake, bool abEffects);
-Wakes/sleeps a NPC.
-
-asName - The name of the NPC
-abAwake - true to awaken, false to sleep
-abEffects - Play the "Awake" or "Sleep" animations
-void SetNPCFollowPlayer(string &in asName, bool abX);
-Sets a NPC's head to follow the player's movements.
-
 void AlertEnemyOfPlayerPresence(string &in asName);
 Alert icon.png Requires version 1.3
-
 void SetEnemySanityDecreaseActive(string &in asName, bool abX);
 Alert icon.png Requires version 1.3
 
@@ -398,3 +312,56 @@ Track
 Unused states:
 
 AttackRange
+
+====================
+REQUIRES VERSION 1.4
+====================
+
+void UnlockAchievement(string &in asName);
+1.4 only
+Unlocks the specified achievement. Only able to be used for the ending achievements.
+
+asName - The name of the achievement. Only the following strings are valid:
+Benefactor
+Survivor
+Sacrifice
+Quitter
+Egotist
+Altruist
+Vacillator
+
+====================
+REQUIRES VERSION 1.5
+====================
+
+This page documents all scripts available in Amnesia: The Dark Descent.
+
+Note icon.png Note: Some of the functions require the Amnesia 1.3 or 1.5 update. Steam and other online store copies should be automatically updated. Other copies can get 1.3 here.
+Directives
+First off, #include "file.hps" can be used to programmatically merge together multiple separate files to make organizing scripts easier.
+
+
+Alert icon.png Requires version 1.5
+
+Engine scripts
+Main
+The following functions are the main hps functions that the HPL2 engine looks to run on certain events - similar to the C++ int main() function.
+void OnUpdate(float afStep);
+Alert icon.png Requires version 1.5
+
+This function is executed for every game update or "tick". Can be used for rapid-firing updates instead of looping timers. Keep in mind that this can affect game performance if not used with care.
+
+afStep- Time elapsed in seconds since the last frame. Multiply speeds, distances etc. by this argument to avoid framerate dependence issues (for example: if you move something in this function with constant speed, it will move faster on computers which run the game with high FPS and slower on computers with low FPS).
+void ShowScreenImage(string &in asImageName, float afX, float afY, float afScale, bool abUseRelativeCoordinates, float afDuration, float afFadeIn, float afFadeOut);
+Alert icon.png Requires version 1.5
+
+Displays an image file directly onto the screen. See ShowScreenImage() in the tutorials section for more information.
+
+asImageName - The image file to render (.jpg, .png, .tga, .dds)
+afX - The X position of the image
+afY - The Y position of the image
+afScale - The size of the image in pixels (not scale), or original image size if negative
+abUseRelativeCoordinates - Whether X and Y are relative to the screen resoltion, or pixel co-ordinates if not
+afDuration - The duration that the image is displayed for
+afFadeIn - The time, in seconds, to fade in the image
+afFadeOut - The time, in seconds, to fade out the image
