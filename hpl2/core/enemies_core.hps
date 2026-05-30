@@ -1,0 +1,177 @@
+// ============================================================
+// characters_enemies.hps
+// HPL2 CHARACTER & ENEMY SYSTEMS
+// Source: HPL2 1.0 - 1.2
+//
+// PURPOSE:
+// AI grounding and scripting structure reference.
+//
+// This file documents:
+// - enemy activation control
+// - hallucination enemies
+// - enemy trigger control
+// - enemy targeting behavior
+// - enemy patrol systems
+// - enemy smoke effects
+// - NPC behavior/awareness settings
+//
+// Includes:
+// - NPC functions
+// - enemy functions
+// - patrol path management
+//
+// Does NOT include:
+// 1.3+ enemy types and additions
+// ============================================================
+
+//////////////////////////////////////////////////////////////
+// Enemies
+//////////////////////////////////////////////////////////////
+// Must have "Enemy_*" entity type to work
+//////////////////////////////////////////////////////////////
+
+// IMPORTANT:
+// - Enemy_WaterLurker is a special type, many enemy functions won't work on it
+// - Enemy_ManPig is a type added in 1.3 patch, has its own extended functionalities on top
+
+// Enables or disables an enemy.
+void SetEnemyDisabled(
+string &in asName,
+bool abDisabled);
+
+// asName - internal name
+// abDisabled - disabled state
+
+
+//------------------------------------------------------------
+
+// Makes an enemy a hallucination.
+void SetEnemyIsHallucination(
+string &in asName,
+bool abX);
+
+// asName - internal name
+// abX - enabled state
+
+
+//------------------------------------------------------------
+
+// Instantly fades an enemy
+// into smoke upon execution.
+void FadeEnemyToSmoke(
+string &in asName,
+bool abPlaySound);
+
+// asName - internal name
+// abPlaySound - play effect sound
+
+//------------------------------------------------------------
+
+// Enables or disables
+// enemy triggers.
+void SetEnemyDisableTriggers(
+string &in asName,
+bool abX);
+
+// asName - internal name
+// abX - enabled state
+
+
+//------------------------------------------------------------
+
+// Makes an enemy run toward
+// the player's position.
+void ShowEnemyPlayerPosition(
+string &in asName);
+
+// asName - internal name
+
+
+//////////////////////////////////////////////////////////////
+// Patrol Paths
+//////////////////////////////////////////////////////////////
+
+// Adds a patrol node to an enemy.
+void AddEnemyPatrolNode(
+string &in asName,
+string &in asNodeName,
+float afWaitTime,
+string &in asAnimation);
+
+// asName - enemy name
+// asNodeName - path node
+// afWaitTime - wait time
+// asAnimation - animation name
+
+
+//------------------------------------------------------------
+
+// Clears all patrol nodes
+// from an enemy.
+void ClearEnemyPatrolNodes(
+string &in asEnemyName);
+
+// asEnemyName - enemy name
+
+
+//////////////////////////////////////////////////////////////
+// NPCs
+//////////////////////////////////////////////////////////////
+// Must have "NPC" entity type to work
+//////////////////////////////////////////////////////////////
+
+// Wakes or puts an NPC to sleep.
+void SetNPCAwake(
+string &in asName,
+bool abAwake,
+bool abEffects);
+
+// asName - internal name
+// abAwake - awake state
+// abEffects - play awake/sleep effects
+
+
+//------------------------------------------------------------
+
+// Makes an NPC follow the
+// player's movements with
+// its head.
+void SetNPCFollowPlayer(
+string &in asName,
+bool abX);
+
+// asName - internal name
+// abX - enabled state
+
+
+//////////////////////////////////////////////////////////////
+// Notes
+//////////////////////////////////////////////////////////////
+
+// Hallucination enemies fade
+// into smoke when approached
+// by the player.
+//
+// Enemies be deactivated and after turned to smoke may
+// also reactivated with "SetEntityActive(...)"
+//
+// If triggers are disabled, enemy will not react to player or attack.
+// Can be used for cinematic encounters where danger isn't real.
+//
+// ShowEnemyPlayerPosition()
+// forces an enemy to move
+// toward the player's current
+// location with constant aggression,
+// no matter where they are.
+// (Until disabled, turned to smoke or reset)
+//
+// AddEnemyPatrolNode() uses
+// afWaitTime = 0 to randomize
+// waiting between 1 and 3
+// seconds at the node.
+//
+// NPCs are special characters that follow the player's
+// movement with their head. They do not pose danger, or
+// can follow paths.
+// A path following NPC may be made from an "Enemy_*"
+// with disabled triggers - which won't follow headpos.

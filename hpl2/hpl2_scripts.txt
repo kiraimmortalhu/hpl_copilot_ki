@@ -303,36 +303,8 @@ abEffects - Play the "Awake" or "Sleep" animations
 void SetNPCFollowPlayer(string &in asName, bool abX);
 Sets a NPC's head to follow the player's movements.
 
-Enemies
-void SetEnemyDisabled(string &in asName, bool abDisabled);
-Disables an enemy.
-
-void SetEnemyIsHallucination(string &in asName, bool abX);
-Makes an enemy a hallucination. Hallucinations fade to smoke when they get near the player.
-
-void FadeEnemyToSmoke(string &in asName, bool abPlaySound);
-Instantly fades an enemy to smoke.
-
-void ShowEnemyPlayerPosition(string &in asName);
-Makes the enemy run to the player, no matter where he is.
-
 void AlertEnemyOfPlayerPresence(string &in asName);
 Alert icon.png Requires version 1.3
-
-Gives the specified enemy the player's current position and makes it search the area.
-
-void SetEnemyDisableTriggers(string &in asName, bool abX);
-Enables or disables enemy triggers. If disabled, enemy will not react to player or attack.
-
-void AddEnemyPatrolNode(string &in asName, string &in asNodeName, float afWaitTime, string &in asAnimation);
-Adds a patrol node to the enemy's path.
-
-asName- Internal name of the enemy
-asNodeName - Path node
-afWaitTime - Time in seconds that the enemy waits at the path node before continuing. If 0, randomized between 1-3.
-asAnimation - The animation the enemy uses when reaching the path node
-void ClearEnemyPatrolNodes(string &in asEnemyName);
-Clears the current path of patrol nodes of the enemy.
 
 void SetEnemySanityDecreaseActive(string &in asName, bool abX);
 Alert icon.png Requires version 1.3
