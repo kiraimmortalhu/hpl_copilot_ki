@@ -34,9 +34,18 @@ void OnGameStart()
 // TIMER CALLBACKS
 // ============================================================
 
-// Timer callback syntax:
+// Timer API
+// Adds a named timer which calls a script function when it expires.
 //
-AddTimer("timer_name", 3.0f, "TimerFunc");
+// Engine signature:
+void AddTimer(string &in asTimerName, float afTime, string &in asCallback);
+
+// asTimerName - unique identifier for the timer; examples use descriptive names
+//               (some scripts use an empty string "" for anonymous/one-off timers)
+// afTime       - time in seconds until the timer expires
+// asCallback   - name of the function to call when the timer fires. Callback
+//                signature:
+//                  void TimerCallback(string &in asTimerName)
 //
 // Called automatically when timer expires.
 void TimerXFunc(string &in asTimer)
