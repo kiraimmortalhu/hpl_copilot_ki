@@ -264,12 +264,23 @@ void PreloadParticleSystem(string &in asPSFile);
 
 /**
  * @brief Creates a particle system on an entity.
- * @param asPSName
+ * @param asPSName - internal name
  * @param asPSFile
  * @param asEntity
  * @param abSavePS
  */
 void CreateParticleSystemAtEntity(string &in asPSName, string &in asPSFile, string &in asEntity, bool abSavePS);
+
+/**
+ * @brief Creates a particle system on an entity, extended method with more options. 
+ * @param asPSName - internal name
+ * @param asPSFile - 
+ * @param asEntity
+ * @param abSavePS
+ */
+void CreateParticleSystemAtEntityExt(string &in asPSName, string &in asPSFile, string &in asEntity, bool abSavePS,
+float afR, float afG, float afB, float afA, bool abFadeAtDistance, float afFadeMinEnd, float afFadeMinStart,
+float afFadeMaxStart, float afFadeMaxEnd);
 
 /**
  * @brief Destroys a particle system.
