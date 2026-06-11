@@ -388,6 +388,21 @@ This value determines which documentation and APIs Copilot should consider valid
 
 ---
 
+## Using GitHub Copilot
+
+After opening your mod project in VSCode:
+
+1. Verify `TARGET_ENGINE` in `project_config.cfg`
+2. Open or create scripts inside `maps/`
+3. Use GitHub Copilot normally
+4. Test and debug with the HPL2 tools
+5. Update documentation when verified behavior is discovered
+
+Copilot should automatically use the workspace documentation to provide more accurate suggestions.
+
+
+---
+
 ## Documentation Structure
 
 ### Core Documentation
@@ -437,46 +452,6 @@ These files contain:
 * Historical context
 * Compatibility notes
 * Copilot guidance
-
----
-
-## Documentation Philosophy
-
-The workspace intentionally documents only verified functionality.
-
-Sources include:
-
-* Official HPL2 documentation
-* Verified engine script references
-* Official Frictional documentation
-
-If functionality cannot be verified:
-
-* It should not be documented
-* Omission is preferred over speculation
-
-The project intentionally avoids inventing:
-
-* Helper functions
-* Convenience wrappers
-* SDK abstractions
-* Custom engine APIs
-
-Accuracy is prioritized over completeness.
-
----
-
-## Using GitHub Copilot
-
-After opening your mod project in VSCode:
-
-1. Verify `TARGET_ENGINE` in `project_config.cfg`
-2. Open or create scripts inside `maps/`
-3. Use GitHub Copilot normally
-4. Test and debug with the HPL2 tools
-5. Update documentation when verified behavior is discovered
-
-Copilot should automatically use the workspace documentation to provide more accurate suggestions.
 
 ---
 
