@@ -1,6 +1,6 @@
 # HPL Copilot
 
-HPL Copilot is an AI-grounding workspace designed to improve AI-assisted scripting for Frictional Games' HPL engine titles.
+HPL Copilot is an AI-grounding workspace designed to improve AI-assisted scripting for Frictional Games' HPL engine titles. It was created mainly for the possibility of OFFLINE use, and to be as beginner friendly as possible.
 
 Rather than relying solely on general AI knowledge, the workspace provides structured documentation, API references, scripting examples, and compatibility guidance that AI assistants such as GitHub Copilot can use as retrieval sources.
 
@@ -13,8 +13,8 @@ The goal is to improve the quality, accuracy, and engine compatibility of AI-ass
 The repository provides:
 
 * Verified HPL API documentation
-* AngelScript references
-* Engine-specific scripting documentation
+* AngelScript references (using only the basics from 2.19.2 SDK)
+* Engine-specific scripting practices
 * Original game scripting examples
 * Version compatibility guidance
 * AI grounding resources
@@ -22,10 +22,13 @@ The repository provides:
 This helps AI assistants:
 
 * Generate authentic HPL scripts
-* Avoid hallucinated APIs
+* Avoid hallucinated solutions from the internet/other engines
 * Respect engine version differences
 * Use verified function signatures
 * Follow established scripting conventions
+
+NOTE: AI can - still and always will - make mistakes. 
+It is the author's intention to improve the tool from user feedback.
 
 ---
 
@@ -53,26 +56,33 @@ Used by:
 
 ## Requirements
 
-Before using this workspace, you should already be familiar with:
-
-* Basic HPL2 mod creation
-* The HPL2 Editor Suite
-* Script debugging and testing
-* General mod folder structure
-
-Tutorials:
-
-* HPL2 Tutorials: *(link coming soon)*
-
-You will also need:
+You will need:
 
 * Visual Studio Code
-* GitHub Copilot
+* GitHub Copilot for VS Code
 
 Downloads:
 
-* VSCode: *(link coming soon)*
-* GitHub Copilot: *(link coming soon)*
+[VSCode](https://https://code.visualstudio.com/Download)
+[GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat)
+
+Before using this workspace, you should already be familiar with:
+
+* Basic HPL2 mod creation
+* The HPL2 Editor Suite in particular
+* General mod folder structure
+* Basic HPL scripting practices
+* Testing - and DEBUGGING - in game
+
+It is advised but not mandatory to have:
+* Git basics knowledge
+* Ability to use Git bash / Github Desktop for your own project management
+* Amnesia Remodded Editor tools (for advanced custom assets management)
+[Remodded](https://www.moddb.com/mods/amnesia-remodded/downloads)
+
+Useful tutorials:
+
+* HPL2 Tutorials: *(link coming soon)*
 
 ---
 
@@ -87,8 +97,8 @@ my_mod/
 ├── .github/
 │   └── copilot-instructions.md
 │
-├── shared/
-├── hpl2/
+├── copilot_shared/
+├── copilot_hpl2/
 │
 ├── maps/
 ├── entities/
@@ -100,12 +110,238 @@ my_mod/
 ### Folder Purpose
 
 * `.github/` - Copilot workspace instructions
-* `shared/` - Configuration files and changelogs
-* `hpl2/` - HPL2 documentation and version-specific references
+* `copilot_shared/` - Configuration files and changelogs
+* `copilot_hpl2/` - HPL2 documentation and version-specific references
 
 * `maps/` - Gameplay scripts and mod implementation files
 
 The workspace is designed so that the engine documentation exists alongside your real mod project rather than inside a separate SDK.
+
+---
+
+## Installation
+
+### 1. Install Visual Studio Code
+
+Download and install Visual Studio Code.
+
+If you have not already done so, create a GitHub account and sign up for GitHub Copilot.
+* https://github.com/
+
+Tutorials:
+
+* VSCode Installation: *(link coming soon)*
+* GitHub Copilot Setup: *(link coming soon)*
+
+---
+
+### 2. Set Up GitHub Copilot
+
+Install the GitHub Copilot extension inside VSCode and complete the sign-in process.
+
+Before continuing, verify that Copilot is functioning correctly by opening a text file and confirming that Copilot suggestions appear.
+
+Tutorial:
+
+* GitHub Copilot Setup Guide: *(link coming soon)*
+
+---
+
+### 3. Confirm the HPL2 Editor Suite working
+
+Ensure that the HPL2 Editor Suite is installed and functioning correctly.
+
+This workspace is intended for users who already know how to:
+
+* Create HPL2 mods
+* Use the Level Editor
+* Create and edit scripts
+* Test and debug projects
+
+Tutorials:
+
+* HPL2 Editor Suite Setup: *(link coming soon)*
+* HPL2 Modding Tutorials: *(link coming soon)*
+
+---
+
+### 4. Download the HPL Copilot Workspace
+
+Open the project's GitHub page.
+
+Near the top of the repository page:
+
+1. Click the green **Code** button.
+2. Select **Download ZIP**.
+3. Save the ZIP file somewhere convenient.
+
+You should end up with a file such as:
+
+```text
+hpl_copilot_ki-master.zip
+```
+
+---
+
+### 5. Locate Your Mod Folder
+
+Find the root folder of the mod or custom story you want to work on.
+
+Common locations include:
+
+```text
+Amnesia The Dark Descent\custom_stories\MyCustomStory\
+```
+
+or
+
+```text
+Amnesia The Dark Descent\redist\MyMod\
+```
+
+The folder should already contain your project files such as:
+
+```text
+maps/
+entities/
+custom_story_settings.cfg
+```
+
+and/or similar project-specific content.
+
+---
+
+### 6. Extract the Workspace Files
+
+Extract:
+
+```text
+hpl_copilot_ki-master.zip
+```
+
+After extraction you will usually see a folder named:
+
+```text
+hpl_copilot_ki-master
+```
+
+Open that folder.
+
+Inside you should see folders similar to:
+
+```text
+.github/
+copilot_shared/
+copilot_hpl2/
+README.md
+```
+
+**Important:**
+
+Do NOT copy the entire `hpl_copilot_ki-master` folder into your mod.
+
+This is a very common mistake.
+
+❌ Incorrect:
+
+```text
+MyCustomStory/
+└── hpl_copilot_ki-master/
+    ├── .github/
+    ├── copilot_shared/
+    └── copilot_hpl2/
+```
+
+✔ Correct:
+
+```text
+MyCustomStory/
+├── .github/
+├── copilot_shared/
+├── copilot_hpl2/
+├── maps/
+├── entities/
+└── custom_story_settings.cfg
+```
+
+Copy the **contents** of `hpl_copilot_ki-master` directly into your project's root folder.
+
+The Copilot folders should sit alongside your existing project folders.
+
+---
+
+### 7. Open the Project in VSCode
+
+Launch Visual Studio Code.
+
+Select:
+
+```text
+File → Open Folder...
+```
+
+Choose your mod's root folder.
+
+Example:
+
+```text
+MyCustomStory/
+```
+
+Do not open only the `maps` folder.
+
+Do not open only the Copilot folders.
+
+Open the project's root folder that contains everything.
+
+---
+
+### 8. Start Working
+
+VSCode can now be used much like a traditional text editor such as Notepad++.
+
+Common shortcuts include:
+
+* CTRL + S — Save file
+* CTRL + F — Find text
+* CTRL + H — Find and replace
+* CTRL + Z — Undo
+* CTRL + SHIFT + F — Search entire project
+
+Your gameplay scripts will typically remain inside:
+
+```text
+maps/
+```
+
+and other normal HPL project folders.
+
+### 8.5 [Optional] Add the copilot files to your project's .gitignore
+
+If you are familiar with Git basics and you use github or any similar platform to track your project, 
+you should add the following lines to the root folder gitignore:
+
+*/.github
+*/.vscode
+*/copilot_hpl2
+*/copilot_shared
+*README.md
+
+### Important
+
+You should normally edit only your own project files.
+
+Avoid modifying:
+
+```text
+.github/
+copilot_shared/
+copilot_hpl2/
+```
+
+Unless you intentionally want to customize or extend the Copilot workspace.
+These folders provide the documentation and configuration that help GitHub Copilot understand HPL2 scripting correctly.
+Modifying them unnecessarily may reduce suggestion quality or cause version compatibility issues.
 
 ---
 
@@ -114,9 +350,10 @@ The workspace is designed so that the engine documentation exists alongside your
 The most important configuration file is:
 
 ```text
-shared/project_config.cfg
+copilot_shared/project_config.cfg
 ```
 
+Before using Copilot you should set "TARGET_ENGINE"
 Example:
 
 ```text
@@ -126,11 +363,11 @@ TARGET_ENGINE=HPL2_15
 Supported values:
 
 ```text
-HPL2_12
+HPL2_12 - default
 HPL2_13
 HPL2_14
 HPL2_15
-HPL2_AMFP
+HPL2_AMFP - wip
 ```
 
 This value determines which documentation and APIs Copilot should consider valid.
@@ -144,7 +381,7 @@ This value determines which documentation and APIs Copilot should consider valid
 Located in:
 
 ```text
-hpl2/core/
+copilot_hpl2/core/
 ```
 
 Contains verified baseline HPL2 functionality.
@@ -165,9 +402,9 @@ Examples:
 Version-specific additions are separated into:
 
 ```text
-hpl2/updates_13/
-hpl2/updates_14/
-hpl2/updates_15/
+copilot_hpl2/updates_13/
+copilot_hpl2/updates_14/
+copilot_hpl2/updates_15/
 ```
 
 This separation improves retrieval quality and version awareness.
@@ -177,7 +414,7 @@ This separation improves retrieval quality and version awareness.
 Historical engine information is stored in:
 
 ```text
-shared/changelogs/
+copilot_shared/changelogs/
 ```
 
 These files contain:
@@ -249,9 +486,3 @@ Copilot should automatically use the workspace documentation to provide more acc
 * Improve troubleshooting assistance
 * Improve script generation quality
 * Expand documentation coverage
-
----
-
-## Installation
-
-Installation instructions and release packages will be documented here in the future.
