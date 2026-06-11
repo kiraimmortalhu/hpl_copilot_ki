@@ -127,13 +127,13 @@ The workspace is designed so that the engine documentation exists alongside your
 
 ### 1. Install Visual Studio Code
 
-Download and install Visual Studio Code.
+* Download and install Visual Studio Code.
 
-* VSCode Installation: https://www.youtube.com/watch?v=wU7IQLIOwoo
+[Youtube](https://www.youtube.com/watch?v=wU7IQLIOwoo)
 
-If you have not already done so, create a GitHub account and sign up for GitHub Copilot.
+* If you have not already done so, create a GitHub account and sign up for GitHub Copilot.
 
-* https://github.com/settings/copilot/features
+[Github](https://github.com/settings/copilot/features)
 
 ---
 
@@ -240,6 +240,8 @@ copilot_hpl2/
 README.md
 ```
 
+Copy the **contents** of `hpl_copilot_ki-master` directly into your project's root folder.
+
 **Important:**
 
 Do NOT copy the entire `hpl_copilot_ki-master` folder into your mod.
@@ -268,8 +270,6 @@ MyCustomStory/
 └── custom_story_settings.cfg
 ```
 
-Copy the **contents** of `hpl_copilot_ki-master` directly into your project's root folder.
-
 The Copilot folders should sit alongside your existing project files.
 
 ---
@@ -289,14 +289,14 @@ Choose your mod's root folder.
 Example:
 
 ```text
-MyCustomStory/
+.../Amnesia The Dark Descent/custom_stories/MyCustomStory/
 ```
 
 Do NOT open only the `maps` folder.
 
 Do NOT open only the Copilot folders.
 
-Open the project's ROOT folder that contains everything.
+Open the project's ROOT folder that contains everything your mod uses.
 
 ---
 
