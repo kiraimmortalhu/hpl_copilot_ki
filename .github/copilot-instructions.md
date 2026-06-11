@@ -175,6 +175,19 @@ Do not combine HPL2_AMFP documentation with HPL2_13, HPL2_14, or HPL2_15 documen
 
 ---
 
+### Compatibility Rules
+
+If no valid target is configured:
+
+* Assume HPL2_12 compatibility
+* Do not use update documentation
+* Ask the user to specify a target engine
+
+Important:
+
+* HPL2_AMFP is a separate engine branch
+* HPL2_AMFP must never be combined with HPL2 1.3, 1.4, or 1.5 update documentation
+
 ## Documentation Source Selection
 
 The selected TARGET_ENGINE determines which documentation may be used.
