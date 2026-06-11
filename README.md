@@ -79,15 +79,14 @@ It is advised but not mandatory to have:
 * Git basics knowledge
 * Ability to use Git bash / Github Desktop for your own project management
 * Amnesia Remodded Editor tools (for advanced custom assets management)
-
-[Remodded](https://www.moddb.com/mods/amnesia-remodded/downloads)
+[DOWNLOAD](https://www.moddb.com/mods/amnesia-remodded/downloads)
 
 Useful tutorials:
 
 * HPL2 Tutorials:
 [by Mudbill](https://https://code.visualstudio.com/Download)
 * Visual Studio Copilot setup: 
-[Youtube]https://www.youtube.com/watch?v=X_Aet9ndh_Y
+[Youtube](https://www.youtube.com/watch?v=X_Aet9ndh_Y)
 
 ---
 
@@ -163,8 +162,8 @@ This workspace is intended for users who already know how to:
 
 Tutorials:
 
-[Retail / Non-steam]https://youtu.be/cyoKpwehW-o
-[Steam]https://www.youtube.com/watch?v=lPAFjs677hk
+[Retail / Non-steam](https://youtu.be/cyoKpwehW-o)
+[Steam](https://www.youtube.com/watch?v=lPAFjs677hk)
 
 ---
 
