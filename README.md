@@ -60,6 +60,8 @@ You will need:
 
 * Visual Studio Code
 * GitHub Copilot for VS Code
+* The game and editor suite installed
+* About 1 GB of additional space for the tools
 
 Downloads:
 
