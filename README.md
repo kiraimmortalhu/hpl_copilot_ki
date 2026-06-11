@@ -163,6 +163,7 @@ This workspace is intended for users who already know how to:
 Tutorials:
 
 [Retail / Non-steam](https://youtu.be/cyoKpwehW-o)
+
 [Steam](https://www.youtube.com/watch?v=lPAFjs677hk)
 
 ---
