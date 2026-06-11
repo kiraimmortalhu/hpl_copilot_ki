@@ -64,6 +64,7 @@ You will need:
 Downloads:
 
 [VSCode](https://https://code.visualstudio.com/Download)
+
 [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat)
 
 Before using this workspace, you should already be familiar with:
@@ -78,11 +79,15 @@ It is advised but not mandatory to have:
 * Git basics knowledge
 * Ability to use Git bash / Github Desktop for your own project management
 * Amnesia Remodded Editor tools (for advanced custom assets management)
+
 [Remodded](https://www.moddb.com/mods/amnesia-remodded/downloads)
 
 Useful tutorials:
 
-* HPL2 Tutorials: *(link coming soon)*
+* HPL2 Tutorials:
+[by Mudbill](https://https://code.visualstudio.com/Download)
+* Visual Studio Copilot setup: 
+[Youtube]https://www.youtube.com/watch?v=X_Aet9ndh_Y
 
 ---
 
@@ -125,13 +130,11 @@ The workspace is designed so that the engine documentation exists alongside your
 
 Download and install Visual Studio Code.
 
+* VSCode Installation: https://www.youtube.com/watch?v=wU7IQLIOwoo
+
 If you have not already done so, create a GitHub account and sign up for GitHub Copilot.
-* https://github.com/
 
-Tutorials:
-
-* VSCode Installation: *(link coming soon)*
-* GitHub Copilot Setup: *(link coming soon)*
+* https://github.com/settings/copilot/features
 
 ---
 
@@ -143,7 +146,7 @@ Before continuing, verify that Copilot is functioning correctly by opening a tex
 
 Tutorial:
 
-* GitHub Copilot Setup Guide: *(link coming soon)*
+* GitHub Copilot Setup Guide: https://youtu.be/wxaxlIlN7BA
 
 ---
 
@@ -160,16 +163,17 @@ This workspace is intended for users who already know how to:
 
 Tutorials:
 
-* HPL2 Editor Suite Setup: *(link coming soon)*
-* HPL2 Modding Tutorials: *(link coming soon)*
+[Retail / Non-steam]https://youtu.be/cyoKpwehW-o
+[Steam]https://www.youtube.com/watch?v=lPAFjs677hk
 
 ---
 
 ### 4. Download the HPL Copilot Workspace
 
-Open the project's GitHub page.
+On the project's GitHub page:
+https://github.com/kiraimmortalhu/hpl_copilot_ki
 
-Near the top of the repository page:
+(Near the top of the repository page)
 
 1. Click the green **Code** button.
 2. Select **Download ZIP**.
@@ -266,7 +270,7 @@ MyCustomStory/
 
 Copy the **contents** of `hpl_copilot_ki-master` directly into your project's root folder.
 
-The Copilot folders should sit alongside your existing project folders.
+The Copilot folders should sit alongside your existing project files.
 
 ---
 
@@ -288,11 +292,11 @@ Example:
 MyCustomStory/
 ```
 
-Do not open only the `maps` folder.
+Do NOT open only the `maps` folder.
 
-Do not open only the Copilot folders.
+Do NOT open only the Copilot folders.
 
-Open the project's root folder that contains everything.
+Open the project's ROOT folder that contains everything.
 
 ---
 
@@ -308,7 +312,7 @@ Common shortcuts include:
 * CTRL + Z — Undo
 * CTRL + SHIFT + F — Search entire project
 
-Your gameplay scripts will typically remain inside:
+Your gameplay scripts - to work correctly with the game even - will typically remain inside:
 
 ```text
 maps/
@@ -316,22 +320,26 @@ maps/
 
 and other normal HPL project folders.
 
-### 8.5 [Optional] Add the copilot files to your project's .gitignore
+### 9. Do the Engine Configuration from the next section
+
+### 9.5 [Optional] Add the copilot files to your project's .gitignore
 
 If you are familiar with Git basics and you use github or any similar platform to track your project, 
 you should add the following lines to the root folder gitignore:
 
+```text
 */.github
 */.vscode
 */copilot_hpl2
 */copilot_shared
 *README.md
+```
 
 ### Important
 
 You should normally edit only your own project files.
 
-Avoid modifying:
+Avoid modifying, unless - and as previously - prompted:
 
 ```text
 .github/
@@ -342,6 +350,11 @@ copilot_hpl2/
 Unless you intentionally want to customize or extend the Copilot workspace.
 These folders provide the documentation and configuration that help GitHub Copilot understand HPL2 scripting correctly.
 Modifying them unnecessarily may reduce suggestion quality or cause version compatibility issues.
+
+### In addition, for fellow developers
+
+I do not accept any direct contribution / pull requests initiated by people not on my Contributors list.
+You are however free to fork this repository and edit/redistribute it in any way you please.
 
 ---
 
@@ -363,14 +376,15 @@ TARGET_ENGINE=HPL2_15
 Supported values:
 
 ```text
-HPL2_12 - default
+HPL2_12
 HPL2_13
 HPL2_14
 HPL2_15
-HPL2_AMFP - wip
+HPL2_AMFP
 ```
 
 This value determines which documentation and APIs Copilot should consider valid.
+12 is treated as default, while AMFP should be considered work in progress.
 
 ---
 
