@@ -54,7 +54,17 @@ void OnGameStart(void);
 
 /**
  * @brief Requires version 1.5
- * @param afStep
+ *
+ * This function is executed for every game update or "tick". Can be used for
+ * rapid-firing updates instead of looping timers. Keep in mind that this can
+ * affect game performance if not used with care.
+ *
+ * @param afStep - Time elapsed in seconds since the last frame. Multiply speeds,
+ *                 distances etc. by this argument to avoid framerate
+ *                 dependence issues (for example: if you move something in
+ *                 this function with constant speed, it will move faster on
+ *                 computers which run the game with high FPS and slower on
+ *                 computers with low FPS).
  */
 void OnUpdate(float afStep);
 
@@ -77,7 +87,7 @@ int RandInt(int alMin, int alMax);
  * @param asString
  * @param asSubString
  */
-int StringContains(string &in asString, string &in asSubString);
+bool StringContains(string &in asString, string &in asSubString);
 
 /**
  * @brief Returns the substring in a string. Example: in the string "frictional games rocks", using 4 as alStart  and 6 as alCount  would return "tional".
@@ -89,103 +99,152 @@ const char* StringSub(string &in asString, int alStart, int alCount);
 
 /**
  * @brief Requires version 1.3
- * @param asString
+ *
+ * If possible, returns an integer converted from a string, else returns 0.
+ *
+ * @param asString - String to convert.
  */
 int StringToInt(string &in asString);
 
 /**
  * @brief Requires version 1.3
- * @param asString
+ *
+ * If possible, returns a float converted from a string, else returns 0.
+ *
+ * @param asString - String to convert.
  */
 float StringToFloat(string &in asString);
 
 /**
  * @brief Requires version 1.3
- * @param asString
+ *
+ * If possible, returns a boolean converted from a string, else returns false.
+ *
+ * @param asString - String to convert.
  */
-int StringToBool(string &in asString);
+bool StringToBool(string &in asString);
 
 /**
  * @brief Requires version 1.3
- * @param afX
+ *
+ * Returns the sine of the specified value.
+ *
+ * @param afX - Value to operate.
  */
 float MathSin(float afX);
 
 /**
  * @brief Requires version 1.3
- * @param afX
+ *
+ * Returns the cosine of the specified value.
+ *
+ * @param afX - Value to operate.
  */
 float MathCos(float afX);
 
 /**
  * @brief Requires version 1.3
- * @param afX
+ *
+ * Returns the tangent of the specified value.
+ *
+ * @param afX - Value to operate.
  */
 float MathTan(float afX);
 
 /**
  * @brief Requires version 1.3
- * @param afX
+ *
+ * Returns the arc sine of the specified value.
+ *
+ * @param afX - Value to operate.
  */
 float MathAsin(float afX);
 
 /**
  * @brief Requires version 1.3
- * @param afX
+ *
+ * Returns the arc cosine of the specified value.
+ *
+ * @param afX - Value to operate.
  */
 float MathAcos(float afX);
 
 /**
  * @brief Requires version 1.3
- * @param afX
+ *
+ * Returns the arc tangent of the specified value.
+ *
+ * @param afX - Value to operate.
  */
 float MathAtan(float afX);
 
 /**
  * @brief Requires version 1.3
- * @param afX
- * @param afY
+ *
+ * Calculates and returns the arc tangent of the specified values.
+ *
+ * @param afX - First value to operate.
+ * @param afY - Second value to operate.
  */
 float MathAtan2(float afX, float afY);
 
 /**
  * @brief Requires version 1.3
- * @param afX
+ *
+ * Returns the square root of the specified value.
+ *
+ * @param afX - Value to operate.
  */
 float MathSqrt(float afX);
 
 /**
  * @brief Requires version 1.3
- * @param afBase
- * @param afExp
+ *
+ * Returns the value of afBase raised to the power of afExp.
+ *
+ * @param afBase - The base value.
+ * @param afExp  - Value to calculate the base with.
  */
 float MathPow(float afBase, float afExp);
 
 /**
  * @brief Requires version 1.3
- * @param afA
- * @param afB
+ *
+ * Returns the lowest value.
+ *
+ * @param afA - First value.
+ * @param afB - Second value.
  */
 float MathMin(float afA, float afB);
 
 /**
  * @brief Requires version 1.3
- * @param afA
- * @param afB
+ *
+ * Returns the highest value.
+ *
+ * @param afA - First value.
+ * @param afB - Second value.
  */
 float MathMax(float afA, float afB);
 
 /**
  * @brief Requires version 1.3
- * @param afX
- * @param afMin
- * @param afMax
+ *
+ * Returns afX clamped between afMin and afMax. If afX < afMin, returns afMin, and
+ * if afX > afMax, returns afMax.
+ *
+ * @param afX   - The value to clamp.
+ * @param afMin - The minimum value to clamp afX with.
+ * @param afMax - The maximum value to clamp afX with.
  */
 float MathClamp(float afX, float afMin, float afMax);
 
 /**
  * @brief Requires version 1.3
- * @param afX
+ *
+ * Returns the absolute value.
+ *
+ * @param afX - Value to operate.
  */
 float MathAbs(float afX);
 
@@ -215,46 +274,156 @@ void ProgLog(string &in asLevel, string &in asMessage);
 int ScriptDebugOn(void);
 
 /**
- * @brief No description provided.
- * @param asName
- * @param alVal
+ * @brief Sets a local integer variable for the current script file.
+ *
+ * Local variables are scoped to the script file and are not saved to disk.
+ * Use these for temporary counters or state that does not need to persist
+ * across map loads.
+ *
+ * @param asName - Name of the local variable to set.
+ * @param alVal  - Integer value to assign to the variable.
  */
 void SetLocalVarInt(string &in asName, int alVal);
 
 /**
- * @brief No description provided.
- * @param asName
- * @param afVal
+ * @brief Sets a local float variable for the current script file.
+ *
+ * @param asName - Name of the local variable to set.
+ * @param afVal  - Float value to assign to the variable.
  */
 void SetLocalVarFloat(string &in asName, float afVal);
 
 /**
- * @brief No description provided.
- * @param asName
- * @param asVal
+ * @brief Sets a local string variable for the current script file.
+ *
+ * @param asName - Name of the local variable to set.
+ * @param asVal  - String value to assign to the variable.
  */
 void SetLocalVarString(string &in asName, string &in asVal);
 
 /**
- * @brief No description provided.
- * @param asName
- * @param alVal
+ * @brief Adds to a local integer variable for the current script file.
+ *
+ * Local variables are scoped to the script file and are not saved to disk.
+ * Use these for temporary counters or state that does not need to persist
+ * across map loads.
+ *
+ * @param asName - Name of the local variable to modify.
+ * @param alVal  - Integer value to add to the variable.
+ */
+void AddLocalVarInt(string &in asName, int alVal);
+
+/**
+ * @brief Returns the value of a local integer variable for the current script file.
+ *
+ * @param asName - Name of the local variable to read.
+ */
+int GetLocalVarInt(string &in asName);
+
+/**
+ * @brief Adds to a local float variable for the current script file.
+ *
+ * @param asName - Name of the local variable to modify.
+ * @param afVal  - Float value to add to the variable.
+ */
+void AddLocalVarFloat(string &in asName, float afVal);
+
+/**
+ * @brief Returns the value of a local float variable for the current script file.
+ *
+ * @param asName - Name of the local variable to read.
+ */
+float GetLocalVarFloat(string &in asName);
+
+/**
+ * @brief Adds to a local string variable for the current script file.
+ *
+ * @param asName - Name of the local variable to modify.
+ * @param asVal  - String to append.
+ */
+void AddLocalVarString(string &in asName, string &in asVal);
+
+/**
+ * @brief Returns the value of a local string variable for the current script file.
+ *
+ * @param asName - Name of the local variable to read.
+ */
+string GetLocalVarString(string &in asName);
+
+/**
+ * @brief Sets a global integer variable accessible across maps and script files.
+ *
+ * Global variables persist across maps and are useful for tracking
+ * player progress or state that must survive map transitions.
+ *
+ * @param asName - Name of the global variable to set.
+ * @param alVal  - Integer value to assign to the variable.
  */
 void SetGlobalVarInt(string &in asName, int alVal);
 
 /**
- * @brief No description provided.
- * @param asName
- * @param afVal
+ * @brief Sets a global float variable accessible across maps and script files.
+ *
+ * @param asName - Name of the global variable to set.
+ * @param afVal  - Float value to assign to the variable.
  */
 void SetGlobalVarFloat(string &in asName, float afVal);
 
 /**
- * @brief No description provided.
- * @param asName
- * @param asVal
+ * @brief Sets a global string variable accessible across maps and script files.
+ *
+ * @param asName - Name of the global variable to set.
+ * @param asVal  - String value to assign to the variable.
  */
 void SetGlobalVarString(string &in asName, string &in asVal);
+
+/**
+ * @brief Adds to a global integer variable accessible across maps and script files.
+ *
+ * Global variables persist across maps and are useful for tracking player
+ * progress or state that must survive map transitions.
+ *
+ * @param asName - Name of the global variable to modify.
+ * @param alVal  - Integer value to add to the variable.
+ */
+void AddGlobalVarInt(string &in asName, int alVal);
+
+/**
+ * @brief Returns the value of a global integer variable.
+ *
+ * @param asName - Name of the global variable to read.
+ */
+int GetGlobalVarInt(string &in asName);
+
+/**
+ * @brief Adds to a global float variable accessible across maps and script files.
+ *
+ * @param asName - Name of the global variable to modify.
+ * @param afVal  - Float value to add to the variable.
+ */
+void AddGlobalVarFloat(string &in asName, float afVal);
+
+/**
+ * @brief Returns the value of a global float variable.
+ *
+ * @param asName - Name of the global variable to read.
+ */
+float GetGlobalVarFloat(string &in asName);
+
+/**
+ * @brief Adds to a global string variable accessible across maps and script files.
+ *
+ * @param asName - Name of the global variable to modify.
+ * @param asVal  - String to append.
+ */
+void AddGlobalVarString(string &in asName, string &in asVal);
+
+/**
+ * @brief Returns the value of a global string variable.
+ *
+ * @param asName - Name of the global variable to read.
+ */
+string GetGlobalVarString(string &in asName);
 
 /**
  * @brief Preloads a particle system.
@@ -264,12 +433,31 @@ void PreloadParticleSystem(string &in asPSFile);
 
 /**
  * @brief Creates a particle system on an entity.
- * @param asPSName
- * @param asPSFile
+ * @param asPSName internal name
+ * @param asPSFile 
  * @param asEntity
  * @param abSavePS
  */
 void CreateParticleSystemAtEntity(string &in asPSName, string &in asPSFile, string &in asEntity, bool abSavePS);
+
+/**
+ * @brief Creates a particle system on an entity, extended method with more options. 
+ * @param asPSName internal name
+ * @param asPSFile the particle system to use + extension .ps
+ * @param asEntity the entity to create the particle system at
+ * @param abSavePS determines whether a particle system should "remember" its shown/hidden state, so that this state can be restored when the player revisits the level
+ * @param afR red value
+ * @param afG green value
+ * @param afB blue value
+ * @param afA alpha value
+ * @param abFadeAtDistance determines whether a particle system fades from a certain distance on
+ * @param afFadeMinEnd minimum distance at which the particle system stops fading
+ * @param afFadeMinStart minimum distance at which the particle system starts fading
+ * @param afFadeMaxStart maximum distance at which the particle system starts fading
+ * @param afFadeMaxEnd maximum distance at which the particle system stops fading
+ * 
+ */
+void CreateParticleSystemAtEntityExt(string &in asPSName, string &in asPSFile, string &in asEntity, bool abSavePS, float afR, float afG, float afB, float afA, bool abFadeAtDistance, float afFadeMinEnd, float afFadeMinStart, float afFadeMaxStart, float afFadeMaxEnd);
 
 /**
  * @brief Destroys a particle system.
@@ -316,6 +504,23 @@ void FadeInSound(string &in asSoundName, float afFadeTime, bool abPlayStart);
 void StopSound(string &in asSoundName, float afFadeTime);
 
 /**
+ * @brief Adds a voice and an additional sound effect to be played.
+ *
+ * It is okay to call this many times to queue multiple voices. The
+ * EffectVoiceOverCallback is not called until ALL voices have finished.
+ *
+ * @param asVoiceFile  - The voice file to play.
+ * @param asEffectFile - Additional sound effect file to play alongside the voice.
+ * @param asTextCat    - The category in the .lang file, usually "Voice".
+ * @param asTextEntry  - The text entry in the .lang file.
+ * @param abUsePosition- Play the voice in 3D (true) or as GUI sound (false).
+ * @param asPosEntity  - Entity at which the voice/sound is played.
+ * @param afMinDistance- Minimum distance the voice is heard.
+ * @param afMaxDistance- Maximum distance the voice is heard.
+ */
+void AddEffectVoice(string &in asVoiceFile, string &in asEffectFile, string &in asTextCat, string &in asTextEntry, bool abUsePosition, string &in asPosEntity, float afMinDistance, float afMaxDistance);
+
+/**
  * @brief Plays music.
  * @param asMusicFile
  * @param abLoop
@@ -342,7 +547,7 @@ void StopAllEffectVoices(float afFadeOutTime);
 /**
  * @brief Checks whether EffectVoices are still active.
  */
-int GetEffectVoiceActive(void);
+bool GetEffectVoiceActive(void);
 
 /**
  * @brief Sets the function to be called when the EffectVoices are finished. Callback syntax: void MyFunc()
@@ -583,13 +788,18 @@ void StartEffectEmotionFlash(string &in asTextCat, string &in asTextEntry, strin
 /**
  * @brief Checks whether a flashback is still in effect.
  */
-int GetFlashbackIsActive(void);
+bool GetFlashbackIsActive(void);
 
 /**
  * @brief Continuously spawn regular particle systems (.ps) around the player. Particles created by this script carry over from map to map.
  * @param asSPSFile
  */
 void StartPlayerSpawnPS(string &in asSPSFile);
+
+/**
+ * @brief Stops the player SPS started with StartPlayerSpawnPS.
+ */
+void StopPlayerSpawnPS(void);
 
 /**
  * @brief Shakes the screen.
@@ -602,20 +812,30 @@ void StartScreenShake(float afAmount, float afTime, float afFadeInTime, float af
 
 /**
  * @brief Requires version 1.3
- * @param abX
+ *
+ * Enables/disables the sanity drain and night vision effects while in the
+ * darkness.
+ *
+ * @param abX - Enable/disable effects.
  */
 void SetInDarknessEffectsActive(bool abX);
 
 /**
  * @brief Requires version 1.5
- * @param asImageName
- * @param afX
- * @param afY
- * @param afScale
- * @param abUseRelativeCoordinates
- * @param afDuration
- * @param afFadeIn
- * @param afFadeOut
+ *
+ * Displays an image file directly onto the screen. See ShowScreenImage()
+ * in the tutorials section for more information.
+ *
+ * @param asImageName - The image file to render (.jpg, .png, .tga, .dds)
+ * @param afX         - The X position of the image
+ * @param afY         - The Y position of the image
+ * @param afScale     - The size of the image in pixels (not scale), or original
+ *                     image size if negative
+ * @param abUseRelativeCoordinates - Whether X and Y are relative to the
+ *                                  screen resoltion, or pixel co-ordinates if not
+ * @param afDuration  - The duration that the image is displayed for
+ * @param afFadeIn    - The time, in seconds, to fade in the image
+ * @param afFadeOut   - The time, in seconds, to fade out the image
  */
 void ShowScreenImage(string &in asImageName, float afX, float afY, float afScale, bool abUseRelativeCoordinates, float afDuration, float afFadeIn, float afFadeOut);
 
@@ -628,7 +848,10 @@ void SetInsanitySetEnabled(string &in asSet, bool abX);
 
 /**
  * @brief Requires version 1.3
- * @param asEventName
+ *
+ * Starts a specified insanity event.
+ *
+ * @param asEventName - Insanity event to play.
  */
 void StartInsanityEvent(string &in asEventName);
 
@@ -639,11 +862,14 @@ void StartRandomInsanityEvent(void);
 
 /**
  * @brief Requires version 1.3
+ *
+ * Stops the currently playing insanity event.
  */
 void StopCurrentInsanityEvent(void);
 
 /**
- * @brief Checks whether an insanity event is currently in effect.Not useful at all due to having a return type of void when it should be bool.
+ * @brief Not useful at all due to having a return type of void when it should be bool. Checks whether an insanity event is currently in effect. 
+ *
  */
 void InsanityEventIsActive(void);
 
@@ -666,10 +892,10 @@ void SetPlayerCrouching(bool abCrouch);
 
 /**
  * @brief Pushes the player into a certain direction. Note that you need values above ~2000 to see any effects.
- * @param afX
- * @param afY
- * @param afZ
- * @param abUseLocalCoords
+ * @param afX amount along the X-axis
+ * @param afY amount along the Y-axis
+ * @param afZ amount along the Z-axis
+ * @param abUseLocalCoords If true, axes are based on where the player is facing, not the world. 
  */
 void AddPlayerBodyForce(float afX, float afY, float afZ, bool abUseLocalCoords);
 
@@ -680,31 +906,68 @@ void AddPlayerBodyForce(float afX, float afY, float afZ, bool abUseLocalCoords);
 void ShowPlayerCrossHairIcons(bool abX);
 
 /**
- * @brief Modifies/returns the sanity of the player.
+ * @brief Modifies the sanity of the player.
  * @param afSanity
  */
 void SetPlayerSanity(float afSanity);
 
 /**
- * @brief Modifies/returns the health of the player.
+ * @brief Modifies the health of the player.
  * @param afHealth
  */
 void SetPlayerHealth(float afHealth);
 
 /**
- * @brief Modifies/returns the lamp oil of the player.
- * @param afOil
+ * @brief Modifies the lamp oil of the player.
+ * @param afOil Lamp oil amount to set
  */
 void SetPlayerLampOil(float afOil);
+
+/**
+ * @brief Adds sanity to the player. Give it a negative number to decrease the sanity of the player.
+ * @param afSanity Sanity to add
+ */
+void AddPlayerSanity(float afSanity);
+
+/**
+ * @brief Returns the sanity of the player.
+ * @return Player's sanity
+ */
+float GetPlayerSanity(void);
+
+/**
+ * @brief Adds health to the player. Give it a negative number to decrease the health of the player.
+ * @param afHealth Health to add
+ */
+void AddPlayerHealth(float afHealth);
+
+/**
+ * @brief Returns the health of the player.
+ * @return Player's health
+ */
+float GetPlayerHealth(void);
+
+/**
+ * @brief Adds lamp oil to the player. Give it a negative number to decrease the lamp oil of the player.
+ * @param afSanity Oil to add
+ */
+void AddPlayerLampOil(float afOil);
+
+/**
+ * @brief Returns the lamp oil of the player.
+ * @return Player's lamp oil
+ */
+float GetPlayerLampOil(void);
 
 /**
  * @brief Returns the current speed of the player.
  */
 float GetPlayerSpeed(void);
+float GetPlayerYSpeed(void);
 
 /**
  * @brief Enables/Disables sanity drain from darkness.
- * @param abX
+ * @param abX 
  */
 void SetSanityDrainDisabled(bool abX);
 
@@ -782,10 +1045,27 @@ void MovePlayerHeadPos(float afX, float afY, float afZ, float afSpeed, float afS
 void StartPlayerLookAt(string &in asEntityName, float afSpeedMul, float afMaxSpeed, string &in asAtTargetCallback);
 
 /**
- * @brief Changes the player's move/run/look speed. Default is 1.
+ * @brief Stops any existing player lookAt from StartPlayerLookAt.
+ */
+void StopPlayerLookAt(void);
+
+/**
+ * @brief Changes the player's move speed. Default is 1.
  * @param afMul
  */
 void SetPlayerMoveSpeedMul(float afMul);
+
+/**
+ * @brief Changes the player's run speed. Default is 1.
+ * @param afMul
+ */
+void SetPlayerRunSpeedMul(float afMul);
+
+/**
+ * @brief Changes the player's look speed. Default is 1.
+ * @param afMul
+ */
+void SetPlayerLookSpeedMul(float afMul);
 
 /**
  * @brief Requires version 1.3
@@ -794,10 +1074,16 @@ void SetPlayerMoveSpeedMul(float afMul);
 void SetPlayerJumpForceMul(float afMul);
 
 /**
- * @brief Enables/Disables the player's ability to jump/crouch.
+ * @brief Enables/Disables the player's ability to jump.
  * @param abX
  */
 void SetPlayerJumpDisabled(bool abX);
+
+/**
+ * @brief Enables/Disables the player's ability to crouch.
+ * @param abX
+ */
+void SetPlayerCrouchDisabled(bool abX);
 
 /**
  * @brief Instantly teleports the player to the target StartPos.
@@ -815,7 +1101,7 @@ void SetLanternActive(bool abX, bool abUseEffects);
 /**
  * @brief Checks whether the player is currently using the lantern.
  */
-int GetLanternActive(void);
+bool GetLanternActive(void);
 
 /**
  * @brief Enables/Disables the player's ability to use the lantern.
@@ -856,23 +1142,45 @@ void DisableDeathStartSound(void);
 void SetPlayerPermaDeathSound(string &in asSound);
 
 /**
- * @brief Requires version 1.3
- * @param abX
+ * @brief Enables/disables the player's ability to take fall damage.
+ *
+ * Requires version 1.3
+ *
+ * @param abX - true to disable fall damage, false to enable
  */
 void SetPlayerFallDamageDisabled(bool abX);
 
 /**
- * @brief Requires version 1.3
- * @param afX
- * @param afY
- * @param afZ
+ * @brief Sets the player's position within the level.
+ *
+ * Requires version 1.3
+ *
+ * @param afX - X co-ordinate position.
+ * @param afY - Y co-ordinate position.
+ * @param afZ - Z co-ordinate position.
  */
 void SetPlayerPos(float afX, float afY, float afZ);
 
 /**
- * @brief Requires version 1.3
+ * @brief Returns the player's position within the level on the X axis.
+ *
+ * Requires version 1.3
  */
 float GetPlayerPosX(void);
+
+/**
+ * @brief Returns the player's position within the level on the Y axis.
+ *
+ * Requires version 1.3
+ */
+float GetPlayerPosY(void);
+
+/**
+ * @brief Returns the player's position within the level on the Z axis.
+ *
+ * Requires version 1.3
+ */
+float GetPlayerPosZ(void);
 
 /**
  * @brief Adds a note to the player's journal.
@@ -890,50 +1198,62 @@ void AddDiary(string &in asNameAndTextEntry, string &in asImage);
 
 /**
  * @brief Only called in the pickup diary callback! If true the journal displays the entry else not.
- * @param abOpenJournal
+ * @param abOpenJournal 
  */
 void ReturnOpenJournal(bool abOpenJournal);
 
 /**
  * @brief Adds a quest to the player's journal under mementos. Completed quests cannot be readded.
- * @param asName
- * @param asNameAndTextEntry
+ * @param asName the internal name of the quest
+ * @param asNameAndTextEntry entry in the .lang file. Must start with " Quest_<texthere>_Text ”, and be in category “Journal”!
  */
 void AddQuest(string &in asName, string &in asNameAndTextEntry);
 
 /**
  * @brief Completes a quest. If the quest has not been added, it's marked as complete anyway, preventing it from being added.
- * @param asName
- * @param asNameAndTextEntry
+ * @param asName the internal name of the quest
+ * @param asNameAndTextEntry entry in the .lang file. Must start with " Quest_<texthere>_Text ”, and be in category “Journal”!
  */
 void CompleteQuest(string &in asName, string &in asNameAndTextEntry);
 
 /**
- * @brief Checks whether a quest is completed/added.
- * @param asName
+ * @brief Checks whether a quest is completed.
+ * @param asName the internal name of the quest
  */
-int QuestIsCompleted(string &in asName);
+bool QuestIsCompleted(string &in asName);
+
+/**
+ * @brief Checks whether a quest is added.
+ * @param asName the internal name of the quest
+ */
+bool QuestIsAdded(string &in asName);
 
 /**
  * @brief Sets the number of quests in the map. Obsolete; formerly used to calculate a completion percentage when looking at a level door.
- * @param alNumberOfQuests
+ * @param alNumberOfQuests Amount of quests
  */
 void SetNumberOfQuestsInMap(int alNumberOfQuests);
 
 /**
  * @brief Displays a hint on the player's screen.
- * @param asName
- * @param asMessageCat
- * @param asMessageEntry
- * @param afTimeShown
+ * @param asName the internal name
+ * @param asMessageCat the category in the .lang file, usually "Hints"
+ * @param asMessageEntry the entry in the .lang file
+ * @param afTimeShown time in seconds until the message disappears. If time is <= 0 then the life time is calculated based on string length.
  */
 void GiveHint(string &in asName, string &in asMessageCat, string &in asMessageEntry, float afTimeShown);
 
 /**
  * @brief Blocking a hint prevents it from being shown. Blocked hints are included in savefiles, so they should persist between levels. Unblocking a hint allows it to be shown.
- * @param asName
+ * @param asName the internal name. Basic game hints use the same name as their respective lang entries, with the exception of "numbered" hints. For example, EntityGrab blocks the EntityGrab01 and EntityGrab02 entries.
  */
 void BlockHint(string &in asName);
+
+/**
+ * @brief Unblocks a hint to allow it to be shown again.
+ * @param asName the internal name. Basic game hints use the same name as their respective lang entries, with the exception of "numbered" hints. For example, EntityGrab blocks the EntityGrab01 and EntityGrab02 entries.
+ */
+void UnBlockHint(string &in asName);
 
 /**
  * @brief Removes the hint from the list of already shown hints, allowing it to appear again.
@@ -1039,7 +1359,7 @@ void SetEntityVisible(string &in asName, bool abVisible);
  * @brief Checks whether an entity exists.
  * @param asName
  */
-int GetEntityExists(string &in asName);
+bool GetEntityExists(string &in asName);
 
 /**
  * @brief Changes the crosshair that is used when focusing an entity.
@@ -1129,6 +1449,13 @@ void SetEntityConnectionStateChangeCallback(string &in asName, string &in asCall
 void SetEntityInteractionDisabled(string &in asName, bool abDisabled);
 
 /**
+ * @brief Breaks a joint. Do not use this on joints in SwingDoors, Levers, Wheels, etc. where the joint is part of an interaction. That will make the game crash. 
+ * @param asName 
+ */
+
+void BreakJoint(string &in asName);
+
+/**
  * @brief Calls a function when two entities collide. Callback syntax: void MyFunc(string &in asParent, string &in asChild, int alState) alState: 1 = enter, -1 = leave
  * @param asParentName
  * @param asChildName
@@ -1150,18 +1477,18 @@ void RemoveEntityCollideCallback(string &in asParentName, string &in asChildName
  * @param asEntityA
  * @param asEntityB
  */
-int GetEntitiesCollide(string &in asEntityA, string &in asEntityB);
+bool GetEntitiesCollide(string &in asEntityA, string &in asEntityB);
 
 /**
- * @brief Requires version 1.3
- * @param asName
- * @param afMass
+ * @brief Requires version 1.3. Sets the mass of an entity's body. 
+ * @param asName Name of the body of an entity. The body name of an entity is EntityName_BodyName.
+ * @param afMass The mass to set.
  */
 void SetBodyMass(string &in asName, float afMass);
 
 /**
- * @brief Requires version 1.3
- * @param asName
+ * @brief Requires version 1.3. Gets the mass of an entity's body. 
+ * @param asName Name of the body of an entity. The body name of an entity is EntityName_BodyName.
  */
 float GetBodyMass(string &in asName);
 
@@ -1192,18 +1519,18 @@ void SetPropStaticPhysics(string &in asName, bool abX);
  * @brief Checks whether a prop is interacted with.
  * @param asName
  */
-int GetPropIsInteractedWith(string &in asName);
+bool GetPropIsInteractedWith(string &in asName);
 
 /**
  * @brief Rotates the prop up to a set speed.
- * @param asName
- * @param afAcc
- * @param afGoalSpeed
- * @param afAxisX
- * @param afAxisY
- * @param afAxisZ
- * @param abResetSpeed
- * @param asOffsetArea
+ * @param asName internal name
+ * @param afAcc acceleration
+ * @param afGoalSpeed desired speed
+ * @param afAxisX rotation around X axis
+ * @param afAxisY rotation around Y axis
+ * @param afAxisZ rotation around Z axis
+ * @param abResetSpeed determines whether the speed is resetted after goal speed is reached
+ * @param asOffsetArea the area to rotate around, if empty, then the center of the body is used Note: The entity you want to rotate MUST be a "StaticObject" entity!
  */
 void RotatePropToSpeed(string &in asName, float afAcc, float afGoalSpeed, float afAxisX, float afAxisY, float afAxisZ, bool abResetSpeed, string &in asOffsetArea);
 
@@ -1214,30 +1541,34 @@ void RotatePropToSpeed(string &in asName, float afAcc, float afGoalSpeed, float 
 void StopPropMovement(string &in asName);
 
 /**
- * @brief Attaches a prop to another prop.
- * @param asPropName
- * @param asAttachName
- * @param asAttachFile
- * @param afPosX
- * @param afPosY
- * @param afPosZ
- * @param afRotX
- * @param afRotY
- * @param afRotZ
+ * @brief --- OUTDATED after 1.3!!! Use AttachPropToProp in 1.3 instead.---
+ *        Attaches a prop to another prop. 
+ *        Note: for the purposes of AddEntityCollideCallback, attached props will not call the callback function if they collide with a "static_object" or a "StaticProp" entity type! 
+ * @param asPropName the prop to attach another prop at
+ * @param asAttachName internal name of the prop that gets attached
+ * @param asAttachFile the prop that gets attached extension .ent
+ * @param afPosX X position of the attach from the prop
+ * @param afPosY Y position of the attach from the prop
+ * @param afPosZ Z position of the attach from the prop
+ * @param afRotX rotation around X axis of the attach
+ * @param afRotY rotation around Y axis of the attach
+ * @param afRotZ rotation around ZX axis of the attach
  */
 void AddAttachedPropToProp(string &in asPropName, string &in asAttachName, string &in asAttachFile, float afPosX, float afPosY, float afPosZ, float afRotX, float afRotY, float afRotZ);
 
 /**
- * @brief Requires version 1.3
- * @param asPropName
- * @param asAttachName
- * @param asAttachFile
- * @param afPosX
- * @param afPosY
- * @param afPosZ
- * @param afRotX
- * @param afRotY
- * @param afRotZ
+ * @brief Requires version 1.3.
+ *        Attaches a prop to another prop. Fixed version of AddAttachedPropToProp. 
+ *        Note: for the purposes of AddEntityCollideCallback, attached props will not call the callback function if they collide with a "static_object" or a "StaticProp" entity type! 
+ * @param asPropName the prop to attach another prop at
+ * @param asAttachName internal name of the prop that gets attached
+ * @param asAttachFile the prop that gets attached extension .ent
+ * @param afPosX X position of the attach from the prop
+ * @param afPosY Y position of the attach from the prop
+ * @param afPosZ Z position of the attach from the prop
+ * @param afRotX rotation around X axis of the attach
+ * @param afRotY rotation around Y axis of the attach
+ * @param afRotZ rotation around ZX axis of the attach
  */
 void AttachPropToProp(string &in asPropName, string &in asAttachName, string &in asAttachFile, float afPosX, float afPosY, float afPosZ, float afRotX, float afRotY, float afRotZ);
 
@@ -1249,11 +1580,25 @@ void AttachPropToProp(string &in asPropName, string &in asAttachName, string &in
 void RemoveAttachedPropFromProp(string &in asPropName, string &in asAttachName);
 
 /**
- * @brief Modifies/returns the health of a prop.
+ * @brief Modifies the health of a prop.
  * @param asName
  * @param afHealth
  */
 void SetPropHealth(string &in asName, float afHealth);
+
+/**
+ * @brief Modifies the health of a prop.
+ * @param asName
+ * @param afHealth
+ */
+void AddPropHealth(string &in asName, float afHealth);
+
+/**
+ * @brief Returns the health of a prop.
+ * @param asName
+ * @return The health of the prop
+ */
+float GetPropHealth(string &in asName);
 
 /**
  * @brief Resets a prop's state to the original one when the map was loaded.
@@ -1280,6 +1625,36 @@ void PlayPropAnimation(string &in asProp, string &in asAnimation, float afFadeTi
  * @param asCoordSystem
  */
 void AddPropForce(string &in asName, float afX, float afY, float afZ, string &in asCoordSystem);
+
+/**
+ * @brief These functions push objects. Note that rather high values are needed when applying forces  (on the order of ~100 (weak) to ~10000 (strong)), but not impulses (values less than 10 can be appropriate). Forces are external influences, and will have different effect depending on the mass of the object they are being applied to; impulses disregard mass, and can cause objects to break, as if hit. A "Body" is a physics-related helper object, to which a force or an impulse can be applied. Entities can consist of several bodies, interconnected in various ways (you can create/examine bodies in the model editor).
+ * @param asName
+ * @param afX
+ * @param afY
+ * @param afZ
+ * @param asCoordSystem
+ */
+void AddPropImpulse(string &in asName, float afX, float afY, float afZ, string &in asCoordSystem);
+
+/**
+ * @brief These functions push objects. Note that rather high values are needed when applying forces  (on the order of ~100 (weak) to ~10000 (strong)), but not impulses (values less than 10 can be appropriate). Forces are external influences, and will have different effect depending on the mass of the object they are being applied to; impulses disregard mass, and can cause objects to break, as if hit. A "Body" is a physics-related helper object, to which a force or an impulse can be applied. Entities can consist of several bodies, interconnected in various ways (you can create/examine bodies in the model editor).
+ * @param asName
+ * @param afX
+ * @param afY
+ * @param afZ
+ * @param asCoordSystem
+ */
+void AddBodyForce(string &in asName, float afX, float afY, float afZ, string &in asCoordSystem);
+
+/**
+ * @brief These functions push objects. Note that rather high values are needed when applying forces  (on the order of ~100 (weak) to ~10000 (strong)), but not impulses (values less than 10 can be appropriate). Forces are external influences, and will have different effect depending on the mass of the object they are being applied to; impulses disregard mass, and can cause objects to break, as if hit. A "Body" is a physics-related helper object, to which a force or an impulse can be applied. Entities can consist of several bodies, interconnected in various ways (you can create/examine bodies in the model editor).
+ * @param asName
+ * @param afX
+ * @param afY
+ * @param afZ
+ * @param asCoordSystem
+ */
+void AddBodyImpulse(string &in asName, float afX, float afY, float afZ, string &in asCoordSystem);
 
 /**
  * @brief Connects a prop with the movement of a rope (i.e. turn a wheel to move a rope). For Levers, the rope only moves when the Lever is at the min, max, or middle.
@@ -1342,10 +1717,16 @@ void SetSwingDoorLocked(string &in asName, bool abLocked, bool abEffects);
 void SetSwingDoorClosed(string &in asName, bool abClosed, bool abEffects);
 
 /**
- * @brief Checks whether a swing door is locked/closed.
+ * @brief Checks whether a swing door is locked.
  * @param asName
  */
-int GetSwingDoorLocked(string &in asName);
+bool GetSwingDoorLocked(string &in asName);
+
+/**
+ * @brief Checks whether a swing door is closed.
+ * @param asName
+ */
+bool GetSwingDoorClosed(string &in asName);
 
 /**
  * @brief Deactivates the "auto-close" when a door is nearly closed.
@@ -1401,11 +1782,25 @@ void SetMoveObjectState(string &in asName, float afState);
 void SetMoveObjectStateExt(string &in asName, float afState, float afAcc, float afMaxSpeed, float afSlowdownDist, bool abResetSpeed);
 
 /**
- * @brief Makes an object/wheel/lever stuck in a certain state.
+ * @brief Makes an object stuck in a certain state.
  * @param asName
  * @param alState
  */
 void SetPropObjectStuckState(string &in asName, int alState);
+
+/**
+ * @brief Makes an wheel stuck in a certain state.
+ * @param asName
+ * @param alState
+ */
+void SetWheelStuckState(string &in asName, int alState, bool abEffects);
+
+/**
+ * @brief Makes an lever stuck in a certain state.
+ * @param asName
+ * @param alState
+ */
+void SetLeverStuckState(string &in asName, int alState, bool abEffects);
 
 /**
  * @brief Moves a wheel to a certain angle.
@@ -1416,11 +1811,18 @@ void SetPropObjectStuckState(string &in asName, int alState);
 void SetWheelAngle(string &in asName, float afAngle, bool abAutoMove);
 
 /**
- * @brief Allows the player to make a wheel/lever unstuck when interacted with.
+ * @brief Allows the player to make a wheel unstuck when interacted with.
  * @param asName
  * @param abX
  */
 void SetWheelInteractionDisablesStuck(string &in asName, bool abX);
+
+/**
+ * @brief Allows the player to make a lever unstuck when interacted with.
+ * @param asName
+ * @param abX
+ */
+void SetLeverInteractionDisablesStuck(string &in asName, bool abX);
 
 /**
  * @brief Returns the state of the lever. 0 = not stuck, 1 = at max, -1 = at min
@@ -1444,10 +1846,11 @@ void SetMultiSliderStuckState(string &in asName, int alStuckState, bool abEffect
 void SetMultiSliderCallback(string &in asName, string &in asCallback);
 
 /**
- * @brief No description provided.
- * @param asName
- * @param abSwitchedOn
- * @param abEffects
+ * @brief Sets a Button's switched state.
+ *
+ * @param asName - internal name of the button
+ * @param abSwitchedOn - true = switched on, false = switched off
+ * @param abEffects - whether to play associated effects/sounds
  */
 void SetButtonSwitchedOn(string &in asName, bool abSwitchedOn, bool abEffects);
 
@@ -1458,11 +1861,18 @@ void SetButtonSwitchedOn(string &in asName, bool abSwitchedOn, bool abEffects);
 void SetAllowStickyAreaAttachment(bool abX);
 
 /**
- * @brief Attaches a prop/body to a StickyArea.
+ * @brief Attaches a prop to a StickyArea.
  * @param asAreaName
  * @param asProp
  */
 void AttachPropToStickyArea(string &in asAreaName, string &in asProp);
+
+/**
+ * @brief Attaches a body to a StickyArea.
+ * @param asAreaName
+ * @param asProp
+ */
+void AttachBodyToStickyArea(string &in asAreaName, string &in asBody);
 
 /**
  * @brief Detaches everything from a StickyArea.
@@ -1514,7 +1924,11 @@ void ShowEnemyPlayerPosition(string &in asName);
 
 /**
  * @brief Requires version 1.3
- * @param asName
+ *
+ * Gives the specified enemy the player's current position and makes it search
+ * the area.
+ *
+ * @param asName - Internal name of the enemy.
  */
 void AlertEnemyOfPlayerPresence(string &in asName);
 
@@ -1542,59 +1956,90 @@ void ClearEnemyPatrolNodes(string &in asEnemyName);
 
 /**
  * @brief Requires version 1.3
- * @param asName
- * @param abX
+ *
+ * Enables/disables whether an enemy activates the player's sanity drain when
+ * stared at.
+ *
+ * @param asName - Internal name of the enemy.
+ * @param abX   - Enabled/disabled.
  */
 void SetEnemySanityDecreaseActive(string &in asName, bool abX);
 
 /**
  * @brief Requires version 1.3
- * @param asEnemyName
- * @param asNodeName
- * @param abChangeY
+ *
+ * Teleports an enemy to a specific PathNode.
+ *
+ * @param asEnemyName - Internal name of the enemy
+ * @param asNodeName  - Internal name of the node to teleport to
+ * @param abChangeY   - Whether the Y position of the node will be used when teleporting the enemy
  */
 void TeleportEnemyToNode(string &in asEnemyName, string &in asNodeName, bool abChangeY);
 
 /**
  * @brief Requires version 1.3
- * @param asEnemyName
- * @param asTargetEntity
- * @param asTargetBody
- * @param abChangeY
+ *
+ * Teleports an enemy to a specific entity.
+ *
+ * @param asEnemyName   - Internal name of the enemy
+ * @param asTargetEntity - Internal name of the entity to teleport to
+ * @param asTargetBody   - Internal name of the entity's body name to teleport to. If empty, the first body will be used (might be unstable, recommended to input a body anyway)
+ * @param abChangeY      - Whether the Y position of the entity will be used when teleporting the enemy
  */
 void TeleportEnemyToEntity(string &in asEnemyName, string &in asTargetEntity, string &in asTargetBody, bool abChangeY);
 
 /**
  * @brief Requires version 1.3
- * @param asName
- * @param asPoseType
+ *
+ * Changes the pose a specified ManPig.
+ *
+ * @param asName     - Internal name of the enemy
+ * @param asPoseType - Name of the ManPig pose to use. Can be "Biped" or "Quadruped"
  */
 void ChangeManPigPose(string &in asName, string &in asPoseType);
 
 /**
  * @brief Requires version 1.3
- * @param asName
- * @param abX
+ *
+ * Enables/disables whether a specified Tesla ManPig should fade the player's
+ * view in and out.
+ *
+ * @param asName - Internal name of the enemy
+ * @param abX    - Enabled/disabled
  */
 void SetTeslaPigFadeDisabled(string &in asName, bool abX);
 
 /**
  * @brief Requires version 1.3
- * @param asName
- * @param abX
+ *
+ * Enables/disables whether a specified Tesla ManPig should play the proximity
+ * sounds.
+ *
+ * @param asName - Internal name of the enemy
+ * @param abX    - Enabled/disabled
  */
 void SetTeslaPigSoundDisabled(string &in asName, bool abX);
 
 /**
  * @brief Requires version 1.3
- * @param asName
- * @param abX
+ *
+ * Enables/disables whether a specified Tesla ManPig should be easier to
+ * escape from when hunted. If not disabled, easy escape is activated if the
+ * player is more than 12.35 meters away, the enemy can't see the player, and
+ * the player has less than 75 health. When this occurs, the enemy is forced
+ * to stop hunting and wait for half a second.
+ *
+ * @param asName - Internal name of the enemy
+ * @param abX    - Enabled/disabled
  */
 void SetTeslaPigEasyEscapeDisabled(string &in asName, bool abX);
 
 /**
  * @brief Requires version 1.3
- * @param asName
+ *
+ * Forces a Tesla ManPig to be visible for a short time.
+ *
+ * @param asName - Internal name of the enemy
  */
 void ForceTeslaPigSighting(string &in asName);
 
@@ -1602,7 +2047,42 @@ void ForceTeslaPigSighting(string &in asName);
  * @brief Requires version 1.3
  * @param asName
  */
-const char* GetEnemyStateName(string &in asName);
+/**
+ * @brief Requires version 1.3
+ * @brief Returns the name of the current state a specified enemy is in.
+ *
+ * @param asName - Internal name of the enemy whose state name should be returned.
+ * @return A string containing the state's name.
+ *
+ * Possible common state names (may vary by enemy type):
+ *  - Idle
+ *  - Wait
+ *  - Patrol
+ *  - Investigate
+ *  - Alert
+ *  - Search
+ *  - Hurt
+ *  - Hunt
+ *  - HuntPause
+ *  - HuntWander
+ *  - AttackMeleeShort
+ *  - AttackMeleeLong
+ *  - BreakDoor
+ *  - Dead
+ *
+ * Waterlurker-only states:
+ *  - GoHome
+ *  - Eat
+ *
+ * ManPig-only states:
+ *  - Flee
+ *  - Stalk
+ *  - Track
+ *
+ * Unused states:
+ *  - AttackRange
+ */
+string GetEnemyStateName(string &in asName);
 
 #ifdef __cplusplus
 }
