@@ -1,0 +1,160 @@
+// ============================================================
+// amfp_scripts.hps
+// AMFP-specific scripting additions (HPL2_AMFP / HPL2_12)
+// Only document engine-level functions observed in copilot_hpl2/amfp_maps/
+// that are NOT present in the HPL2_1.2 core docs.
+// Do NOT document core functions or map-local helper functions.
+// ============================================================
+
+//////////////////////////////////////////////////////////////
+// AddEffectVoiceN helpers
+//////////////////////////////////////////////////////////////
+// Variants: AddEffectVoice2, AddEffectVoice3, AddEffectVoice4, ...
+// Purpose: convenience wrappers used in AMFP maps to queue multiple
+// effect-voice/text blocks in a single call (phonautograph / VO sequences).
+// General behaviour (observed patterns):
+// - N in the name indicates the number of voice/effect blocks the helper accepts.
+// - Each block typically contains a voice file (or empty string), an effect file,
+//   a text category and a text entry; maps also pass per-block delay offsets.
+// - Final arguments mirror `AddEffectVoice` positional options:
+//   `abUsePosition, asPosEntity, afMinDistance, afMaxDistance`.
+//
+// Example (from amfp_maps/01_mansion_01.hps):
+// AddEffectVoice4("mansion01_phonautograph_gallery.ogg", "", "Voice", "vo_mansion_phono_mandus_01",
+//                 0.0f, "vo_mansion_phono_prof_01", 3.0f,
+//                 "vo_mansion_phono_mandus_02", 7.0f, "vo_mansion_phono_prof_02", 10.5f,
+//                 false, "", 0.0f, 0.0f);
+//
+// Notes:
+// - The exact parameter ordering is a repeated block pattern followed by
+//   the positional flags; use the example call sites in `copilot_hpl2/amfp_maps/`
+//   as references.
+
+//////////////////////////////////////////////////////////////
+// AttachAreaToProp
+//////////////////////////////////////////////////////////////
+// Attaches a trigger/area to a prop so the area follows the prop movement.
+// Signature (observed):
+// void AttachAreaToProp(string &in asAreaName, string &in asPropName, int alMode)
+//
+// Example (from amfp_maps/08_sewers.hps):
+// AttachAreaToProp("WaterAreaMove1", "WaterPlaneMove1", 0);
+//
+// Notes:
+// - Used by AMFP maps for dynamic water/walkable-area sequences.
+// - Not present in the HPL2 1.2 core docs; treat as AMFP-only helper.
+
+//////////////////////////////////////////////////////////////
+// AttachPropToBone
+//////////////////////////////////////////////////////////////
+// Attaches a prop entity to a named bone on another prop (useful for complex
+// articulated machines where child props must follow a bone transform).
+// Observed signature:
+// void AttachPropToBone(string &in asAttachName, string &in asParentProp, string &in asBoneName,
+//                       float afPosX, float afPosY, float afPosZ,
+//                       float afRotX, float afRotY, float afRotZ)
+//
+// Example (from amfp_maps/07_tunnels.hps):
+// AttachPropToBone("Shuttle_3_1", "CentrifugeArms", "compound_C_bone",
+//                  0.0f, 0.0f, 0.0f, 22.625f, 2.014f, -25.091f);
+//
+// Notes:
+// - Appears only in AMFP maps; preferred for attaching shuttle/arm parts.
+
+//////////////////////////////////////////////////////////////
+// DestroyParticleSystemInstantly
+//////////////////////////////////////////////////////////////
+// Immediately destroys a particle system instance (bypassing fade-out).
+// Observed signature:
+// void DestroyParticleSystemInstantly(string &in asPSName)
+//
+// Example (from amfp_maps/08_sewers.hps):
+// DestroyParticleSystemInstantly("PS_Water_Mist_1");
+//
+// Notes:
+// - `DestroyParticleSystem` exists in core; this variant forces immediate removal.
+// - Use when a particle system must be removed synchronously (e.g., water/steam stops).
+
+//////////////////////////////////////////////////////////////
+// Phone ringing helpers
+//////////////////////////////////////////////////////////////
+// StartPhoneRinging / StopPhoneRinging
+// Observed signatures:
+// void StartPhoneRinging(string &in asPhoneEntity)
+// void StopPhoneRinging(string &in asPhoneEntity)
+//
+// Purpose: control the phone box ringing state (sound, prop animation, and lamp indicator).
+// Example (from amfp_maps/04_alley.hps / 02_mansion_02.hps / 03_cellar.hps):
+// StartPhoneRinging("phone_box_1");
+// ...
+// StopPhoneRinging("phone_box_1");
+//
+// Notes:
+// - Maps commonly use timers and `SetEntityPlayerInteractCallback` to start/stop ringing.
+// - Not present in HPL2 1.2 core docs; treat as AMFP-only helper.
+
+// End of AMFP-specific script notes.
+
+//////////////////////////////////////////////////////////////
+// MandusReactionPlayer (common map helper)
+//////////////////////////////////////////////////////////////
+// Purpose: play Mandus/player reaction VOs or small ambient reactions
+// Observed signature (map-local, but repeatedly present across AMFP maps):
+// void MandusReactionPlayer(string asReactType, float afWaitTime)
+// Example (from amfp_maps/12_streets.hps):
+// MandusReactionPlayer("Scared", 0.5f);
+// Notes:
+// - Frequently implemented inside each map file as a small timer-driven helper
+//   that triggers short voice/effect entries. Many AMFP maps include the same
+//   pattern; include in this doc for discoverability but treat as map-local.
+
+//////////////////////////////////////////////////////////////
+// SetEnemyMoveType
+//////////////////////////////////////////////////////////////
+// Purpose: change an enemy/entity movement type (animation/motion state)
+// Observed usage (AMFP maps):
+// SetEnemyMoveType("Child1", "RunBiped");
+// Notes:
+// - No single `void SetEnemyMoveType(...)` definition found in core stubs;
+//   maps commonly call it as a helper to toggle enemy movement behaviour.
+// - Use map call-sites (e.g. amfp_maps/01_mansion_01.hps, amfp_maps/12_streets.hps)
+//   as templates for valid move-type strings: `RunBiped`, `WalkBiped`, `ChargeBiped`, `Idle`.
+
+//////////////////////////////////////////////////////////////
+// StartLampFlickerBurst
+//////////////////////////////////////////////////////////////
+// Purpose: trigger a burst flicker effect on a named lamp (timed sequence).
+// Observed signature (map-local helper, commonly re-used):
+// void StartLampFlickerBurst(string &in asLamp, float afTime)
+// Example (from amfp_maps/12_streets.hps):
+// StartLampFlickerBurst("streetlight_ground_7", 8);
+// Notes:
+// - Many AMFP maps define identical `StartLampFlickerBurst` implementations.
+// - Documented here for authorship consistency (map-local but widespread).
+
+//////////////////////////////////////////////////////////////
+// Phonautograph / Phono handler pattern
+//////////////////////////////////////////////////////////////
+// Purpose: interactive music/voice playback device pattern used in AMFP maps.
+// Common pieces (observed across many AMFP maps):
+// - `SetEntityConnectionStateChangeCallback("Phonautograph1", "PhonautographHandler");`
+// - `void PhonautographHandler(string &in asEntity, int alState)` — starts the prop
+//    animation with `PlayPropAnimation(..., "Play", ...)` and calls `AddEffectVoiceN(...)`.
+// - schedule a timer: `AddTimer("Phono1Timer", <ogg_length> + 0.5f, "PhonautographDeactivateHandler");`
+// - `void PhonautographDeactivateHandler(string &in asTimer)` — stops animation
+//    via `PlayPropAnimation(..., "Stop", ...)`.
+// Representative call-site (amfp_maps/01_mansion_01.hps):
+// SetEntityConnectionStateChangeCallback("Phonautograph1", "PhonautographHandler");
+// void PhonautographHandler(string &in asEntity, int alState) {
+//     if (asEntity == "Phonautograph1") {
+//         PlayPropAnimation("Phonautograph1", "Play", 1.0f, true, "");
+//         AddEffectVoice4("mansion01_phonautograph_gallery.ogg", "", "Voice", "vo_mansion_phono_mandus_01", ...);
+//         AddTimer("Phono1Timer", 18.0f, "PhonautographDeactivateHandler");
+//     }
+// }
+// Notes:
+// - Maps commonly use `AddEffectVoiceN` variants to play a sequence of VO/effects
+//   while the prop animation runs; the deactivate handler must match the timer name.
+// - This pattern is repeated in most AMFP maps that include a phonautograph entity;
+//   include the pattern here to standardize expected callbacks and timers.
+

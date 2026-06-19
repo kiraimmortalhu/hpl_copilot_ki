@@ -1,0 +1,2747 @@
+//***Filename: TUNNELS_01.HPS
+//***Author: Peter Howell
+//***Lines: 80
+//***Updated: 18/06/2012
+
+										////////////////////////////////
+										//MAP INITIALISATION FUNCTIONS//
+										////////////////////////////////
+										
+void OnStart()
+ 
+{
+	//Map Preamble
+	{
+		SetMapDisplayNameEntry("Tesla01");
+		//SET CHECKPOINT #1//
+		CheckPoint("CP01_Start", "CheckpointStart_1", "", "", "", false);
+		//CLEAR OLD HINTS//
+		//RemoveAllHints();
+	}
+	
+	bool bDoElevator = true;
+	
+	//Debugging
+		if(ScriptDebugOn()) 
+		{
+			GiveItemFromFile("lantern", "lantern.ent");
+			
+			//bDoElevator = false;
+		}
+		
+	//Initialise Start Elevator
+		{
+			if(bDoElevator) InitialiseElevator();
+		}
+			
+	//Elevator Callbacks
+		{
+			AddEntityCollideCallback("Player", "CloseStartElevatorDoorTrigger", "ElevatorDoorHandler", true, 1);
+			AddEntityCollideCallback("Player", "ExitElevatorDoorOpenTrigger", "ElevatorDoorHandler", true, 1);
+			AddEntityCollideCallback("Player", "ExitElevatorSwitchInteractionArea", "CheckSwitchProximity", false, 0);
+			SetMultiSliderCallback("ExitElevatorSwitch", "ElevatorDescent");
+			SetEntityInteractionDisabled("ExitElevatorSwitch", true);
+		}
+		
+	// Setup Local Variables
+		{
+			SetLocalVarString("TeslaPigTeleportTarget", "");
+			SetLocalVarString("TeslaPigQuad", "");
+			SetLocalVarInt("TeslaRoomQuadrant_1_PlayerCollision", 0);
+			SetLocalVarInt("TeslaRoomQuadrant_2_PlayerCollision", 0);
+			SetLocalVarInt("TeslaRoomQuadrant_3_PlayerCollision", 0);
+			SetLocalVarInt("TeslaRoomQuadrant_4_PlayerCollision", 0);
+			SetLocalVarInt("TeslaSwitchesActive", 0);
+		}
+		
+	//Setup Ambience Callbacks
+		{
+			AddEntityCollideCallback("Player", "AMB_Area_Start", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "AMB_Area_01", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "AMB_Area_02", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "AMB_Area_03", "MapAmbienceAreas", false, 0); 
+			AddEntityCollideCallback("Player", "AMB_Area_04", "MapAmbienceAreas", false, 0); 
+			AddEntityCollideCallback("Player", "AMB_Area_05", "MapAmbienceAreas", false, 0); 
+			AddEntityCollideCallback("Player", "Electric_Drone_Area_1", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "Electric_Drone_Area_2", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "child_1_spawn_trigger", "ActivateChild1", true, 0);
+			AddEntityCollideCallback("Player", "child_2_spawn_trigger", "ActivateChild2", true, 0);
+			AddEntityCollideCallback("Player", "child_3_spawn_trigger", "ActivateChild3", true, 0);
+			AddEntityCollideCallback("Player", "child_4_spawn_trigger", "ActivateChild4", true, 0);
+			AddEntityCollideCallback("Player", "running_children_trigger", "RunningChildHandler", true, 0);
+			AddEntityCollideCallback("Child_1", "running_children_drop", "RunningChildHandler", true, 0);
+			AddEntityCollideCallback("Child_1", "running_children_kill_trigger", "RunningChildHandler", true, 0);
+			AddEntityCollideCallback("Player", "Sound_StartArea_Start_1", "SoundOptimiser", true, 1);
+			AddEntityCollideCallback("Player", "Sound_StartArea_Start_2", "SoundOptimiser", true, 1);
+			AddEntityCollideCallback("Player", "Sound_LargeArea_Start_1", "SoundOptimiser", true, 1);
+			AddEntityCollideCallback("Player", "Sound_LargeArea_Start_2", "SoundOptimiser", true, 1);
+			AddEntityCollideCallback("Player", "Sound_PrePigArea_Start_1", "SoundOptimiser", true, 1);
+			AddEntityCollideCallback("Player", "Sound_PrePigArea_Start_2", "SoundOptimiser", true, 1);
+			AddEntityCollideCallback("Player", "AreaStartFlicker", "CollideStartFlicker", true, 1);
+
+		}
+	
+	//Setup Initial Object States
+		{
+
+			SetLeverStuckState("tesla_dressing_handle_2", 1, false);
+			SetLeverInteractionDisablesStuck("tesla_dressing_handle_2", true);
+			
+			
+			PlayPropAnimation("child_silent_1", "idle", 0.0f, true, "");
+			PlayPropAnimation("child_silent_2", "idle", 0.0f, true, "");
+			PlayPropAnimation("child_silent_3", "idle", 0.0f, true, "");
+			PlayPropAnimation("child_silent_4*", "idle", 0.0f, true, "");
+			
+			SetLampLit("TeslaRoomMachine1_LampGreen", true, true);
+			PlayPropAnimation("TeslaRoomMachine1_Gauge", "on", 1.0f, true, "");
+			SetLightVisible("TeslaRoomMachine1_SwitchLight", true);
+			//PlaySoundAtEntity("TeslaRoomMachine1_Sound", "spraylock_engine_loop_tesla.snt", "TeslaRoomMachine1_Switch", 1, true);
+
+			SetLampLit("TeslaRoomMachine2_LampGreen", true, true);
+			PlayPropAnimation("TeslaRoomMachine2_Gauge", "on", 1.0f, true, "");
+			SetLightVisible("TeslaRoomMachine2_SwitchLight", true);
+			//PlaySoundAtEntity("TeslaRoomMachine2_Sound", "spraylock_engine_loop_tesla.snt", "TeslaRoomMachine2_Switch", 1, true);
+		}
+		
+		
+	//Setup CreakCallbacks
+		{
+		}
+	
+	//STATE CHANGE CALLBACKS//
+		{
+			SetEntityConnectionStateChangeCallback("tesla_dressing_handle_2", "ElectricitySpinSequence");
+		}
+	
+//Setup Initial VO Music Zither Callbacks
+		{
+			AddEntityCollideCallback("Player", "VO_2", "VOPlayer", true, 1);
+			AddEntityCollideCallback("Player", "zither_1", "MusicPlayer", true, 1);
+			AddEntityCollideCallback("Player", "zither_2", "MusicPlayer", true, 1);
+			AddEntityCollideCallback("Player", "zither_3", "MusicPlayer", true, 1);
+			AddEntityCollideCallback("Player", "zither_4", "MusicPlayer", true, 1);
+			AddEntityCollideCallback("Player", "music_1", "MusicPlayer", true, 1);
+			AddEntityCollideCallback("Player", "music_2", "MusicPlayer", true, 1);
+			AddEntityCollideCallback("Player", "music_3", "MusicPlayer", true, 1);
+			AddEntityCollideCallback("Player", "zither_loop_1", "ZitherPlayer", true, 1);
+			AddEntityCollideCallback("Player", "zither_loop_2", "ZitherPlayer", true, 1);
+			AddEntityCollideCallback("Player", "zither_loop_3", "ZitherPlayer", true, 1);
+			AddEntityCollideCallback("Player", "zither_loop_4", "ZitherPlayer", true, 1);
+			AddEntityCollideCallback("Player", "distant_pig_1", "VOPlayer", true, 1);
+			AddEntityCollideCallback("Player", "distant_pig_2", "VOPlayer", true, 1);
+			AddEntityCollideCallback("Player", "not_so_distant_pig", "VOPlayer", true, 1);
+		}
+		
+		//LEVEL TRANSITION MUSIC
+		{
+			SetEntityPlayerInteractCallback("Level_Transition_Door", "Level_Transition_Door", true);
+		}
+				
+//Setup Initial TeslaPig Callbacks
+		{
+			AddEntityCollideCallback("Player", "WindowTeslaTrigger", "ActivateWindowTesla", true, 1);
+			AddEntityCollideCallback("Player", "TeslaKillRevealTrigger", "ActivateTeslaKillReveal", true, 1);
+			AddEntityCollideCallback("Player", "PreTeslaEncounterFlicker", "PreTeslaEncounterFlicker", true, 1);
+			AddEntityCollideCallback("Player", "PostTeslaFlickerTrigger", "PostTeslaFlicker", true, 1);
+			AddEntityCollideCallback("Player", "TeslaRoomQuadrant_1", "UpdatePlayerQuad", false, 0);
+			AddEntityCollideCallback("Player", "TeslaRoomQuadrant_2", "UpdatePlayerQuad", false, 0);
+			AddEntityCollideCallback("Player", "TeslaRoomQuadrant_3", "UpdatePlayerQuad", false, 0);
+			AddEntityCollideCallback("Player", "TeslaRoomQuadrant_4", "UpdatePlayerQuad", false, 0);
+			AddEntityCollideCallback("Tesla_Pig_1", "TeslaRoomQuadrant_1", "UpdateTeslaPigQuad", false, 1);
+			AddEntityCollideCallback("Tesla_Pig_1", "TeslaRoomQuadrant_2", "UpdateTeslaPigQuad", false, 1);
+			AddEntityCollideCallback("Tesla_Pig_1", "TeslaRoomQuadrant_3", "UpdateTeslaPigQuad", false, 1);
+			AddEntityCollideCallback("Tesla_Pig_1", "TeslaRoomQuadrant_4", "UpdateTeslaPigQuad", false, 1);
+			AddEntityCollideCallback("Player", "Tesla_Start_1", "Tesla_Start", false, 1);
+			AddEntityCollideCallback("Player", "Tesla_Start_2", "Tesla_Start", false, 1);
+			AddEntityCollideCallback("Player", "TeslaRoom_OpenDoor", "TeslaRoom_OpenDoor", true, 1);
+			AddEntityCollideCallback("Player", "TeslaRoom_Exit", "TeslaRoom_Exit", true, 1);
+			AddEntityCollideCallback("Player", "FinalTesla_Start", "FinalTesla_Start", true, 1);
+			AddEntityCollideCallback("Player", "SpookWretchBKillTrigger", "SpookWretchBKill", true, 0);
+			AddEntityCollideCallback("Player", "SpookMask1FlashTrigger", "SpookMask1FlashHandler", true, 0);
+			AddEntityCollideCallback("Player", "SpookMask2FlashTrigger", "SpookMask2FlashHandler", true, 0);
+		}
+		
+	//SOUND OPTIMISATION
+		{	
+			//FUSE ROOM TRIGGERS		
+			AddEntityCollideCallback("Player", "teslapigroom_fusesounds_start_1", "soundopt", true, 1);
+			AddEntityCollideCallback("Player", "teslapigroom_fusesounds_start_2", "soundopt", true, 1);
+			AddEntityCollideCallback("Player", "soundopt_startcupboards_start_1", "soundopt", true, 1);
+			AddEntityCollideCallback("Player", "soundopt_startcupboards_start_2", "soundopt", true, 1);
+		}
+		
+		// Hint callbacks
+		{
+			AddEntityCollideCallback("Player", "TunnelsHintTrigger", "HintHandler", true, 1);
+		}
+		
+		// Effects
+		{
+			SetLightVisible("TeslaRoomMachine1_SwitchLight", false);
+			SetLightVisible("TeslaRoomMachine2_SwitchLight", false);
+		}
+		
+		//PRELOAD
+		PreloadSound("afx_cellar_smallmachine_start");
+		PreloadSound("afx_event_tunnels_groan");
+		PreloadSound("afx_factory_quake_shake");
+		PreloadSound("afx_pigline_electrical_arc");
+		PreloadSound("afx_spooky_eerie_monster_type2");
+		PreloadSound("afx_spooky_hifrequencymoan");
+		PreloadSound("afx_spooky_mansion_backarea_abstract");
+		PreloadSound("afx_spooky_metal_grind_type2");
+		PreloadSound("afx_spooky_metaldrag_04");
+		PreloadSound("afx_tesla01_arena");
+		PreloadSound("afx_tesla01_hallwaybeforeencounter");
+		PreloadSound("afx_tesla01_lasthallway");
+		PreloadSound("afx_tesla01_lightsout");
+		PreloadSound("afx_tesla01_pigroar");
+		PreloadSound("afx_tesla01_pigroar_closer");
+		PreloadSound("afx_tesla01_teslapigwindowsighting");
+		PreloadSound("afx_tesla01_teslaruntoteleport");
+		PreloadSound("afx_tesla_massive_electricity_discharge");
+		PreloadSound("afx_tesla_metalgate_close");
+		PreloadSound("afx_tesla_metalgate_open");
+		PreloadSound("afx_tesla_teslapigevent_01");
+		PreloadSound("afx_tesla_teslapigevent_02");
+		PreloadSound("afx_tunnels_child_giggle_run_corridor_2D");
+		PreloadSound("afx_zither_11");
+		PreloadSound("afx_zither_12");
+		PreloadSound("afx_zither_2");
+		PreloadSound("afx_zither_3");
+		PreloadSound("afx_zither_4");
+		PreloadSound("afx_zither_5");
+		PreloadSound("afx_zither_6");
+		PreloadSound("afx_zither_8");
+		PreloadSound("afx_zither_9");
+		PreloadSound("amb_tesla_fusepipes");
+		PreloadSound("amb_tesla_metalcreak");
+		PreloadSound("amb_tesla_object_pipes");
+		PreloadSound("amb_tesla_pulsating_electricity");
+		PreloadSound("react_breath");
+		PreloadSound("react_cough");
+		PreloadSound("react_quickscare");
+		PreloadSound("react_scare");
+		PreloadSound("reactor_elevator_door_close_2D");
+		PreloadSound("reactor_elevator_door_close_3D");
+		PreloadSound("reactor_elevator_door_open_2D");
+		PreloadSound("reactor_elevator_door_open_3D");
+		PreloadSound("reactor_elevator_loop");
+		PreloadSound("spraylock_engine_loop_tesla");
+		PreloadSound("tesla_amb_distant_quieter");
+		PreloadSound("tesla_light_flicker");
+		PreloadSound("tesla_teleport");
+		PreloadSound("afx_events_streets_explosionplayer_interior_boom_05");
+		PreloadSound("afx_pigline_explosion_06");
+		PreloadSound("spooky_wind_whirl");
+		  
+		PreloadParticleSystem("tesla_teleport.ps");
+		PreloadParticleSystem("ps_electro_switch_sparks.ps");
+		PreloadParticleSystem("tesla_destroy.ps");
+} 
+
+void OnEnter()
+{
+	//ENTITY SETUP//
+	{
+		SetMoveObjectStateExt("FinalTesla_Bulkhead", 0.88, 5, 1, 0.12, true);
+	}
+	
+	//AUTOSAVE//
+	{
+		AutoSave();
+	}
+
+
+}
+
+void OnLeave()
+{
+	StopMusic(1.0f, 3);
+
+	SetupLoadScreen("LoadingText", "Tesla02_", 3, "game_loading_tesla_02.jpg");
+}
+
+										//////////////////////////
+										//MAP-SPECIFIC FUNCTIONS//
+										//////////////////////////
+										
+void CollideStartFlicker (string &in asParent, string &in asChild, int alState)
+{
+	AddTimer("Lamp_1", RandFloat(0.1,0.5), "TimerFlickerLamps");
+	AddTimer("Lamp_2", RandFloat(0.1,0.5), "TimerFlickerLamps");
+}
+
+void TimerFlickerLamps(string &in asTimer)
+{
+	SetLocalVarInt(asTimer, GetLocalVarInt(asTimer) == 1 ? 0 : 1);
+	
+	if(GetLocalVarInt(asTimer) == 1)
+		SetLampLit(asTimer, true, true);
+	else
+		SetLampLit(asTimer, false, true);
+
+	AddTimer(asTimer, RandFloat(0.1, 0.5), "TimerFlickerLamps");
+}
+
+
+//INITIALISE ELEVATOR//
+void InitialiseElevator ()
+{
+	AddAttachedPropToProp("StartElevator", "ElevatorSwitchStatic", "elevator_switch_static.ent", 0.06f, -1.842f, -0.068f, 0.0f, 0.0f, 0.0f);
+	SetMoveObjectState("StartElevator", 1);
+	PlaySoundAtEntity("LiftLoop", "reactor_elevator_loop.snt", "Player", 1.0f, true);
+	AddEffectVoice5("vo_tesla_machine_1", "", "Voice", "vo_tesla_machine_trigger_01", 0.0f, "vo_tesla_machine_trigger_01_2", 6.0f, "vo_tesla_machine_trigger_01_3", 19.3f, "vo_tesla_machine_trigger_01_3", 19.3f, "vo_tesla_machine_trigger_01_4", 30.59f, false, "", 0.0f, 0.0f);
+	AddTimer("LiftTimer", 40.5f, "LiftEnd");
+	AddTimer("LiftDoorTimer", 41.8f, "LiftEnd");
+}
+
+void LiftEnd (string &in asTimer)
+{
+	if (asTimer == "LiftTimer")
+	{
+		AddDebugMessage("LIFT STOP NOW", false);
+		PlaySoundAtEntity("", "reactor_elevator_stop.snt", "Player", 0.0f, false);
+		StopSound("LiftLoop", 1.5f);
+		return;
+	}
+	else if (asTimer == "LiftDoorTimer")
+	{
+		ElevatorDoorHandler("Player", "ElevatorBottomOpenTrigger", 1);
+		return;
+	}
+}
+//END INITIALISE ELEVATOR//
+
+//ELEVATOR DOOR HANDLER//
+void ElevatorDoorHandler (string &in asParent, string &in asChild, int alState)
+{
+	if (asChild == "ElevatorBottomOpenTrigger")
+	{
+		SetMoveObjectState("StartElevatorDoorRight", 1);
+		SetMoveObjectState("StartElevatorDoorLeft", 1);
+		SetEntityActive("StartElevatorBlockBox", false);
+		PlaySoundAtEntity("", "reactor_elevator_door_open_3D.snt", "ElevatorDoorSource1", 0.0f, false);
+		PlaySoundAtEntity("", "reactor_elevator_door_open_2D.snt", "ElevatorDoorSource1", 0.0f, false);
+		return;
+	}
+	else if (asChild == "CloseStartElevatorDoorTrigger")
+	{
+		SetMoveObjectState("StartElevatorDoorRight", 0);
+		SetMoveObjectState("StartElevatorDoorLeft", 0);
+		PlaySoundAtEntity("", "reactor_elevator_door_close_3D.snt", "ElevatorDoorSource1", 0.0f, false);
+		PlaySoundAtEntity("", "reactor_elevator_door_close_2D.snt", "ElevatorDoorSource1", 0.0f, false);
+		return;
+	}
+	else if (asChild == "ExitElevatorDoorOpenTrigger")
+	{
+		SetMoveObjectState("ExitElevatorDoorRight", 1);
+		SetMoveObjectState("ExitElevatorDoorLeft", 1);
+		PlaySoundAtEntity("", "reactor_elevator_door_open_3D.snt", "ElevatorDoorSource2", 0.0f, false);
+		PlaySoundAtEntity("", "reactor_elevator_door_open_2D.snt", "ElevatorDoorSource2", 0.0f, false);
+	}
+}
+
+void CheckSwitchProximity (string &in asParent, string &in asChild, int alState)
+{
+	if (alState == 1)
+	{
+		AddDebugMessage("Switch CAN Be Interacted With", false);
+		SetEntityInteractionDisabled("ExitElevatorSwitch", false);
+		AddTimer("MovementPreventionTimer", 0.1f, "ElevatorSwitchMovementPreventionChecker");
+		return;
+	}
+	else if (alState == -1)
+	{
+		AddDebugMessage("Switch CANNOT Be Interacted With", false);
+		SetEntityInteractionDisabled("ExitElevatorSwitch", true);
+		RemoveTimer("MovementPreventionTimer");
+		return;
+	}
+}
+
+void ElevatorSwitchMovementPreventionChecker (string &in asTimer)
+{
+	if (GetPropIsInteractedWith("ExitElevatorSwitch") == true)
+	{
+		SetPlayerMoveSpeedMul(0.0f);
+		SetPlayerRunSpeedMul(0.0f);
+		AddTimer("MovementPreventionTimer", 0.1f, "ElevatorSwitchMovementPreventionChecker");
+		return;
+	}
+	else
+	{
+		SetPlayerMoveSpeedMul(1.0f);
+		SetPlayerRunSpeedMul(1.0f);
+		AddTimer("MovementPreventionTimer", 0.1f, "ElevatorSwitchMovementPreventionChecker");
+		return;
+	}
+}
+//END ELEVATOR DOOR HANDLER//
+
+//RANDOM SOUND OPTIMISATION//
+void SoundOptimiser (string &in asParent, string &in asChild, int alState)
+{
+	if (asChild == "Sound_StartArea_Start_1"|| asChild == "Sound_StartArea_Start_2")
+	{	
+	
+	//START SOUNDS
+	AddTimer("InitRandSound_Start", 5.0f, "Sound_Start");
+	AddTimer("InitRandSound_StartEnv", 8.0f, "Sound_StartEnv");
+	AddTimer("InitRandSound_StartDoor", 6.0f, "Sound_StartDoor");
+	AddTimer("InitRandSound_StartDoorEnv", 9.0f, "Sound_StartDoorEnv");
+	AddTimer("InitRandSound_StartSmallEnv", 7.0f, "Sound_StartSmallEnv");
+	AddTimer("InitRandSound_StartRingEnv", 10.0f, "Sound_StartRingEnv");
+	AddTimer("InitRandSound_StartRing", 11.0f, "Sound_StartRing");
+	
+	//AREAS
+	RemoveEntityCollideCallback("Player", "Sound_StartArea_Start_1");
+	RemoveEntityCollideCallback("Player", "Sound_StartArea_Start_2");
+	AddEntityCollideCallback("Player", "Sound_StartArea_Stop_1", "SoundOptimiser", true, 1);
+	AddEntityCollideCallback("Player", "Sound_StartArea_Stop_2", "SoundOptimiser", true, 1);
+	
+	AddDebugMessage("Tesla Start Area Sounds START!", true);
+	return;
+	}
+	
+	else if (asChild == "Sound_StartArea_Stop_1"|| asChild == "Sound_StartArea_Stop_2")
+	{
+	//REMOVE OUTSIDE SOUND
+	RemoveTimer("Sound_Start_1");
+	RemoveTimer("Sound_Start_2");
+	RemoveTimer("Sound_StartDoor_1");
+	RemoveTimer("Sound_StartDoor_2");
+	RemoveTimer("Sound_StartDoor_3");
+	RemoveTimer("Sound_StartDoor_4");
+	RemoveTimer("Sound_StartSmall_1");
+	RemoveTimer("Sound_StartSmall_2");
+	RemoveTimer("Sound_StartSmall_3");
+	RemoveTimer("Sound_StartSmall_4");
+	RemoveTimer("Sound_StartRing_1");
+	RemoveTimer("Sound_StartRing_2");
+	RemoveTimer("Sound_StartRing_3");
+	RemoveTimer("Sound_StartRing_4");
+	RemoveTimer("Sound_StartRing_5");
+	RemoveTimer("Sound_StartRing_6");
+	RemoveTimer("Sound_StartRing_7");
+	RemoveTimer("Sound_StartRing_8");
+	RemoveTimer("Sound_StartRing_9");
+	RemoveTimer("Sound_StartRing_10");
+	RemoveTimer("Sound_StartRing_11");
+	RemoveTimer("Sound_StartRing_12");
+	RemoveTimer("Sound_EntranceToHall_1");
+	RemoveTimer("Sound_EntranceToHall_2");
+	RemoveTimer("Sound_EntranceToHall_3");
+	RemoveTimer("Sound_EntranceToHall_4");
+	RemoveTimer("InitRandSound_Start");
+	RemoveTimer("InitRandSound_StartEnv");
+	RemoveTimer("InitRandSound_StartDoor");
+	RemoveTimer("InitRandSound_StartDoorEnv");
+	RemoveTimer("InitRandSound_StartSmallEnv");
+	RemoveTimer("InitRandSound_StartRingEnv");
+	RemoveTimer("InitRandSound_StartRing");
+	RemoveTimer("Sound_Start");
+	RemoveTimer("Sound_StartEnv");
+	RemoveTimer("Sound_StartDoor");
+	RemoveTimer("Sound_StartDoorEnv");
+	RemoveTimer("Sound_StartSmallEnv");
+	RemoveTimer("Sound_StartRingEnv");
+	RemoveTimer("Sound_StartRing");
+
+	
+	
+	
+	//AREAS
+	RemoveEntityCollideCallback("Player", "Sound_StartArea_Stop_1");
+	RemoveEntityCollideCallback("Player", "Sound_StartArea_Stop_2");
+	AddEntityCollideCallback("Player", "Sound_StartArea_Start_1", "SoundOptimiser", true, 1);
+	AddEntityCollideCallback("Player", "Sound_StartArea_Start_2", "SoundOptimiser", true, 1);
+			
+	AddDebugMessage("Tesla Start Area Sounds STOP!", true);
+	return;
+	}	
+
+//LARGE AREA
+	if (asChild == "Sound_LargeArea_Start_1"|| asChild == "Sound_LargeArea_Start_2")
+	{	
+	
+	//LARGE SOUNDS
+	AddTimer("InitRandSound_LargeHall1Env", 5.0f, "Sound_LargeHall1Env");
+	AddTimer("InitRandSound_LargeHall1", 8.0f, "Sound_LargeHall1");
+	AddTimer("InitRandSound_LargeHallHideawayEnv", 6.0f, "Sound_LargeHallHideawayEnv");
+	AddTimer("InitRandSound_LargeHallHideaway", 9.0f, "Sound_LargeHallHideaway");
+	AddTimer("InitRandSound_LargeHall2Env", 7.0f, "Sound_LargeHall2Env");
+	AddTimer("InitRandSound_LargeHall2", 10.0f, "Sound_LargeHall2");
+	AddTimer("InitRandSound_LargeHall2HideawayEnv", 8.0f, "Sound_LargeHall2HideawayEnv");
+	AddTimer("InitRandSound_LargeHall2Hideaway", 11.0f, "Sound_LargeHall2Hideaway");
+	
+	//AREAS
+	RemoveEntityCollideCallback("Player", "Sound_LargeArea_Start_1");
+	RemoveEntityCollideCallback("Player", "Sound_LargeArea_Start_2");
+	AddEntityCollideCallback("Player", "Sound_LargeArea_Stop_1", "SoundOptimiser", true, 1);
+	AddEntityCollideCallback("Player", "Sound_LargeArea_Stop_2", "SoundOptimiser", true, 1);
+	
+	AddDebugMessage("Tesla Large Area Sounds START!", true);
+	return;
+	}
+	
+	else if (asChild == "Sound_LargeArea_Stop_1"|| asChild == "Sound_LargeArea_Stop_2")
+	{
+	//REMOVE LARGE SOUNDS
+	RemoveTimer("Sound_EntranceToHall_1");
+	RemoveTimer("Sound_EntranceToHall_2");
+	RemoveTimer("Sound_EntranceToHall_3");
+	RemoveTimer("Sound_EntranceToHall_4");
+	RemoveTimer("Sound_LargeHall1_1");
+	RemoveTimer("Sound_LargeHall1_2");
+	RemoveTimer("Sound_LargeHall1_3");
+	RemoveTimer("Sound_LargeHall1_4");
+	RemoveTimer("Sound_LargeHall1_5");
+	RemoveTimer("Sound_LargeHall1_6");
+	RemoveTimer("Sound_LargeHallHideaway_1");
+	RemoveTimer("Sound_LargeHallHideaway_2");
+	RemoveTimer("Sound_LargeHallHideaway_3");
+	RemoveTimer("Sound_LargeHall2_1");
+	RemoveTimer("Sound_LargeHall2_2");
+	RemoveTimer("Sound_LargeHall2_3");
+	RemoveTimer("Sound_LargeHall2_4");
+	RemoveTimer("Sound_LargeHall2_5");
+	RemoveTimer("Sound_LargeHall2_6");
+	RemoveTimer("Sound_LargeHall2_7");
+	RemoveTimer("Sound_LargeHall2Hideaway_1");
+	RemoveTimer("Sound_LargeHall2Hideaway_3");
+	RemoveTimer("Sound_LargeHall2Hideaway_2");
+	RemoveTimer("InitRandSound_LargeHall1Env");
+	RemoveTimer("InitRandSound_LargeHall1");
+	RemoveTimer("InitRandSound_LargeHall1Env");
+	RemoveTimer("InitRandSound_LargeHall1");
+	RemoveTimer("InitRandSound_LargeHallHideaway");
+	RemoveTimer("Sound_LargeHallHideaway");
+	RemoveTimer("InitRandSound_LargeHall2Env");
+	RemoveTimer("Sound_LargeHall2Env");
+	RemoveTimer("InitRandSound_LargeHall2");
+	RemoveTimer("Sound_LargeHall2");
+	RemoveTimer("InitRandSound_LargeHall2HideawayEnv");
+	RemoveTimer("Sound_LargeHall2HideawayEnv");
+	RemoveTimer("InitRandSound_LargeHall2Hideaway");
+	RemoveTimer("Sound_LargeHall2Hideaway");	
+	
+	//AREAS
+	RemoveEntityCollideCallback("Player", "Sound_LargeArea_Stop_1");
+	RemoveEntityCollideCallback("Player", "Sound_LargeArea_Stop_2");
+	AddEntityCollideCallback("Player", "Sound_LargeArea_Start_1", "SoundOptimiser", true, 1);
+	AddEntityCollideCallback("Player", "Sound_LargeArea_Start_2", "SoundOptimiser", true, 1);
+			
+	AddDebugMessage("Tesla Large Area Sounds STOP!", true);
+	return;
+	}
+	
+//Pre AREA
+	if (asChild == "Sound_PrePigArea_Start_1"|| asChild == "Sound_PrePigArea_Start_2")
+	{	
+	
+	//PrePig SOUNDS
+	AddTimer("InitRandSound_CorridorPrePigEnv", 5.0f, "RandSound_CorridorPrePigEnv");
+	AddTimer("InitRandSound_CorridorPrePig", 3.0f, "RandSound_CorridorPrePig");
+	
+	//AREAS
+	RemoveEntityCollideCallback("Player", "Sound_PrePigArea_Start_1");
+	RemoveEntityCollideCallback("Player", "Sound_PrePigArea_Start_2");
+	AddEntityCollideCallback("Player", "Sound_PrePigArea_Stop_1", "SoundOptimiser", true, 1);
+	AddEntityCollideCallback("Player", "Sound_PrePigArea_Stop_2", "SoundOptimiser", true, 1);
+	
+	AddDebugMessage("Tesla PrePig Area Sounds START!", true);
+	return;
+	}
+	
+	else if (asChild == "Sound_PrePigArea_Stop_1"|| asChild == "Sound_PrePigArea_Stop_2")
+	{
+	//REMOVE PrePig SOUNDS
+	RemoveTimer("RandSound_CorridorPrePig_6");
+	RemoveTimer("RandSound_CorridorPrePig_5");
+	RemoveTimer("RandSound_CorridorPrePig_4");
+	RemoveTimer("RandSound_CorridorPrePig_3");
+	RemoveTimer("RandSound_CorridorPrePig_2");
+	RemoveTimer("RandSound_CorridorPrePig_1");
+	RemoveTimer("RandSound_CorridorPrePig");
+	RemoveTimer("InitRandSound_CorridorPrePig");
+	RemoveTimer("RandSound_CorridorPrePigEnv");
+	RemoveTimer("InitRandSound_CorridorPrePigEnv");	
+	
+	//AREAS
+	RemoveEntityCollideCallback("Player", "Sound_PrePigArea_Stop_1");
+	RemoveEntityCollideCallback("Player", "Sound_PrePigArea_Stop_2");
+	AddEntityCollideCallback("Player", "Sound_PrePigArea_Start_1", "SoundOptimiser", true, 1);
+	AddEntityCollideCallback("Player", "Sound_PrePigArea_Start_2", "SoundOptimiser", true, 1);
+			
+	AddDebugMessage("Tesla PrePig Area Sounds STOP!", true);
+	return;
+	}			
+}
+//END RANDOM SOUND OPTIMISATION//								
+
+//RESTORE TO NORMAL//
+void RestoreToNormal (string &in asTimer)
+{
+//RETURN TO NORMAL VISION
+	if (asTimer == "ReturnToNormalVision")
+	{
+		FadeRadialBlurTo(0.0f, 4.0f);
+		FadeImageTrailTo(0.0f, 4.0f);
+		return;
+	}
+
+//RETURN TO NORMAL ALL//
+	else if (asTimer == "ReturnToNormal")
+	{
+		FadeImageTrailTo(0.0f, 3.0f);
+		SetPlayerLookSpeedMul(1.0f);
+		SetPlayerMoveSpeedMul(1.0f);
+		StopPlayerLookAt();
+		return;
+	}
+	
+//END VISUAL EFFECT FOR SCREAM//
+	else if (asTimer == "EndVisEffect")
+	{
+		FadeImageTrailTo(0.0f, 0.5f);
+		FadeSepiaColorTo(0.0f, 0.5f);
+		return;
+	}
+}
+//END RESTORE TO NORMAL//
+
+//SPOOK MASK 1 FLASH HANDLER//Mask Flash
+void SpookMask1FlashTimer (string &in asTimer)
+	{
+	if(asTimer == "SpookMask1LightsOn1") //Show Pig Face nr start
+		{
+		SetLightVisible("PointLight_51", true);
+		SetLightVisible("PointLight_52", true);
+		SetLightVisible("PointLight_53", true);
+		SetLightVisible("PointLight_54", true);
+		SetLightVisible("BoxLight_1", true);
+		SetEntityActive("SpookMask1", true);
+		SetLanternFlickerActive(false);
+		SetLampLit("tesla_dressing_light_on_24", false, false);
+		AddTimer("SpookMask1LightsOff1", 0.05f, "SpookMask1FlashTimer");
+		}
+
+	if(asTimer == "SpookMask1LightsOff1")
+		{
+		SetLightVisible("PointLight_51", false);
+		SetLightVisible("PointLight_52", false);
+		SetLightVisible("PointLight_53", false);
+		SetLightVisible("PointLight_54", false);
+		SetLightVisible("BoxLight_1", false);
+		SetEntityActive("SpookMask1", false);
+		MandusReactionPlayer("Scared", 0.1f);
+		SetLampLit("tesla_dressing_light_on_24", true, true);
+		SetLanternFlickerActive(true);
+		AddTimer("SpookMask1LightsOn2", 0.2f, "SpookMask1FlashTimer");
+		}
+
+	if(asTimer == "SpookMask1LightsOn2") //Return to normal w/ lantern flicker
+		{
+		SetLightVisible("PointLight_51", true);
+		SetLightVisible("PointLight_52", true);
+		SetLightVisible("PointLight_53", true);
+		SetLightVisible("PointLight_54", true);
+		SetLightVisible("BoxLight_1", true);
+		SetLampLit("tesla_dressing_light_on_24", false, false);
+		SetLanternFlickerActive(false);
+		}
+	}
+
+void SpookMask1FlashHandler (string &in asParent, string &in asChild, int alState)
+{
+/*	if (asChild == "SpookMask1FlashTrigger") //Turns lights off. STarts sequence
+	{
+		AddDebugMessage("Flash Triggered", false);
+		SetLightVisible("BoxLight_1", false);
+		SetLanternFlickerActive(true);
+		AddTimer("SpookMask1LightsOn1", 0.2, "SpookMask1FlashTimer");
+		return;
+	}*/
+}
+//END SPOOK MASK 1 FLASH HANDLER//
+
+//SPOOK MASK 2 FLASH HANDLER//
+void SpookMask2FlashTimer (string &in asTimer)
+{
+	if(asTimer == "SpookMask2PreSpawn") //Show Pig Face
+	{
+		StartScreenShake(0.05, 0.15, 0.05, 0);
+		FadePlayerAspectMulTo(0.75f, 3.0f);
+		AddTimer("SpookMask2LightsOn1", 0.1, "SpookMask2FlashTimer");
+		SetPropActiveAndFade("SpookMask2", true, 0.05f);
+	}
+	if(asTimer == "SpookMask2LightsOn1") //Show Pig Face
+	{
+		SetLampLit("oval_wall_lamp_2m_pipe_2", true, false);
+		FadeLightTo("PostTeslaFlickerLight_4", 0.138,0.293,0.294,1, -1, 0.1);
+		SetLightVisible("BoxLight_1", true);
+		AddTimer("SpookMask2LightsOff1", 0.3f, "SpookMask2FlashTimer");
+	}
+
+	if(asTimer == "SpookMask2LightsOff1")
+	{
+		FadePlayerAspectMulTo(1.f, 0.75f);
+		SetLampLit("oval_wall_lamp_2m_pipe_2", false, false);
+		FadeLightTo("PostTeslaFlickerLight_4", 0, 0, 0, 1, -1, 0.1);
+		SetLightVisible("BoxLight_1", false);
+		AddTimer("SpookMask2LightsOn2", 0.2f, "SpookMask2FlashTimer");
+	}
+
+	if(asTimer == "SpookMask2LightsOn2") //Return to normal w/ lantern flicker
+	{
+		SetPropActiveAndFade("SpookMask2", false, 0.075f);
+		SetLampLit("oval_wall_lamp_2m_pipe_2", true, true);
+		FadeLightTo("PostTeslaFlickerLight_4", 0.138,0.293,0.294,1, -1, 1);
+		SetEntityActive("SpookMask2", false);
+		SetLightVisible("BoxLight_1", true);
+		SetLanternFlickerActive(false);
+	}
+}
+
+void SpookMask2FlashHandler (string &in asParent, string &in asChild, int alState)
+{
+/*	if (asChild == "SpookMask2FlashTrigger") //Turns lights off. STarts sequence
+	{
+		SetLightVisible("BoxLight_1", false);
+		SetLanternFlickerActive(true);
+		SetLampLit("oval_wall_lamp_2m_pipe_2", false, false);
+		FadeLightTo("PostTeslaFlickerLight_4", 0, 0, 0, 1, -1, 0.1);
+		AddTimer("SpookMask2PreSpawn", 0.2, "SpookMask2FlashTimer");
+		return;
+	}*/
+}
+//END SPOOK MASK 2 FLASH HANDLER//
+
+//-------------------------------------------------------------
+
+//------------------------
+// TESLA GLIMPSES //
+//------------------------
+
+//-------------------------------------------------------------
+
+void ActivateWindowTesla(string &in asParent, string &in asChild, int alState)
+{
+	SetEntityPlayerLookAtCallback("WindowTeslaLookAt", "LookAtWindowTeslaStart", false);
+	AddEntityCollideCallback("Player", "WindowTeslaStart", "CollideWindowTeslaStart", false, 0);
+	AddEntityCollideCallback("WindowTesla", "WindowTeslaKiller", "CollideKillWindowTesla", true, 1);
+	AddEntityCollideCallback("WindowTesla", "WindowTeslaForceGlimpse", "CollideWindowTeslaForcedGlimpse", true, 1);
+	
+	SetEntityActive("WindowTesla", true);
+	SetTeslaPigSoundDisabled("WindowTesla", true);
+	SetLampFlickerActive("WindowTeslaLamp_*", true);
+	SetLightFlickerActive("WindowTeslaLight_1", true);
+	SetLightFlickerActive("WindowTeslaLight_2", true);
+	SetLanternFlickerActive(true);
+
+	
+	AddEntityCollideCallback("Player", "WindowTeslaStopTrigger", "DeactivateWindowTesla", true, 1);
+}
+
+//-------------------------------------------------------------
+
+void DeactivateWindowTesla(string &in asParent, string &in asChild, int alState)
+{
+	SetEntityPlayerLookAtCallback("WindowTeslaLookAt", "", false);
+	RemoveEntityCollideCallback("Player", "WindowTeslaStart");
+	RemoveEntityCollideCallback("WindowTesla", "WindowTeslaKiller");
+	RemoveEntityCollideCallback("WindowTesla", "WindowTeslaForceGlimpse");
+	
+	SetEntityActive("WindowTesla", false);
+	SetLampFlickerActive("WindowTeslaLamp_*", false);
+	SetLightFlickerActive("WindowTeslaLight_1", false);
+	SetLightFlickerActive("WindowTeslaLight_2", false);
+	SetLanternFlickerActive(false);
+	
+	AddEntityCollideCallback("Player", "WindowTeslaTrigger", "ActivateWindowTesla", true, 1);
+}
+
+//-------------------------------------------------------------
+
+void LookAtWindowTeslaStart(string &in asEntity, int alState)
+{
+	WindowTeslaStart("WindowTeslaSequence_1");
+}
+
+void CollideWindowTeslaStart(string &in asParent, string &in asChild, int alState)
+{
+	WindowTeslaStart("WindowTeslaSequence_1");
+}
+
+void WindowTeslaStart(string &in asTimer)
+{
+	RemoveEntityCollideCallback("Player", "WindowTeslaStopTrigger");
+	RemoveEntityCollideCallback("Player", "WindowTeslaStart");
+	SetEntityPlayerLookAtCallback("WindowTeslaLookAt", "", false);
+	
+	AddEnemyPatrolNode("WindowTesla", "PathNodeArea_44", 0, "", false);
+	SetTeslaPigFadeDisabled("WindowTesla", true);
+	
+	PlaySoundAtEntity("", "afx_tesla01_teslapigwindowsighting.snt", "WindowTesla", 0, false);
+	
+	MandusReactionPlayer("Quick", 0.8f);
+}
+
+//-------------------------------------------------------------
+
+void CollideWindowTeslaForcedGlimpse(string &in asParent, string &in asChild, int alState)
+{
+	ForceTeslaPigSighting("WindowTesla");
+	SetTeslaPigFadeDisabled("WindowTesla", false);
+}
+
+//-------------------------------------------------------------
+
+void CollideKillWindowTesla(string &in asParent, string &in asChild, int alState)
+{
+	SetLampFlickerActive("WindowTeslaLamp_*", false);
+	SetLightFlickerActive("WindowTeslaLight_1", false);
+	SetLightFlickerActive("WindowTeslaLight_2", false);
+	SetLanternFlickerActive(false);
+		
+	SetEntityActive("WindowTesla", false);
+}
+
+//-------------------------------------------------------------
+
+void ActivateTeslaKillReveal (string &in asParent, string &in asChild, int alState)
+{
+	SetEntityActive("RevealTesla", true);
+	SetTeslaPigSoundDisabled("RevealTesla", true);
+	SetTeslaPigFadeDisabled("RevealTesla", true);
+	LanternFlicker(10);
+	
+	SetEntityPlayerLookAtCallback("TeslaReveal_Start", "TeslaReveal_PlayerLookAt", true);
+	AddTimer("Vanish_1", 10.0f, "TeslaReveal_Vanish");
+}
+
+//-------------------------------------------------------------
+
+void TeslaReveal_PlayerLookAt(string &in asParent, int alState)
+{
+	if (GetEntityActive("RevealTesla") == false) return;
+	
+	AddDebugMessage("Tesla Reveal Start", false);
+
+	LanternFlicker(3);
+	ForceTeslaPigSighting("RevealTesla");
+	SetTeslaPigFadeDisabled("RevealTesla", false);
+	
+	RemoveTimer("Vanish_1");
+
+	ClearEnemyPatrolNodes("RevealTesla");
+	AddEnemyPatrolNode("RevealTesla", "PathNodeArea_178", 0, "", false);
+	
+	AddEntityCollideCallback("RevealTesla", "TeslaReveal_Kill", "TeslaReveal_Kill", true, 1);
+	
+	PlaySoundAtEntity("", "afx_tesla01_teslaruntoteleport.snt", "RevealTesla", 0, false);
+}
+
+void TeslaReveal_Kill(string &in asParent, string &in asChild, int alState)
+{
+	TeslaReveal_Vanish("Vanish_1");
+}
+
+void TeslaReveal_Vanish(string &in asTimer)
+{
+	if (asTimer == "Vanish_1")
+	{
+		ForceTeslaPigSighting("RevealTesla");
+		SetTeslaPigFadeDisabled("RevealTesla", true);
+		FadeOut(0.2f);
+		AddTimer("Vanish_2", 0.2f, "TeslaReveal_Vanish");
+		MandusReactionPlayer("Breath", 2.0f);
+		StartScreenShake(0.05, 0.3, 0.1, 0.1);
+	}
+	else if (asTimer == "Vanish_2")
+	{
+		FadeIn(0.1f);
+
+		CreateParticleSystemAtEntity("", "tesla_teleport.ps", "RevealTesla", false);
+		SetEntityActive("RevealTesla", false);
+		SetTeslaPigFadeDisabled("RevealTesla", false);
+	}
+}
+
+//-------------------------------------------------------------
+
+void PreTeslaEncounterFlicker(string &in asParent, string &in asChild, int alState)
+{
+	PlaySoundAtEntity("", "afx_tesla01_hallwaybeforeencounter.snt", "Player", 1, false);
+	MandusReactionPlayer("Breath", 3.0f);
+	FadeImageTrailTo(1.f, 1.5f);
+	AddTimer("ReturnToNormalVision", 1.f, "RestoreToNormal");
+	AddTimer("PreTeslaEncounterRoar", 1.5f, "PreTeslaEncounterRoar");
+	
+	LanternFlicker(4);
+	for (int lLampNum = 1; lLampNum <= 8; lLampNum++)
+	{
+		float fTotalTime = 0;
+		for (int i = 0; i < 4; i++)
+		{
+			fTotalTime += RandFloat(0.1, 1.0f);
+			AddTimer("PreTeslaFlickerLamp_" + lLampNum, fTotalTime, "TimerSetLampUnlit");
+			AddTimer("PreTeslaFlickerLamp_" + lLampNum + "_Light_1", fTotalTime, "TimerSetLightInvisible");
+			AddTimer("PreTeslaFlickerLamp_" + lLampNum + "_Light_2", fTotalTime, "TimerSetLightInvisible");
+			fTotalTime += RandFloat(0.05, 0.25);
+			AddTimer("PreTeslaFlickerLamp_" + lLampNum, fTotalTime, "TimerSetLampLit");
+			AddTimer("PreTeslaFlickerLamp_" + lLampNum + "_Light_1", fTotalTime, "TimerSetLightVisible");
+			AddTimer("PreTeslaFlickerLamp_" + lLampNum + "_Light_2", fTotalTime, "TimerSetLightVisible");
+		}
+	}
+}
+
+void PreTeslaEncounterRoar(string &in asTimer)
+{
+	PlaySoundAtEntity("", "tesla_amb_distant_quieter.snt", "RandSound_Arena_5", 1.0f, false);
+}
+
+//-------------------------------------------------------------
+
+void PostTeslaFlicker(string &in asParent, string &in asChild, int alState)
+{
+	SetLampFlickerActive("PostTeslaFlickerLamp_*", true);
+	SetLightFlickerActive("PostTeslaFlickerLight_3", true);
+	SetLightFlickerActive("PostTeslaFlickerLight_4", true);
+	LanternFlicker(4);
+	FadeImageTrailTo(1.5, 1.5f);
+	
+	PlaySoundAtEntity("PostTeslaFlickerElec", "afx_tesla01_lasthallway.snt", "PostTeslaFlickerLamp_1", 0.5f, true);
+	MandusReactionPlayer("Breath", 4.0f);
+	AddTimer("ReturnToNormalVision", 3.f, "RestoreToNormal");
+	AddTimer("PostTeslaFlickerLamp_1", 0.1f, "PostTeslaFlickerSound");
+	AddTimer("PostTeslaFlickerLamp_1", 2.5f, "PostTeslaFlickerSound");
+	AddTimer("PostTeslaFlickerLamp_2", 3.0f, "PostTeslaFlickerSound");
+	AddTimer("PostTeslaFlickerDone_1", 3.f, "PostTeslaFlickerDone");
+	AddTimer("PostTeslaFlickerDone_2", 3.8f, "PostTeslaFlickerDone");
+}
+
+void PostTeslaFlickerSound(string &in asTimer)
+{
+	PlaySoundAtEntity("", "afx_pigline_electrical_arc.snt", asTimer, 0, true);
+}
+
+void PostTeslaFlickerDone(string &in asTimer)
+{
+	if (asTimer == "PostTeslaFlickerDone_1")
+	{
+		StopSound("PostTeslaFlickerElec", 2.f);
+		SetLampFlickerActive("PostTeslaFlickerLamp_*", false);
+		SetLampLit("PostTeslaFlickerLamp_2", false, true);
+	}
+	else
+	{
+		SetLightFlickerActive("PostTeslaFlickerLight_3", false);
+		FadeLightTo("PostTeslaFlickerLight_3", 0.138,0.293,0.294,1, 3.5, 0.1f);
+		SetLightFlickerActive("PostTeslaFlickerLight_4", false);
+		FadeLightTo("PostTeslaFlickerLight_4", 0.138,0.293,0.294,1, 3.5, 0.1f);
+	}
+}
+
+//-------------------------------------------------------------
+
+//------------------------
+// THE TESLA ROOM //
+//------------------------
+
+//-------------------------------------------------------------
+
+void TeslaRoom_OpenDoor(string &in asParent, string &in asChild, int alState)
+{
+	SetMoveObjectStateExt("Tesla_Bulkhead_1", 0.88, 5, 1, 0.12, true);
+	PlaySoundAtEntity("Tesla_Bulkhead_1", "afx_tesla_metalgate_open.snt", "Tesla_Bulkhead_1", 0.0f, false);
+}
+
+void Tesla_Start(string &in asParent, string &in asChild, int alState)
+{
+	AddDebugMessage("Tesla Room Start", false);
+	
+	SetEntityActive("Tesla_Start_*", false);
+	
+	SetMoveObjectStateExt("Tesla_Bulkhead_1", 0, 17, 20, 0.1, true);
+	PlaySoundAtEntity("Tesla_Bulkhead_1Close", "afx_tesla_metalgate_close.snt", "Tesla_Bulkhead_1", 0.0f, false);
+	
+/*	SetEntityActive("tesla_dressing_light_on_18", false);
+	PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);*/
+	
+	SetPlayerMoveSpeedMul(0.5);
+	
+	RemoveTimer("Lamp_1");
+	RemoveTimer("Lamp_2");
+
+	///
+	// INTRO EFFECTS ------------------------------------------------------------
+	//
+	AddTimer("intro1", 0, "TimerNewTeslaStart");
+	AddTimer("intro2", 2, "TimerNewTeslaStart");
+	AddTimer("intro3", 3, "TimerNewTeslaStart");
+	
+	// ---------------------------------------------------------------------------
+	
+	//SetLocalVarInt("TeslaRoomLanterActive", GetLanternActive()?1:0);
+	
+	LanternFlicker(4);
+	
+	AddTimer("Delay", 3, "TimerDelayTeslaOldStart");
+	
+	CheckPoint("CheckPoint_TeslaRoom", "CheckPoint_TeslaRoom", "CheckPoint_TeslaRoom", "", "", false);
+}
+
+void TimerNewTeslaStart(string &in asTimer)
+{
+		if(asTimer == "intro1")
+		{
+			PlaySoundAtEntity("rumb", "afx_factory_quake_shake.snt", "Player", 2, false);
+			PlaySoundAtEntity("rumb2", "afx_spooky_metaldrag_04.snt", "Player", 2, false);
+			StartScreenShake(0.01, 0.5, 1, 1.5);
+		}
+				
+		if(asTimer == "intro2")
+		{
+			SetLampLit("TeslaRoomMachine1_LampGreen", false, true);
+			PlayPropAnimation("TeslaRoomMachine1_Gauge", "off", 1.0f, true, "");
+			SetLightVisible("TeslaRoomMachine1_SwitchLight", false);
+			StopSound("TeslaRoomMachine1_Sound", 1);
+			
+			SetLampLit("TeslaRoomMachine2_LampGreen", false, true);
+			PlayPropAnimation("TeslaRoomMachine2_Gauge", "off", 1.0f, true, "");
+			SetLightVisible("TeslaRoomMachine2_SwitchLight", false);
+			StopSound("TeslaRoomMachine2_Sound", 1);
+			
+			SetLeverStuckState("TeslaRoomMachine1_Switch", -1, true);
+			SetLeverInteractionDisablesStuck("TeslaRoomMachine1_Switch", true);
+			AddPropForce("TeslaRoomMachine1_Switch", 1, 1, 1, "world");
+			SetLeverStuckState("TeslaRoomMachine2_Switch", -1, true);
+			SetLeverInteractionDisablesStuck("TeslaRoomMachine2_Switch", true);
+			AddPropForce("TeslaRoomMachine2_Switch", 1, 1, 1, "world");
+			SetLampLit("TeslaRoomMachine1_LampRed", true, true);
+			SetLampLit("TeslaRoomMachine2_LampRed", true, true);
+			
+			SetEntityConnectionStateChangeCallback("TeslaRoomMachine1_Switch", "TeslaRoomSwitchChangeState");
+			SetEntityConnectionStateChangeCallback("TeslaRoomMachine2_Switch", "TeslaRoomSwitchChangeState");	
+
+			StartScreenShake(0.05, 0.2, 0.2, 2);
+			PlaySoundAtEntity("flash", "tesla_teleport.snt", "Player", 1, false);
+			CreateParticleSystemAtEntity("puff1", "tesla_destroy.ps", "TeslaRoomMachine1_PS_1", false);
+			CreateParticleSystemAtEntity("puff2", "tesla_destroy.ps", "TeslaRoomMachine2_PS_1", false);
+			FadeLightTo("SpotLight_5", 0.284,0.257,0.414,1, 30, 0.3);
+			FadeLightTo("SpotLight_17", 0.284,0.257,0.414,1, 30, 0.3);
+			
+			SetPlayerMoveSpeedMul(1);
+		}
+		
+		if(asTimer == "intro3")
+		{
+			FadeLightTo("SpotLight_5", 0, 0, 0, 0, 0, 0.7);
+			FadeLightTo("SpotLight_17", 0, 0, 0, 0, 0, 0.7);
+		}
+}
+
+void TimerDelayTeslaOldStart(string &in asTimer)
+{
+	PlayMusic("music_church_factory_pig.ogg", true, 0.7f, 4.0f, 3, false);
+	
+	SetLampLit("PointLight_363", false, false);
+	//SetLightVisible("SpotLight_5", false);
+	SetLightVisible("BoxLight_1", false);
+	
+	SetEntityActive("tfuseroomON_27", false);
+	SetEntityActive("tfuseroomON_21", false);
+	SetEntityActive("tfuseroomON_15", false);
+	SetEntityActive("tfuseroomON_9", false);
+	SetEntityActive("tfuseroomON_3", false);
+	SetEntityActive("tfuseroomON_31", false);
+	SetEntityActive("tfuseroomOFF_31", true);
+	SetEntityActive("tfuseroomOFF_27", true);
+	SetEntityActive("tfuseroomOFF_21", true);
+	SetEntityActive("tfuseroomOFF_15", true);
+	SetEntityActive("tfuseroomOFF_9", true);
+	SetEntityActive("tfuseroomOFF_3", true);
+	
+	AddTimer("TeslaTimer2", 0.4, "TeslaTimer");
+	AddTimer("TeslaTimer3", 0.8, "TeslaTimer");
+	AddTimer("TeslaTimer4", 1.2, "TeslaTimer");
+	AddTimer("TeslaTimer5", 1.6, "TeslaTimer");
+	AddTimer("TeslaTimer6", 2.0, "TeslaTimer");
+	
+	AddTimer("Flash8", 3.8, "Tesla_SpawnPig");
+}
+
+void CheckPoint_TeslaRoom(string &in asName, int alCount)
+{
+	if(alCount>1)
+		SetLocalVarInt("TeslaEasyMode",1);
+		
+	for (int i = 0; i < 45; i++)
+	{
+		if (GetEntityExists("tfuseroomON_" + i))
+		{
+			SetEntityActive("tfuseroomOFF_" + i, false);
+			SetEntityActive("tfuseroomON_" + i, true);
+		}
+	}
+	SetLightVisible("BoxLight_1", true);
+	SetEntityActive("Tesla_Start_*", true);
+	
+	SetLampLit("TeslaRoomMachine1_LampRed", false, false);
+	SetLampLit("TeslaRoomMachine1_LampGreen", false, false);
+	SetEntityConnectionStateChangeCallback("TeslaRoomMachine1_Switch", "");
+	SetLeverStuckState("TeslaRoomMachine1_Switch", 1, true);
+	SetLeverInteractionDisablesStuck("TeslaRoomMachine1_Switch", false);
+	SetEntityInteractionDisabled("TeslaRoomMachine1_Switch", false);
+	AddPropForce("TeslaRoomMachine1_Switch", 1, 1, 1, "world");
+	SetLampLit("TeslaRoomMachine2_LampRed", false, false);
+	SetLampLit("TeslaRoomMachine2_LampGreen", false, false);
+	SetEntityConnectionStateChangeCallback("TeslaRoomMachine2_Switch", "");
+	SetLeverStuckState("TeslaRoomMachine2_Switch", 1, true);
+	SetLeverInteractionDisablesStuck("TeslaRoomMachine2_Switch", false);
+	SetEntityInteractionDisabled("TeslaRoomMachine2_Switch", false);
+	AddPropForce("TeslaRoomMachine2_Switch", 1, 1, 1, "world");
+	
+	SetLocalVarInt("TeslaSwitchesActive", 0);
+	
+	AddEntityCollideCallback("Player", "TeslaRoom_OpenDoor", "TeslaRoom_OpenDoor", true, 1);
+	
+	SetMoveObjectState("Tesla_Bulkhead_2", 0);
+	
+	SetLanternDisabled(false);
+	
+	RemoveTimer("TeslaRoom_TimeOver");
+	RemoveTimer("TeslaRoom_TeslaRemovalCheck");
+	RemoveTimer("TeslaRoom_LookAtVanish");
+	RemoveTimer("TeslaRoom_LookAtVanish_Step2");
+	RemoveTimer("TeslaRoom_TeleportPigToRandomQuad");
+	RemoveTimer("Vanish_1");
+	RemoveTimer("Vanish_2");
+	RemoveTimer("Teleport_1");
+	RemoveTimer("Teleport_2");
+	RemoveTimer("Teleport_3");
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_1_LookAt_*", "", false);
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_2_LookAt_*", "", false);
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_3_LookAt_*", "", false);
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_4_LookAt_*", "", false);
+	
+	StopMusic(0.5f, 3);
+}
+
+//-------------------------------------------------------------
+
+void TeslaRoom_Exit(string &in asParent, string &in asChild, int alState)
+{
+	AddDebugMessage("Tesla Room Exit", false);
+
+	SetMoveObjectStateExt("Tesla_Bulkhead_2", 0, 17, 20, 0.1, true);
+	
+	PlaySoundAtEntity("Tesla_Bulkhead_1", "afx_tesla_metalgate_close.snt", "Tesla_Bulkhead_2", 0.0f, false);
+	RemoveTimer("Sound_Arena");
+	
+	RemoveTimer("InitRandSound_Arena");
+	RemoveTimer("RandSound_Arena_1");
+	RemoveTimer("RandSound_Arena_2");
+	RemoveTimer("RandSound_Arena_3");
+	RemoveTimer("RandSound_Arena_4");
+	RemoveTimer("RandSound_Arena_5");
+	RemoveTimer("RandSound_Arena_6");
+	RemoveTimer("RandSound_Arena_7");
+	RemoveTimer("RandSound_Arena_8");
+	RemoveTimer("RandSound_Arena_9");
+	RemoveTimer("RandSound_Arena_10");
+}
+
+//-------------------------------------------------------------
+
+void TimerDelayedHint(string &in asEntity)
+{
+	AddHint(asEntity, "");
+}
+
+//-------------------------------------------------------------
+
+void Tesla_SpawnPig( string &in asTimer )
+{
+	SetEntityActive("Tesla_Pig_1", true);
+	
+	ClearEnemyPatrolNodes("Tesla_Pig_1");
+	
+	if (GetLocalVarInt("TeslaEasyMode") == 0)
+		AddTimer("TeslaRoom_LookAtVanish", 1.f, "TeslaRoom_LookAtVanish");
+		
+	PlaySoundAtEntity("", "afx_tesla01_pigroar.snt", "Player", 0.0f, false);
+	
+	AddTimer("InitRandSound_Arena", 5.0f, "Sound_Arena");
+	
+	MandusReactionPlayer("Quick", 0.7f);
+	MandusReactionPlayer("Breath", 4.0f);
+}
+//-------------------------------------------------------------
+
+void UpdatePlayerQuad (string &in asParent, string &in asChild, int alState)
+{
+	SetLocalVarInt(asChild + "_PlayerCollision", alState == 1 ? 1 : 0);
+}
+
+//-------------------------------------------------------------
+
+void UpdateTeslaPigQuad (string &in asParent, string &in asChild, int alState)
+{
+	SetLocalVarString("TeslaPigQuad", asChild);
+}
+
+//-------------------------------------------------------------
+
+void TeslaRoom_TimeOver(string &in asTimer)
+{
+	AddDebugMessage("Time Over!", false);
+
+	TeslaRoom_TeslaRemovalCheck("");
+}
+
+//-------------------------------------------------------------
+
+void TeslaRoom_TeslaRemovalCheck(string &in asTimer)
+{
+	if(GetPlayerHealth()<=0) return;
+
+//	if(GetEnemyPlayerDistance("Tesla_Pig_1")>10 && GetPlayerCanSeeEnemy("Tesla_Pig_1")==false)
+//	{
+		AddTimer("ReturnToNormal1", 0.4, "TesEventKillTimer");
+		AddTimer("ReturnToNormal2", 0.8, "TesEventKillTimer");
+		AddTimer("ReturnToNormal3", 1.2, "TesEventKillTimer");
+		AddTimer("ReturnToNormal4", 1.6, "TesEventKillTimer");
+		AddTimer("ReturnToNormal5", 2, "TesEventKillTimer");
+		AddTimer("ReturnToNormal6", 2.4, "TesEventKillTimer");
+		
+		AddTimer("TeslaRoom_ShakeFadeIn", 2.8, "TeslaRoom_ShakeFadeIn");
+		AddTimer("TeslaRoom_TeslaGone", 3.6f, "TeslaRoom_TeslaGone");
+/*	}
+	else
+	{
+		AddTimer("TeslaRoom_TeslaRemovalCheck", 1.0f, "TeslaRoom_TeslaRemovalCheck");
+	}*/
+}
+
+//-------------------------------------------------------------
+
+void TeslaRoom_ShakeFadeIn(string &in asTimer)
+{
+	if (GetPlayerHealth() < 50)
+		SetPlayerHealth(50);
+		
+	FadeIn(0.1);
+	SetTeslaPigFadeDisabled("Tesla_Pig_1", true);
+	FadeLightTo("PointLight_5", 0.34,0.19,0.045,1, 25, 1);
+	PlayGuiSound("afx_events_streets_explosionplayer_interior_boom_05.ogg", 1);
+	StartScreenShake(0.05f, 0, 0.1f, 4);
+	//StartPlayerLookAt("Tesla_Pig_1", 8, 8, "");
+	SetPlayerMoveSpeedMul(0.5f);
+	SetPlayerLookSpeedMul(0.5f);
+}
+
+//-------------------------------------------------------------
+
+
+void TeslaRoom_TeslaGone(string &in asTimer)
+{	
+	CreateParticleSystemAtEntity("poof", "tesla_teleport.ps", "Tesla_Pig_1", false);
+	FadeLightTo("PointLight_5", 0,0,0,0, 25, 1);
+	StopPlayerLookAt();
+	SetPlayerMoveSpeedMul(1);
+	SetPlayerLookSpeedMul(1);
+	StartEffectFlash(0.4, 0.1, 1);
+	PlayGuiSound("afx_pigline_explosion_06.ogg", 0.8f);
+	
+	SetEntityActive("Tesla_Pig_1", false);
+
+	StopMusic(3, 3);
+	
+	AddTimer("TeslaRoom_OpenExitDoor", 4.4, "TeslaRoom_OpenExitDoor");
+	
+}
+
+//-------------------------------------------------------------
+
+void TeslaRoom_OpenExitDoor(string &in asTimer)
+{
+	//if(GetLocalVarInt("TeslaRoomLanterActive")==1) SetLanternActive(true, true);
+	//SetLanternDisabled(false);
+	
+	//*InsertSoundHere*: Want fat sound of door opening! (perhaps do a special ent version of this door and add sounds in ent? It is easy to replace entities in editor.)
+	PlaySoundAtEntity("Tesla_Bulkhead_2", "afx_tesla_metalgate_open.snt", "Tesla_Bulkhead_2", 0.0f, false);
+	SetMoveObjectStateExt("Tesla_Bulkhead_2", 0.88, 5, 1, 0.12, true);
+}
+
+//-------------------------------------------------------------
+
+void TeslaRoomSwitchChangeState(string &in asEntity, int alState)
+{
+	string sMachine = asEntity == "TeslaRoomMachine1_Switch" ? "TeslaRoomMachine1" : "TeslaRoomMachine2";
+	
+	if (alState !=1) return;
+	
+	//Regular changes as player solves problem 
+	AddLocalVarInt("TeslaSwitchesActive", 1);
+	
+	SetLampLit(sMachine + "_LampRed", false, true);
+	SetLampLit(sMachine + "_LampGreen", true, true);
+	
+	PlayPropAnimation(sMachine + "_Gauge", "on", 1.0f, true, "");
+	CreateParticleSystemAtEntity(sMachine + "_Sparks_1", "ps_electro_switch_sparks.ps", sMachine + "_PS_1", false);
+	CreateParticleSystemAtEntity(sMachine + "_Sparks_2", "ps_electro_switch_sparks.ps", sMachine + "_PS_2", false);
+	SetLightVisible(sMachine + "_SwitchLight", true);
+	AddTimer(sMachine + "_SwitchLight", 0.75, "TimerSetLightInvisible");
+	
+	PlaySoundAtEntity("", "afx_pigline_electrical_arc.snt", asEntity, 0.0f, false);
+	PlaySoundAtEntity("", "afx_cellar_smallmachine_start.snt", asEntity, 0.0f, false);
+	PlaySoundAtEntity(sMachine+"_Sound", "spraylock_engine_loop_tesla.snt", asEntity, 1, true);
+
+	SetLeverStuckState(sMachine + "_Switch", 1, true);
+	SetLeverInteractionDisablesStuck(sMachine + "_Switch", false);
+	SetEntityInteractionDisabled(sMachine + "_Switch", true);
+	
+	if (GetLocalVarInt("TeslaSwitchesActive") == 2)
+	{
+		if (GetPlayerHealth() < 50)
+			SetPlayerHealth(50);
+		TeslaRoom_TeslaRemovalCheck("");
+	}
+	else if (GetLocalVarInt("TeslaEasyMode") == 0)
+	{
+		// Prepare teleportation to other lever
+		if (asEntity == "TeslaRoomMachine1_Switch")
+		{
+			RemoveEntityCollideCallback("Player", "TeslaRoomQuadrant_4");
+			AddEntityCollideCallback("Player", "TeslaRoomQuadrant_4", "TeslaRoom_SecondLeverTeleport", false, 0);
+		}
+		else
+		{
+			RemoveEntityCollideCallback("Player", "TeslaRoomQuadrant_3");
+			AddEntityCollideCallback("Player", "TeslaRoomQuadrant_3", "TeslaRoom_SecondLeverTeleport", false, 0);
+		}
+		ShowEnemyPlayerPosition("Tesla_Pig_1");
+		AddTimer("Vanish_1", 2.f, "TeslaRoom_TeleportPigSequence");
+	}
+}
+
+//-------------------------------------------------------------
+
+void TeslaRoom_TeleportPig(string &in asNode)
+{
+	SetLocalVarString("TeslaPigTeleportTarget", asNode);
+	TeslaRoom_TeleportPigSequence("Teleport_1");
+}
+
+//-------------------------------------------------------------
+
+void TeslaRoom_TeleportPigToRandomQuad(string &in asTimer)
+{
+	int lSelectedQuad = RandInt(1, 3);
+	if ((lSelectedQuad == 1 && GetLocalVarInt("TeslaRoomQuadrant_1_PlayerCollision") == 1) ||
+		(lSelectedQuad == 2 && GetLocalVarInt("TeslaRoomQuadrant_2_PlayerCollision") == 1) ||
+		(lSelectedQuad == 3 && GetLocalVarInt("TeslaRoomQuadrant_3_PlayerCollision") == 1))
+	{
+		lSelectedQuad = 4;
+	}
+	
+	TeslaRoom_TeleportPig("TeslaRoomQuadrant_" + lSelectedQuad + "_Node");
+	
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_1_LookAt_*", "", false);
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_2_LookAt_*", "", false);
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_3_LookAt_*", "", false);
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_4_LookAt_*", "", false);
+}
+
+//-------------------------------------------------------------
+
+void TeslaRoom_TeleportPigSequence (string &in asTimer)
+{
+	if (GetLocalVarInt("TeslaSwitchesActive") == 2) return;
+	
+	// Disappear
+	if (asTimer == "Vanish_1")
+	{
+		SetTeslaPigFadeDisabled("Tesla_Pig_1", true);
+		FadeOut(0.2f);
+		AddTimer("Vanish_2", 0.2f, "TeslaRoom_TeleportPigSequence");
+		
+		StartScreenShake(0.05, 0.3, 0.1, 0.1);
+	}
+	else if (asTimer == "Vanish_2")
+	{
+		AddDebugMessage("DISAPPEARANCE!", false);
+		FadeIn(0.1f);
+		PlaySoundAtEntity("", "tesla_teleport.snt", "Tesla_Pig_1", 0.0f, false);
+		CreateParticleSystemAtEntity("", "tesla_teleport.ps", "Tesla_Pig_1", false);
+		SetEntityActive("Tesla_Pig_1", false);
+		SetTeslaPigFadeDisabled("Tesla_Pig_1", false);
+	}
+	
+	// Reappear
+	else if (asTimer == "Teleport_1")
+	{
+		FadeOut(0.2f);
+		AddTimer("Teleport_2", 0.2f, "TeslaRoom_TeleportPigSequence");
+		
+		StartScreenShake(0.05, 0.6, 0.25, 0.25);
+	}
+	else if (asTimer == "Teleport_2")
+	{
+		AddDebugMessage("REAPPEARANCE!", false);
+		
+		FadeIn(0.1f);
+		SetEntityActive("Tesla_Pig_1", true);
+		SetEnemyDisableTriggers("Tesla_Pig_1", true);
+		ForceEnemyWaitState("Tesla_Pig_1");
+		ForceTeslaPigSighting("Tesla_Pig_1");
+		TeleportEnemyToNode("Tesla_Pig_1", GetLocalVarString("TeslaPigTeleportTarget"), true);
+		CreateParticleSystemAtEntity("", "tesla_teleport.ps", "Tesla_Pig_1", false);
+		PlaySoundAtEntity("", "tesla_teleport.snt", "Tesla_Pig_1", 0.0f, false);
+		
+		AddTimer("Teleport_3", 3.0f, "TeslaRoom_TeleportPigSequence");
+	}
+	else if (asTimer == "Teleport_3")
+	{
+		SetEnemyDisableTriggers("Tesla_Pig_1", false);
+		//ShowEnemyPlayerPosition("Tesla_Pig_1");
+	}
+}
+
+//-------------------------------------------------------------
+
+void TeslaRoom_LookAtVanish(string &in asTimer)
+{
+	if (asTimer == "TeslaRoom_LookAtVanish")
+	{
+		if (GetPlayerCanSeeEnemy("Tesla_Pig_1") == false)
+		{
+			AddTimer("TeslaRoom_LookAtVanish", 1.f, "TeslaRoom_LookAtVanish");
+			return;
+		}
+		
+		AddTimer("Vanish_1", 1.f, "TeslaRoom_TeleportPigSequence");
+		
+		AddTimer("TeslaRoom_LookAtVanish_Step2", 5.0f, "TeslaRoom_LookAtVanish");
+	}
+	else
+	{
+		// Prepare reappearance
+		SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_1_LookAt_*", "TeslaRoom_LookAtTeleport", false);
+		SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_2_LookAt_*", "TeslaRoom_LookAtTeleport", false);
+		SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_3_LookAt_*", "TeslaRoom_LookAtTeleport", false);
+		SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_4_LookAt_*", "TeslaRoom_LookAtTeleport", false);
+		
+		// For the gamer that tries to avoid death by staring at the floor
+		AddTimer("TeslaRoom_TeleportPigToRandomQuad", 10.0f, "TeslaRoom_TeleportPigToRandomQuad");
+	}
+}
+
+//-------------------------------------------------------------
+
+void TeslaRoom_LookAtTeleport (string &in asEntity, int alState)
+{
+	if (alState != 1) return;
+	
+	string sQuadrant = StringSub(asEntity, 0, 19);
+	string sNumber = StringSub(asEntity, 27, 1);
+	
+	// Don't teleport pig to the same quadrant as the player is in
+	if (GetLocalVarInt(sQuadrant + "_PlayerCollision") == 1) return;
+	
+	TeslaRoom_TeleportPig(sQuadrant + "_Node_" + sNumber);
+	
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_1_LookAt_*", "", false);
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_2_LookAt_*", "", false);
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_3_LookAt_*", "", false);
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_4_LookAt_*", "", false);
+	
+	RemoveTimer("TeslaRoom_TeleportPigToRandomQuad");
+}
+
+//-------------------------------------------------------------
+
+void TeslaRoom_SecondLeverTeleport(string &in asParent, string &in asChild, int alState)
+{
+	// Remove stuff that might interfere
+	RemoveTimer("TeslaRoom_LookAtVanish");
+	RemoveTimer("TeslaRoom_LookAtVanish_Step2");
+	RemoveTimer("TeslaRoom_TeleportPigToRandomQuad");
+	RemoveTimer("Vanish_1");
+	RemoveTimer("Vanish_2");
+	RemoveTimer("Teleport_1");
+	RemoveTimer("Teleport_2");
+	RemoveTimer("Teleport_3");
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_1_LookAt_*", "", false);
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_2_LookAt_*", "", false);
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_3_LookAt_*", "", false);
+	SetEntityPlayerLookAtCallback("TeslaRoomQuadrant_4_LookAt_*", "", false);
+	
+	UpdatePlayerQuad(asParent, asChild, alState);
+	RemoveEntityCollideCallback("Player", asChild);
+	AddEntityCollideCallback("Player", asChild, "UpdatePlayerQuad", false, 0);
+	
+	if (asChild == "TeslaRoomQuadrant_3")
+	{
+		TeslaRoom_TeleportPig("PathNodeArea_185");
+	}
+	else
+	{
+		TeslaRoom_TeleportPig("PathNodeArea_1");
+	}
+}
+
+//-------------------------------------------------------------
+
+void TeslaTimer (string &in asTimer)
+{
+		if (asTimer == "TeslaTimer2")
+		{
+		AddDebugMessage("Timer2 Fired", false);
+		PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);
+		SetEntityActive("tfuseroomON_28", false);
+		SetEntityActive("tfuseroomON_22", false);
+		SetEntityActive("tfuseroomON_16", false);
+		SetEntityActive("tfuseroomON_10", false);
+		SetEntityActive("tfuseroomON_4", false);
+		SetEntityActive("tfuseroomOFF_28", true);
+		SetEntityActive("tfuseroomOFF_22", true);
+		SetEntityActive("tfuseroomOFF_16", true);
+		SetEntityActive("tfuseroomOFF_10", true);
+		SetEntityActive("tfuseroomOFF_4", true);
+		}
+		
+		else if (asTimer == "TeslaTimer3")
+		{
+		AddDebugMessage("Timer3 Fired", false);
+		PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);
+		SetEntityActive("tfuseroomON_2", false);
+		SetEntityActive("tfuseroomON_8", false);
+		SetEntityActive("tfuseroomON_14", false);
+		SetEntityActive("tfuseroomON_20", false);
+		SetEntityActive("tfuseroomON_26", false);
+		SetEntityActive("tfuseroomOFF_2", true);
+		SetEntityActive("tfuseroomOFF_8", true);
+		SetEntityActive("tfuseroomOFF_14", true);
+		SetEntityActive("tfuseroomOFF_20", true);
+		SetEntityActive("tfuseroomOFF_26", true);
+		}
+		
+		else if (asTimer == "TeslaTimer4")
+		{
+		AddDebugMessage("Timer4 Fired", false);
+		PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);
+		SetEntityActive("tfuseroomON_29", false);
+		SetEntityActive("tfuseroomON_23", false);
+		SetEntityActive("tfuseroomON_17", false);
+		SetEntityActive("tfuseroomON_11", false);
+		SetEntityActive("tfuseroomON_5", false);
+		SetEntityActive("tfuseroomOFF_29", true);
+		SetEntityActive("tfuseroomOFF_23", true);
+		SetEntityActive("tfuseroomOFF_17", true);
+		SetEntityActive("tfuseroomOFF_11", true);
+		SetEntityActive("tfuseroomOFF_5", true);
+		}
+		
+		else if (asTimer == "TeslaTimer5")
+		{
+		AddDebugMessage("Timer5 Fired", false);
+		PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);
+		SetEntityActive("tfuseroomON_25", false);
+		SetEntityActive("tfuseroomON_19", false);
+		SetEntityActive("tfuseroomON_13", false);
+		SetEntityActive("tfuseroomON_7", false);
+		SetEntityActive("tfuseroomON_1", false);
+		SetEntityActive("tfuseroomOFF_25", true);
+		SetEntityActive("tfuseroomOFF_19", true);
+		SetEntityActive("tfuseroomOFF_13", true);
+		SetEntityActive("tfuseroomOFF_7", true);
+		SetEntityActive("tfuseroomOFF_1", true);
+		}
+		
+		else if (asTimer == "TeslaTimer6")
+		{
+		AddDebugMessage("Timer6 Fired", false);
+		PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);
+		SetEntityActive("tfuseroomON_30", false);
+		SetEntityActive("tfuseroomON_24", false);
+		SetEntityActive("tfuseroomON_18", false);
+		SetEntityActive("tfuseroomON_12", false);
+		SetEntityActive("tfuseroomON_6", false);
+		SetEntityActive("tfuseroomON_32", false);
+		SetEntityActive("tfuseroomOFF_30", true);
+		SetEntityActive("tfuseroomOFF_24", true);
+		SetEntityActive("tfuseroomOFF_18", true);
+		SetEntityActive("tfuseroomOFF_12", true);
+		SetEntityActive("tfuseroomOFF_6", true);
+		SetEntityActive("tfuseroomOFF_32", true);
+		
+		//SetLanternActive(false, true);
+		//SetLanternDisabled(true);
+		}
+}
+
+//-------------------------------------------------------------
+
+void TesEventKillTimer (string &in asTimer) //(Post event, lights back on sequence)
+	{
+	if(asTimer == "ReturnToNormal1")
+		{
+		AddDebugMessage("ReturnToNormal1", false);
+		PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);
+		SetLampLit("PointLight_363", false, true);
+		SetEntityActive("tfuseroomON_27", true);
+		SetEntityActive("tfuseroomON_21", true);
+		SetEntityActive("tfuseroomON_15", true);
+		SetEntityActive("tfuseroomON_9", true);
+		SetEntityActive("tfuseroomON_3", true);
+		SetEntityActive("tfuseroomON_31", true);
+		SetEntityActive("tfuseroomOFF_31", false);
+		SetEntityActive("tfuseroomOFF_27", false);
+		SetEntityActive("tfuseroomOFF_21", false);
+		SetEntityActive("tfuseroomOFF_15", false);
+		SetEntityActive("tfuseroomOFF_9", false);
+		SetEntityActive("tfuseroomOFF_3", false);
+		SetEntityActive("tesla_dressing_light_on_18", true);
+		}
+		
+	if(asTimer == "ReturnToNormal2")
+		{
+		AddDebugMessage("ReturnToNormal2", false);
+		PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);
+		SetEntityActive("tfuseroomON_28", true);
+		SetEntityActive("tfuseroomON_22", true);
+		SetEntityActive("tfuseroomON_16", true);
+		SetEntityActive("tfuseroomON_10", true);
+		SetEntityActive("tfuseroomON_4", true);
+		SetEntityActive("tfuseroomOFF_28", false);
+		SetEntityActive("tfuseroomOFF_22", false);
+		SetEntityActive("tfuseroomOFF_16", false);
+		SetEntityActive("tfuseroomOFF_10", false);
+		SetEntityActive("tfuseroomOFF_4", false);
+		}
+
+	if(asTimer == "ReturnToNormal3")
+		{
+		AddDebugMessage("ReturnToNormal3", false);
+		PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);
+		SetEntityActive("tfuseroomON_2", true);
+		SetEntityActive("tfuseroomON_8", true);
+		SetEntityActive("tfuseroomON_14", true);
+		SetEntityActive("tfuseroomON_20", true);
+		SetEntityActive("tfuseroomON_26", true);
+		SetEntityActive("tfuseroomOFF_2", false);
+		SetEntityActive("tfuseroomOFF_8", false);
+		SetEntityActive("tfuseroomOFF_14", false);
+		SetEntityActive("tfuseroomOFF_20", false);
+		SetEntityActive("tfuseroomOFF_26", false);
+		}
+
+	if(asTimer == "ReturnToNormal4")
+		{
+		AddDebugMessage("ReturnToNormal4", false);
+		PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);
+		SetEntityActive("tfuseroomON_29", true);
+		SetEntityActive("tfuseroomON_23", true);
+		SetEntityActive("tfuseroomON_17", true);
+		SetEntityActive("tfuseroomON_11", true);
+		SetEntityActive("tfuseroomON_5", true);
+		SetEntityActive("tfuseroomOFF_29", false);
+		SetEntityActive("tfuseroomOFF_23", false);
+		SetEntityActive("tfuseroomOFF_17", false);
+		SetEntityActive("tfuseroomOFF_11", false);
+		SetEntityActive("tfuseroomOFF_5", false);
+		}
+		
+	if(asTimer == "ReturnToNormal5")
+		{
+		AddDebugMessage("ReturnToNormal5", false);
+		PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);
+		SetEntityActive("tfuseroomON_25", true);
+		SetEntityActive("tfuseroomON_19", true);
+		SetEntityActive("tfuseroomON_13", true);
+		SetEntityActive("tfuseroomON_7", true);
+		SetEntityActive("tfuseroomON_1", true);
+		SetEntityActive("tfuseroomOFF_25", false);
+		SetEntityActive("tfuseroomOFF_19", false);
+		SetEntityActive("tfuseroomOFF_13", false);
+		SetEntityActive("tfuseroomOFF_7", false);
+		SetEntityActive("tfuseroomOFF_1", false);
+		}
+
+	if(asTimer == "ReturnToNormal6")
+		{
+		AddDebugMessage("ReturnToNormal6", false);
+		PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);
+		SetEntityActive("tfuseroomON_30", true);
+		SetEntityActive("tfuseroomON_24", true);
+		SetEntityActive("tfuseroomON_18", true);
+		SetEntityActive("tfuseroomON_12", true);
+		SetEntityActive("tfuseroomON_6", true);
+		SetEntityActive("tfuseroomON_32", true);
+		SetEntityActive("tfuseroomOFF_30", false);
+		SetEntityActive("tfuseroomOFF_24", false);
+		SetEntityActive("tfuseroomOFF_18", false);
+		SetEntityActive("tfuseroomOFF_12", false);
+		SetEntityActive("tfuseroomOFF_6", false);
+		SetEntityActive("tfuseroomOFF_32", false);
+		
+		SetLightVisible("BoxLight_1", true);
+		}
+}
+
+//-------------------------------------------------------------
+
+//------------------------
+// FINAL TESLA ENCOUNTER //
+//------------------------
+
+//-------------------------------------------------------------
+
+void FinalTesla_Start(string &in asParent, string &in asChild, int alState)
+{
+	AddDebugMessage("Final Tesla Start!", false);
+
+	SetMoveObjectStateExt("FinalTesla_Bulkhead", 0, 17, 20, 0.1, true);
+	PlaySoundAtEntity("FinalTesla_BulkheadClose", "afx_tesla_metalgate_close.snt", "FinalTesla_Bulkhead", 0.0f, false);
+	
+	AddTimer("FinalTesla_Blackout4", 1 ,"FinalTesla_Blackout4");
+	AddTimer("FinalTesla_Blackout3", 1.5f ,"FinalTesla_Blackout3");
+	AddTimer("FinalTesla_Blackout2", 2 ,"FinalTesla_Blackout2");
+	AddTimer("FinalTesla_Blackout1", 2.5f ,"FinalTesla_Blackout1");
+	
+	AddTimer("FinalTesla_SpawnPig", 3, "FinalTesla_SpawnPig");
+	
+	PlayMusic("music_church_factory_pig.ogg", true, 1.0f, 4.0f, 3, false);
+	
+	AddEntityCollideCallback("Player", "FinalTesla_LastHunt", "FinalTesla_LastHunt", true, 1);
+	
+	CheckPoint("CheckPoint_FinalTesla", "CheckPoint_FinalTesla", "CheckPoint_FinalTesla", "", "", false);
+	
+	LanternFlicker(4);
+}
+
+void CheckPoint_FinalTesla(string &in asName, int alCount)
+{
+	SetMoveObjectStateExt("FinalTesla_Bulkhead", 0.88, 5, 1, 0.12, true);
+	
+	AddEntityCollideCallback("Player", "FinalTesla_Start", "FinalTesla_Start", true, 1);
+	
+	StopMusic(1.0f, 3);
+	
+	SetLampLit("FinalTesla_Lamp_*", true, false);
+}
+
+//-------------------------------------------------------------
+
+void FinalTesla_Blackout4(string &in asTimer){
+	SetLampLit("FinalTesla_Lamp_4_*", false, false);
+	PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);
+}
+
+void FinalTesla_Blackout3(string &in asTimer){
+	SetLampLit("FinalTesla_Lamp_3_*", false, false);
+	PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);
+}
+
+void FinalTesla_Blackout2(string &in asTimer){
+	SetLampLit("FinalTesla_Lamp_2_*", false, false);
+	PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);
+}
+
+void FinalTesla_Blackout1(string &in asTimer){
+	SetLampLit("FinalTesla_Lamp_1_*", false, false);
+	PlaySoundAtEntity("", "afx_tesla01_lightsout.snt", "Player", 0.0f, false);
+	
+	SetLightVisible("BoxLight_1", false);
+}
+
+//-------------------------------------------------------------
+
+void FinalTesla_SpawnPig( string &in asTimer )
+{
+	SetEntityActive("FinalTesla", true);
+	
+	AddTimer("FinalTesla_LastHunt", 5, "FinalTesla_LastHunt");
+			
+	PlaySoundAtEntity("", "afx_tesla01_pigroar.snt", "FinalTesla", 0.0f, false);
+	
+	//MandusReactionPlayer("Quick", 0.7f);
+	//MandusReactionPlayer("Breath", 4.0f);
+}
+
+void FinalTesla_StartMove(string &in asTimer)
+{
+	ClearEnemyPatrolNodes("FinalTesla");
+	//AddEnemyPatrolNode("FinalTesla", "PathNodeArea_154", 0, "", false);
+	//AddEnemyPatrolNode("FinalTesla", "PathNodeArea_118", 0, "", false);
+	//AddEnemyPatrolNode("FinalTesla", "PathNodeArea_103", 0, "", false);
+	//AddEnemyPatrolNode("FinalTesla", "PathNodeArea_125", 0, "", false);
+	//AddEnemyPatrolNode("FinalTesla", "PathNodeArea_113", 0, "", false);
+	
+}
+
+void FinalTesla_LastHunt(string &in asParent, string &in asChild, int alState)
+{
+	AddDebugMessage("Final Hunt Start!", false);
+	
+	LanternFlicker(3);
+
+	FinalTesla_LastHuntLoop("");
+}
+
+void FinalTesla_LastHuntLoop(string &in asTimer)
+{
+	ShowEnemyPlayerPosition("FinalTesla");
+	
+	AddTimer("FinalTesla_LastHuntLoop", 0.5f, "FinalTesla_LastHuntLoop");
+}
+
+//-------------------------------------------------------------
+
+
+//LEVEL TRANSITION MUSIC//
+void Level_Transition_Door(string &in asEntity)
+{
+	PlayMusic("music_telsa_1_transition_27.ogg", false, 1.0f, 2.0f, 3, false);
+	AddDebugMessage("Triggered Music", false);
+}
+//END LEVEL TRANSITION MUSIC//
+
+//////////////////////////////
+//NON MAP-SPECIFIC FUNCTIONS//
+//////////////////////////////
+
+//AMBIENT SOUNDTRACK PLAYER//
+void MapAmbienceAreas (string &in asParent, string &in asChild, int alState) //Callback function for all ambience areas in map
+{
+		if (asChild == "AMB_Area_Start")
+		{
+			if (alState == 1)
+			{
+				PlaySoundAtEntity("AMB_Area_Start", "amb_tesla_basedrone_03_smallcorridor.snt", "Player", 1.0f, true);
+				return;
+			}
+			else if (alState == -1) 
+			{
+				StopSound("AMB_Area_Start", 1.0f);
+				return;
+			}
+		}
+				if (asChild == "AMB_Area_01")
+		{
+			if (alState == 1)
+			{
+				PlaySoundAtEntity("AMB_Area_01", "amb_tesla_basedrone_03_smallcorridor.snt", "Player", 1.0f, true);
+				return;
+			}
+			else if (alState == -1) 
+			{
+				StopSound("AMB_Area_01", 1.0f);
+				return;
+			}
+		}
+		if (asChild == "AMB_Area_02")
+				{
+			if (alState == 1)
+			{
+				PlaySoundAtEntity("AMB_Area_02", "amb_tesla_basedrone_03_smallcorridor.snt", "Player", 1.0f, true);
+				return;
+			}
+			else if (alState == -1) 
+			{
+				StopSound("AMB_Area_02", 1.0f);
+				return;
+			}
+		}
+		if (asChild == "AMB_Area_03")
+		{
+			if (alState == 1)
+			{
+				PlaySoundAtEntity("AMB_Area_03", "amb_tesla_hall.snt", "Player", 1.0f, true);
+				return;
+			}
+			else if (alState == -1) 
+			{
+				StopSound("AMB_Area_03", 1.0f);
+				return;
+			}
+		}
+		if (asChild == "AMB_Area_04")
+		{
+			if (alState == 1)
+			{
+				PlaySoundAtEntity("AMB_Area_04", "amb_tesla_basedrone_02.snt", "Player", 1.0f, true);
+				PlaySoundAtEntity("AMB_Area_04", "afx_zither_9.snt", "Player", 1.0f, true);
+				return;
+			}
+			else if (alState == -1) 
+			{
+				StopSound("AMB_Area_04", 1.0f);
+				return;
+			}
+		}
+		if (asChild == "AMB_Area_05")
+		{
+			if (alState == 1)
+			{
+				PlaySoundAtEntity("AMB_Area_05", "amb_tesla_basedrone_02.snt", "Player", 1.0f, true);
+				return;
+			}
+			else if (alState == -1) 
+			{
+				StopSound("AMB_Area_05", 1.0f);
+				return;
+			}
+		}
+		if (asChild == "Electric_Drone_Area_1")
+		{
+			if (alState == 1)
+			{
+				PlaySoundAtEntity("Electric_Drone_Area_1", "amb_tesla_pulsating_electricity", "Player", 1.0f, true);
+				return;
+			}
+			else if (alState == -1) 
+			{
+				StopSound("Electric_Drone_Area_1", 1.0f);
+				return;
+			}
+		}
+		if (asChild == "Electric_Drone_Area_2")
+		{
+			if (alState == 1)
+			{
+				PlaySoundAtEntity("Electric_Drone_Area_2", "amb_tesla_pulsating_electricity", "Player", 1.0f, true);
+				return;
+			}
+			else if (alState == -1) 
+			{
+				StopSound("Electric_Drone_Area_2", 1.0f);
+				return;
+			}
+		}
+	
+}
+//END AMBIENT SOUNDTRACK PLAYER//
+
+//SOUND OPTIMISATION//
+void soundopt (string &in asParent, string &in asChild, int alState)
+{
+//FUSE ROOM
+	if (asChild == "teslapigroom_fusesounds_start_1"|| asChild == "teslapigroom_fusesounds_start_2")
+	{
+	//REMOVE START TRIGGERS
+	RemoveEntityCollideCallback("Player", "teslapigroom_fusesounds_start_1");
+	RemoveEntityCollideCallback("Player", "teslapigroom_fusesounds_start_2");
+	
+	//ADD STOP TRIGGERS
+	AddEntityCollideCallback("Player", "teslapigroom_fusesounds_stop_1", "soundopt", true, 1);
+	AddEntityCollideCallback("Player", "teslapigroom_fusesounds_stop_2", "soundopt", true, 1);
+	
+	//START FUSE SOUNDS
+	PlaySoundAtEntity("teslafusepipes_1", "amb_tesla_fusepipes.snt", "fuse_soundsource_1", 1.0f, true);
+	PlaySoundAtEntity("teslafusepipes_2", "amb_tesla_fusepipes.snt", "fuse_soundsource_2", 1.0f, true);
+	PlaySoundAtEntity("teslafusepipes_3", "amb_tesla_fusepipes.snt", "fuse_soundsource_3", 1.0f, true);
+	PlaySoundAtEntity("teslafusepipes_4", "amb_tesla_fusepipes.snt", "fuse_soundsource_4", 1.0f, true);
+	PlaySoundAtEntity("teslafusepipes_5", "amb_tesla_fusepipes.snt", "fuse_soundsource_5", 1.0f, true);
+	PlaySoundAtEntity("teslafusepipes_6", "amb_tesla_fusepipes.snt", "fuse_soundsource_6", 1.0f, true);
+	PlaySoundAtEntity("teslafusepipes_7", "amb_tesla_fusepipes.snt", "fuse_soundsource_7", 1.0f, true);
+	PlaySoundAtEntity("teslafusepipes_8", "amb_tesla_fusepipes.snt", "fuse_soundsource_8", 1.0f, true);
+	PlaySoundAtEntity("teslafusepipes_9", "amb_tesla_fusepipes.snt", "fuse_soundsource_9", 1.0f, true);
+	PlaySoundAtEntity("teslafusepipes_10", "amb_tesla_fusepipes.snt", "fuse_soundsource_10", 1.0f, true);
+	PlaySoundAtEntity("teslafusepipes_11", "amb_tesla_fusepipes.snt", "fuse_soundsource_11", 1.0f, true);
+	PlaySoundAtEntity("teslafusepipes_12", "amb_tesla_fusepipes.snt", "fuse_soundsource_12", 1.0f, true);
+
+	//DEBUG MESSAGE
+	AddDebugMessage("START FUSE SOUNDS", true);
+	}
+//BREAK
+	if (asChild == "teslapigroom_fusesounds_stop_1"|| asChild == "teslapigroom_fusesounds_stop_2")
+	{
+	//REMOVE STOP TRIGGERS
+	RemoveEntityCollideCallback("Player", "teslapigroom_fusesounds_stop_1");
+	RemoveEntityCollideCallback("Player", "teslapigroom_fusesounds_stop_2");
+	
+	//ADD START TRIGGERS
+	AddEntityCollideCallback("Player", "teslapigroom_fusesounds_start_1", "soundopt", true, 1);
+	AddEntityCollideCallback("Player", "teslapigroom_fusesounds_start_2", "soundopt", true, 1);
+	
+	//Stop Quieter Drone
+	StopSound("teslafusepipes_1", 1.0f);
+	StopSound("teslafusepipes_2", 1.0f);
+	StopSound("teslafusepipes_3", 1.0f);
+	StopSound("teslafusepipes_4", 1.0f);
+	StopSound("teslafusepipes_5", 1.0f);
+	StopSound("teslafusepipes_6", 1.0f);
+	StopSound("teslafusepipes_7", 1.0f);
+	StopSound("teslafusepipes_8", 1.0f);
+	StopSound("teslafusepipes_9", 1.0f);
+	StopSound("teslafusepipes_10", 1.0f);
+	StopSound("teslafusepipes_11", 1.0f);
+	StopSound("teslafusepipes_12", 1.0f);
+	
+	//DEBUG MESSAGE
+	AddDebugMessage("STOP FUSE SOUNDS", true);
+	}
+//BREAK
+//START CUPBOARD SOUNDS
+	if (asChild == "soundopt_startcupboards_start_1"|| asChild == "soundopt_startcupboards_start_2")
+	{
+	//REMOVE START TRIGGERS
+	RemoveEntityCollideCallback("Player", "soundopt_startcupboards_start_1");
+	RemoveEntityCollideCallback("Player", "soundopt_startcupboards_start_2");
+	
+	//ADD STOP TRIGGERS
+	AddEntityCollideCallback("Player", "soundopt_startcupboards_stop_1", "soundopt", true, 1);
+	AddEntityCollideCallback("Player", "soundopt_startcupboards_stop_2", "soundopt", true, 1);
+
+	//START FUSE SOUNDS
+	PlaySoundAtEntity("cupboardstartsound_1", "amb_tesla_object_pipes.snt", "cupboardstartsound_1", 1.0f, true);
+	PlaySoundAtEntity("cupboardstartsound_2", "amb_tesla_object_pipes.snt", "cupboardstartsound_2", 1.0f, true);
+	PlaySoundAtEntity("cupboardstartsound_3", "amb_tesla_object_pipes.snt", "cupboardstartsound_3", 1.0f, true);
+	PlaySoundAtEntity("cupboardstartsound_4", "amb_tesla_object_pipes.snt", "cupboardstartsound_4", 1.0f, true);
+	PlaySoundAtEntity("cupboardstartsound_5", "amb_tesla_object_pipes.snt", "cupboardstartsound_5", 1.0f, true);
+	PlaySoundAtEntity("cupboardstartsound_6", "amb_tesla_object_pipes.snt", "cupboardstartsound_6", 1.0f, true);
+	PlaySoundAtEntity("cupboardstartsound_7", "amb_tesla_object_pipes.snt", "cupboardstartsound_7", 1.0f, true);
+	PlaySoundAtEntity("cupboardstartsound_8", "amb_tesla_object_pipes.snt", "cupboardstartsound_8", 1.0f, true);
+	PlaySoundAtEntity("cupboardstartsound_9", "amb_tesla_object_pipes.snt", "cupboardstartsound_9", 1.0f, true);
+
+	//DEBUG MESSAGE
+	AddDebugMessage("START CUPBOARD SOUNDS", true);
+	}
+//BREAK
+	if (asChild == "soundopt_startcupboards_stop_1"|| asChild == "soundopt_startcupboards_stop_2")
+	{
+	//REMOVE STOP TRIGGERS
+	RemoveEntityCollideCallback("Player", "teslapigroom_fusesounds_stop_1");
+	RemoveEntityCollideCallback("Player", "teslapigroom_fusesounds_stop_2");
+	
+	//ADD START TRIGGERS
+	AddEntityCollideCallback("Player", "soundopt_startcupboards_start_1", "soundopt", true, 1);
+	AddEntityCollideCallback("Player", "soundopt_startcupboards_start_2", "soundopt", true, 1);
+	
+	//Stop Quieter Drone
+	StopSound("cupboardstartsound_1", 1.0f);
+	StopSound("cupboardstartsound_2", 1.0f);
+	StopSound("cupboardstartsound_3", 1.0f);
+	StopSound("cupboardstartsound_4", 1.0f);
+	StopSound("cupboardstartsound_5", 1.0f);
+	StopSound("cupboardstartsound_6", 1.0f);
+	StopSound("cupboardstartsound_7", 1.0f);
+	StopSound("cupboardstartsound_8", 1.0f);
+	StopSound("cupboardstartsound_9", 1.0f);
+	
+	//DEBUG MESSAGE
+	AddDebugMessage("STOP CUPBOARD SOUNDS", true);
+	}
+//BREAK
+}
+//END SOUND OPTIMISATION
+
+//RANDOMISED SOUND CUE PLAYER//
+void RandDrone2SoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"RandDrone2Source_1", "RandDrone2Source_2", "RandDrone2Source_3", "RandDrone2Source_4", "RandDrone2Source_5", "RandDrone2Source_6", "RandDrone2Source_7", 
+							"RandDrone2Source_8", };
+	asTimer = sCueSources[RandInt(0, 7)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_drone2_oneshot.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Dron2 Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(5.0f, 10.0f), "RandDrone2SoundCues");
+}
+
+void Sound_Arena(string &in asTimer)
+{
+	string[] sCueSources = {"RandSound_Arena_1", "RandSound_Arena_2", "RandSound_Arena_3", "RandSound_Arena_4", "RandSound_Arena_5", "RandSound_Arena_6", "RandSound_Arena_7", "RandSound_Arena_8", "RandSound_Arena_9", "RandSound_Arena_10", };
+	asTimer = sCueSources[RandInt(0, 9)];
+	PlaySoundAtEntity(asTimer, "afx_tesla01_arena.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Arena Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(5.0f, 15.0f), "Sound_Arena");
+}
+
+void RandDrone2_2SoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"RandDrone2_2Source_1", "RandDrone2_2Source_2", "RandDrone2_2Source_3", "RandDrone2_2Source_4", "RandDrone2_2Source_5", };
+	asTimer = sCueSources[RandInt(0, 4)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_drone2_oneshot.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Dron2 Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(5.0f, 10.0f), "RandDrone2_2SoundCues");
+}
+
+void RandSound_Scream_01(string &in asTimer)
+{
+	string[] sCueSources = {"RandSound_Scream_01_1", "RandSound_Scream_01_2", "RandSound_Scream_01_3", "RandSound_Scream_01_4", "RandSound_Scream_01_5", "RandSound_Scream_01_6", };
+	asTimer = sCueSources[RandInt(0, 5)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_granulized_scream.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Scream 01 Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(10.0f, 15.0f), "RandSound_Scream_01");
+}
+
+void RandSound_Scream_02(string &in asTimer)
+{
+	string[] sCueSources = {"RandSound_Scream_02_1", "RandSound_Scream_02_2", "RandSound_Scream_02_3", "RandSound_Scream_02_4", "RandSound_Scream_02_5", };
+	asTimer = sCueSources[RandInt(0, 4)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_granulized_scream.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Scream 02 Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(10.0f, 15.0f), "RandSound_Scream_02");
+}
+
+//NEW MARKERS//
+void Sound_Start(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_Start_1", "Sound_Start_2"};
+	asTimer = sCueSources[RandInt(0, 2)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_granulized_scream.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Start Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(10.0f, 15.0f), "Sound_Start");
+}
+
+void Sound_StartEnv(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_Start_1", "Sound_Start_2"};
+	asTimer = sCueSources[RandInt(0, 2)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_mansion_backarea_abstract.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Start Env Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(10.0f, 15.0f), "Sound_StartEnv");
+}
+
+void Sound_StartDoor(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_StartDoor_1", "Sound_StartDoor_2", "Sound_StartDoor_3", "Sound_StartDoor_4"};
+	asTimer = sCueSources[RandInt(0, 3)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_hifrequencymoan.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Start Door Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(7.0f, 15.0f), "Sound_StartDoor");
+}
+
+void Sound_StartDoorEnv(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_StartDoor_1", "Sound_StartDoor_2", "Sound_StartDoor_3", "Sound_StartDoor_4"};
+	asTimer = sCueSources[RandInt(0, 3)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_metal_grind_type2.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Start Door Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(10.0f, 15.0f), "Sound_StartDoorEnv");
+}
+
+void Sound_StartSmall(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_StartSmall_1", "Sound_StartSmall_2", "Sound_StartSmall_3", "Sound_StartSmall_4"};
+	asTimer = sCueSources[RandInt(0, 3)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_hifrequencymoan.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Start Small Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(7.0f, 15.0f), "Sound_StartDoor");
+}
+
+void Sound_StartSmallEnv(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_StartSmall_1", "Sound_StartSmall_2", "Sound_StartSmall_3", "Sound_StartSmall_4"};
+	asTimer = sCueSources[RandInt(0, 3)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_metal_grind_type2.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Start Small Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(10.0f, 15.0f), "Sound_StartDoorEnv");
+}
+
+void Sound_StartRing(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_StartRing_1", "Sound_StartRing_2", "Sound_StartRing_3", "Sound_StartRing_4", "Sound_StartRing_5", "Sound_StartRing_6", "Sound_StartRing_7", "Sound_StartRing_8", "Sound_StartRing_9", "Sound_StartRing_10", "Sound_StartRing_11", "Sound_StartRing_12"};
+	asTimer = sCueSources[RandInt(0, 11)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_granulized_scream.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Sound_StartRing Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(15.0f, 25.0f), "Sound_StartRing");
+}
+
+void Sound_StartRingEnv(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_StartRing_1", "Sound_StartRing_2", "Sound_StartRing_3", "Sound_StartRing_4", "Sound_StartRing_5", "Sound_StartRing_6", "Sound_StartRing_7", "Sound_StartRing_8", "Sound_StartRing_9", "Sound_StartRing_10", "Sound_StartRing_11", "Sound_StartRing_12"};
+	asTimer = sCueSources[RandInt(0, 11)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_drone2_oneshot.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Sound_StartRing ENV Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(15.0f, 25.0f), "Sound_StartRingEnv");
+}
+
+void Sound_EntranceToHall(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_EntranceToHall_1", "Sound_EntranceToHall_2", "Sound_EntranceToHall_3", "Sound_EntranceToHall_4"};
+	asTimer = sCueSources[RandInt(0, 3)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_granulized_scream.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Entrance To Hall Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(15.0f, 25.0f), "Sound_EntranceToHall");
+}
+
+void Sound_EntranceToHallEnv(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_EntranceToHall_1", "Sound_EntranceToHall_2", "Sound_EntranceToHall_3", "Sound_EntranceToHall_4"};
+	asTimer = sCueSources[RandInt(0, 3)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_drone2_oneshot.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Entrance To Hall Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(15.0f, 25.0f), "Sound_EntranceToHallEnv");
+}
+
+void Sound_LargeHall1(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_LargeHall1_1", "Sound_LargeHall1_2", "Sound_LargeHall1_3", "Sound_LargeHall1_4", "Sound_LargeHall1_5", "Sound_LargeHall1_6"};
+	asTimer = sCueSources[RandInt(0, 5)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_hifrequencymoan.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Large Hall Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(15.0f, 25.0f), "Sound_LargeHall1");
+}
+
+void Sound_LargeHall1Env(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_LargeHall1_1", "Sound_LargeHall1_2", "Sound_LargeHall1_3", "Sound_LargeHall1_4", "Sound_LargeHall1_5", "Sound_LargeHall1_6"};
+	asTimer = sCueSources[RandInt(0, 5)];
+	PlaySoundAtEntity(asTimer, "afx_event_tunnels_groan.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Large Hall Env Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(15.0f, 25.0f), "Sound_LargeHall1Env");
+}
+
+void Sound_LargeHallHideaway(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_LargeHallHideaway_1", "Sound_LargeHallHideaway_2", "Sound_LargeHallHideaway_3"};
+	asTimer = sCueSources[RandInt(0, 2)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_drone2_oneshot.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Large Hall Hideaway Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(15.0f, 25.0f), "Sound_LargeHallHideaway");
+}
+
+void Sound_LargeHallHideawayEnv(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_LargeHallHideaway_1", "Sound_LargeHallHideaway_2", "Sound_LargeHallHideaway_3"};
+	asTimer = sCueSources[RandInt(0, 2)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_eerie_monster_type2.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Large Hall Hideaway Env Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(15.0f, 25.0f), "Sound_LargeHallHideawayEnv");
+}
+
+void Sound_LargeHall2(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_LargeHall2_1", "Sound_LargeHall2_2", "Sound_LargeHall2_3", "Sound_LargeHall2_4", "Sound_LargeHall2_5", "Sound_LargeHall2_6", "Sound_LargeHall2_7"};
+	asTimer = sCueSources[RandInt(0, 6)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_eerie_monster_type2.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Large Hall 2 Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(15.0f, 25.0f), "Sound_LargeHall2");
+}
+
+void Sound_LargeHall2Env(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_LargeHall2_1", "Sound_LargeHall2_2", "Sound_LargeHall2_3", "Sound_LargeHall2_4", "Sound_LargeHall2_5", "Sound_LargeHall2_6", "Sound_LargeHall2_7"};
+	asTimer = sCueSources[RandInt(0, 6)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_metalcreak.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Large Hall 2 Env Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(7.0f, 15.0f), "Sound_LargeHall2Env");
+}
+
+void Sound_LargeHall2Hideaway(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_LargeHall2Hideaway_1", "Sound_LargeHall2Hideaway_2", "Sound_LargeHall2Hideaway_3"};
+	asTimer = sCueSources[RandInt(0, 2)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_granulized_scream.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Large Hall 2 Hideaway Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(15.0f, 25.0f), "Sound_LargeHall2Hideaway");
+}
+
+void Sound_LargeHall2HideawayEnv(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_LargeHall2Hideaway_1", "Sound_LargeHall2Hideaway_2", "Sound_LargeHall2Hideaway_3"};
+	asTimer = sCueSources[RandInt(0, 2)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_drone2_oneshot.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Sound Large Hall Hideaway 2 Env Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(15.0f, 25.0f), "Sound_LargeHall2HideawayEnv");
+}
+
+void RandSound_CorridorPrePig(string &in asTimer)
+{
+	string[] sCueSources = {"RandSound_CorridorPrePig_6", "RandSound_CorridorPrePig_5", "RandSound_CorridorPrePig_4", "RandSound_CorridorPrePig_3", "RandSound_CorridorPrePig_2", "RandSound_CorridorPrePig_1", "RandSound_CorridorPrePig_6", "RandSound_CorridorPrePig_7", "RandSound_CorridorPrePig_9", "RandSound_CorridorPrePig_10"};
+	asTimer = sCueSources[RandInt(0, 5)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_drone2_oneshot.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Pre Pig Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(5.0f, 10.0f), "RandSound_CorridorPrePig");
+}
+
+void RandSound_CorridorPrePigEnv(string &in asTimer)
+{
+	string[] sCueSources = {"RandSound_CorridorPrePig_6", "RandSound_CorridorPrePig_5", "RandSound_CorridorPrePig_4", "RandSound_CorridorPrePig_3", "RandSound_CorridorPrePig_2", "RandSound_CorridorPrePig_1", "RandSound_CorridorPrePig_6", "RandSound_CorridorPrePig_7", "RandSound_CorridorPrePig_9", "RandSound_CorridorPrePig_10"};
+	asTimer = sCueSources[RandInt(0, 5)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_granulized_scream.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Pre Pig Env Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(5.0f, 10.0f), "RandSound_CorridorPrePigEnv");
+}
+
+//END RANDOMISED SOUND CUE PLAYER//
+
+//ELECTRICTY DISCHARGE EVENT//
+void ElectricitySpinSequence (string &in asEntity, int alState)
+{
+if (alState == -1)
+{
+PlaySoundAtEntity("Discharge", "afx_tesla_massive_electricity_discharge.snt", "Player", 0, false);
+SetEntityInteractionDisabled("tesla_dressing_handle_2", true);
+SetLeverStuckState(asEntity, -1, true);
+AddTimer("ScreenShakeElectricityTimer", 4.58f, "TimerEndCalls");
+}
+}
+
+//TRIGGERED VO PLAYER//
+void VOPlayer (string &in asParent, string &in asChild, int alState)
+{
+	
+	if (asChild == "VO_2")
+	{
+	AddEffectVoice3("vo_tesla_mandus_machine_1.ogg", "", "Voice", "vo_tesla_mandus_machine_1_mandus_1", 0.0f, "vo_tesla_mandus_machine_1_machine_1", 3.5f, "vo_tesla_mandus_machine_1_mandus_2", 12.5f, false, "", 0.0f, 0.0f);
+	return;
+	}
+	
+	else if (asChild == "distant_pig_1")
+	{
+	PlaySoundAtEntity("t1", "afx_tesla_teslapigevent_01.snt", "Player", 1.0f, false);
+	return;
+	}
+	
+	else if (asChild == "distant_pig_2")
+	{
+	PlaySoundAtEntity("", "afx_tesla_teslapigevent_02.snt", "deadwretch", 1.0f, false);
+	return;
+	}
+	
+/*	else if (asChild == "not_so_distant_pig")
+	{
+	PlaySoundAtEntity("", "afx_tesla01_pigroar_closer.snt", "deadwretch", 1.0f, false);
+	return;
+	}*/
+}
+
+
+//END TRIGGERED VO PLAYER//
+
+//TIMER END CALLS/////////ALL TIMERS CALL THIS CONTAINER FUNCTION, IF BLOCKS DETERMINE OUTPUT//
+void TimerEndCalls (string &in asTimer)
+{
+	//Electricity//
+	if (asTimer == "ScreenShakeElectricityTimer")
+	{
+		StartScreenShake(0.25f, 0.5f, 0.0f, 1.0f);
+		return;
+	}
+}
+
+// HINT HANDLER//
+void HintHandler (string &in asParent, string &in asChild, int alState)
+{
+	if (asChild == "TunnelsHintTrigger")
+	{
+		AddHint("TeslaOne1", "");
+		return;
+	}
+}
+//END HINT HANDLER//
+
+// CHILD 1 HANDLER
+
+void ActivateChild1 (string &in asParent, string &in asChild, int alState)
+	{
+	SetEntityActive("child_silent_1", true);
+	SetEntityActive("child_2_spawn_trigger", false);
+	SetEntityActive("child_4_spawn_trigger", false);
+	AddTimer("OnTime", 0.3f, "DeactivateChild1"); //ADJUST TIME AS NEEDED//
+	StartScreenShake(0.05, 0.1,0,0);
+	PlaySoundAtEntity("flicka", "tesla_light_flicker.snt", "Player", 0, false);
+	PlayGuiSound("spooky_wind_whirl.snt", 0.2);
+	}
+
+void DeactivateChild1 (string &in asTimer)
+	{
+	SetEntityActive("child_silent_1", false);
+	}
+
+// END CHILD 1 HANDLER
+
+// CHILD 2 HANDLER
+
+void ActivateChild2 (string &in asParent, string &in asChild, int alState)
+	{
+	SetEntityActive("child_silent_2", true);
+	SetEntityActive("child_1_spawn_trigger", false);
+	SetEntityActive("child_3_spawn_trigger", false);
+	AddTimer("OnTime", 0.3f, "DeactivateChild2"); //ADJUST TIME AS NEEDED//
+ 	
+	StartScreenShake(0.05, 0.1,0,0);
+	PlaySoundAtEntity("flicka", "tesla_light_flicker.snt", "Player", 0, false);
+	PlayGuiSound("spooky_wind_whirl.snt", 0.2);
+	}
+	
+void DeactivateChild2 (string &in asTimer)
+	{
+	SetEntityActive("child_silent_2", false);
+	}
+
+// END CHILD 2 HANDLER
+
+// CHILD 3 HANDLER
+
+void ActivateChild3 (string &in asParent, string &in asChild, int alState)
+	{
+	SetEntityActive("child_silent_3", true);
+	SetEntityActive("child_2_spawn_trigger", false);
+	SetEntityActive("child_4_spawn_trigger", false);
+	AddTimer("OnTime", 0.3f, "DeactivateChild3"); //ADJUST TIME AS NEEDED//
+	
+	StartScreenShake(0.05, 0.1,0,0);
+	PlaySoundAtEntity("flicka", "tesla_light_flicker.snt", "Player", 0, false);
+	PlayGuiSound("spooky_wind_whirl.snt", 0.2);
+	}
+
+void DeactivateChild3 (string &in asTimer)
+	{
+	SetEntityActive("child_silent_3", false);
+	}
+
+// END CHILD 3 HANDLER
+
+// CHILD 4 HANDLER
+
+void ActivateChild4 (string &in asParent, string &in asChild, int alState)
+	{
+	SetEntityActive("child_silent_4*", true);
+	SetEntityActive("child_1_spawn_trigger", false);
+	SetEntityActive("child_3_spawn_trigger", false);
+	AddTimer("OnTime", 0.3f, "DeactivateChild4"); //ADJUST TIME AS NEEDED//
+	StartScreenShake(0.05, 0.1,0,0);
+	PlaySoundAtEntity("flicka", "tesla_light_flicker.snt", "Player", 0, false);
+	PlayGuiSound("spooky_wind_whirl.snt", 0.2);
+	}
+
+void DeactivateChild4 (string &in asTimer)
+	{
+	SetEntityActive("child_silent_4*", false);
+	}
+
+// END CHILD 4 HANDLER
+
+// Flash Deactivators follow
+void DeactivateFlash_01 (string &in asTimer)
+		{
+		SetEntityActive("tfuseroomON_27", false);
+		SetEntityActive("tfuseroomOFF_27", true);
+		}
+void DeactivateFlash_02 (string &in asTimer)
+		{
+		SetEntityActive("tfuseroomON_8", false);
+		SetEntityActive("tfuseroomOFF_8", true);
+		}		
+void DeactivateFlash_03 (string &in asTimer)
+		{
+		SetEntityActive("tfuseroomON_23", false);
+		SetEntityActive("tfuseroomOFF_23", true);
+		}
+void DeactivateFlash_04 (string &in asTimer)
+		{
+		SetEntityActive("tfuseroomON_15", false);
+		SetEntityActive("tfuseroomOFF_15", true);
+		}
+void DeactivateFlash_05 (string &in asTimer)
+		{
+		SetEntityActive("tfuseroomON_29", false);
+		SetEntityActive("tfuseroomOFF_29", true);
+		}
+void DeactivateFlash_06 (string &in asTimer)
+		{
+		SetEntityActive("tfuseroomON_2", false);
+		SetEntityActive("tfuseroomOFF_2", true);
+		}
+void DeactivateFlash_07 (string &in asTimer)
+		{
+		SetEntityActive("tfuseroomON_1", false);
+		SetEntityActive("tfuseroomOFF_1", true);
+		}
+void DeactivateFlash_08 (string &in asTimer)
+		{
+		SetEntityActive("tfuseroomON_13", false);
+		SetEntityActive("tfuseroomOFF_13", true);
+		}
+void Deactivatetesla_01 (string &in asTimer)
+		{
+		SetEntityActive("tesla_01", false);
+		SetEntityActive("tfuseroomON_27", false);
+		SetEntityActive("tfuseroomOFF_27", true);
+		}
+		
+		//MANDUS REACTION SOUND PLAYER//
+void MandusReactionPlayer (string asReactType, float afWaitTime)
+{
+	SetLocalVarString("CurrentReactType", asReactType);
+	AddTimer("MandusReactionInternalTimer", afWaitTime, "MandusReactionPlayerTimerEnd");
+}
+
+void MandusReactionPlayerTimerEnd (string &in asTimer)
+{
+	if (GetLocalVarString("CurrentReactType") == "Scared")
+	{
+		AddDebugMessage("SCARED REACTION", false);
+		PlaySoundAtEntity("", "react_scare.snt", "Player", 0.0f, false);
+		return;
+	}
+	else if (GetLocalVarString("CurrentReactType") == "Breath")
+	{
+		AddDebugMessage("BREATH REACTION", false);
+		PlaySoundAtEntity("", "react_breath.snt", "Player", 0.0f, false);
+		return;
+	}
+	else if (GetLocalVarString("CurrentReactType") == "Quick")
+	{
+		AddDebugMessage("QUICK SCARE REACTION", false);
+		PlaySoundAtEntity("", "react_quickscare.snt", "Player", 0.0f, false);
+		return;
+	}
+	else if (GetLocalVarString("CurrentReactType") == "Cough")
+	{
+		AddDebugMessage("COUGH REACTION", false);
+		PlaySoundAtEntity("", "react_cough.snt", "Player", 0.0f, false);
+		return;
+	}
+}
+
+//END MANDUS REACTION SOUND PLAYER//
+
+//ZITHER PLAYER//
+void ZitherPlayer (string &in asParent, string &in asChild, int alState) //Callback function for all ambience areas in map
+{
+		if (asChild == "zither_loop_1")
+		{
+			if (alState == 1)
+			{
+				PlaySoundAtEntity("ZitherLoop1", "afx_zither_4.snt", "ZitherLoopSource1", 1.0f, true);
+				return;
+			}
+			else if (alState == -1) 
+			{
+				StopSound("zither_loop_1", 1.0f);
+				return;
+			}
+		}
+		
+		if (asChild == "zither_loop_2")
+		{
+			if (alState == 1)
+			{
+				PlaySoundAtEntity("ZitherLoop2", "afx_zither_5.snt", "ZitherLoopSource2", 1.0f, true);
+				return;
+			}
+			else if (alState == -1) 
+			{
+				StopSound("zither_loop_2", 1.0f);
+				return;
+			}
+		}
+		if (asChild == "zither_loop_3")
+		{
+			if (alState == 1)
+			{
+				PlaySoundAtEntity("ZitherLoop3", "afx_zither_11.snt", "ZitherLoopSource3", 1.0f, true);
+				return;
+			}
+			else if (alState == -1) 
+			{
+				StopSound("zither_loop_3", 1.0f);
+				return;
+			}
+		}
+		if (asChild == "zither_loop_4")
+		{
+			if (alState == 1)
+			{
+				PlaySoundAtEntity("ZitherLoop4", "afx_zither_8.snt", "ZitherLoopSource4", 1.0f, true);
+				return;
+			}
+			else if (alState == -1) 
+			{
+				StopSound("zither_loop_4", 1.0f);
+				return;
+			}
+		}
+		
+}
+
+//END ZITHER PLAYER
+
+//MUSIC PLAYER//
+void MusicPlayer (string &in asParent, string &in asChild, int alState)
+{
+	if (asChild == "music_1")
+	{
+		PlayMusic("afx_tesla_rumble_with_child.ogg", false, 0.65f, 0.0f, 3, false);
+		
+		return;
+	}
+	
+	else if (asChild == "music_2")
+	{
+		AddTimer("music_2_timer", 5.0f, "music_2_timer");
+		StopMusic(5.0f, 3);
+		return;
+	}
+		else if (asChild == "music_3")
+	{
+		AddTimer("music_3_timer", 0.0f, "music_2_timer");
+		StopMusic(5.0f, 3);
+		return;
+	}
+	else if (asChild == "zither_1")
+	{
+		PlaySoundAtEntity("zither1", "afx_zither_6.snt", "Player", 1.0f, true);
+		return;
+	}
+	else if (asChild == "zither_2")
+	{
+		PlaySoundAtEntity("zither2", "afx_zither_2.snt", "ZitherSource2", 1.0f, true);
+		return;
+	}
+		else if (asChild == "zither_3")
+	{
+		PlaySoundAtEntity("zither3", "afx_zither_3.snt", "ZitherSource3", 1.0f, true);
+		return;
+	}
+		else if (asChild == "zither_4")
+	{
+		PlaySoundAtEntity("zither4", "afx_zither_12.snt", "ZitherSource4", 1.0f, true);
+		PlaySoundAtEntity("zither4", "afx_zither_12.snt", "ZitherSource4", 1.0f, true);
+		return;
+	}
+}
+
+void music_2_timer (string &in asTimer)
+	{
+		PlayMusic("afx_tesla_long_low_rumble.ogg", false, 0.65f, 0.0f, 3, false);
+		AddDebugMessage("Music Triggered", false);
+	}
+	
+void music_3_timer (string &in asTimer)
+	{
+		PlayMusic("afx_tesla_high_vibration.ogg", false, 0.5f, 0.0f, 3, false);
+		return;
+	}
+//END MUSIC PLAYER//
+
+// RUNNING CHILDREN HANDLER
+void RunningChildHandler (string &in asParent, string &in asChild, int alState)
+{
+	if (asChild == "running_children_trigger")
+	{
+		PlaySoundAtEntity("Child_1laugh", "afx_tunnels_child_giggle_run_corridor_2D", "Child_1", 0, false);
+		SetEntityActive("Child_1", true);
+		AddEnemyPatrolNode("Child_1", "runchildrenrun", 0.0f, "", false);
+		SetEntityActive("Child_2", true);
+		AddEnemyPatrolNode("Child_2", "runchildrenrun", 0.0f, "", false);
+		SetPlayerRunSpeedMul(0);
+		return;
+	}
+	
+	else if (asChild == "running_children_drop")
+	{
+		//SetEntityActive("note_3", true);
+		SetEntityActive("bear", true);
+		return;
+	}
+	
+	else if (asChild == "running_children_kill_trigger")
+	{
+		SetPlayerRunSpeedMul(1);
+		SetEntityActive("Child_1", false);
+		SetEntityActive("Child_2", false);
+		return;
+	}
+	
+}
+
+
+//----------------------------
+//GENERIC TIMERS//
+//----------------------------
+
+void TimerSetLightVisible(string &in asTimer)
+{
+	SetLightVisible(asTimer, true);
+}
+
+void TimerSetLightInvisible(string &in asTimer)
+{
+	SetLightVisible(asTimer, false);
+}
+
+void TimerSetLampLit(string &in asTimer)
+{
+	SetLampLit(asTimer, true, false);
+}
+
+void TimerSetLampUnlit(string &in asTimer)
+{
+	SetLampLit(asTimer, false, false);
+}
+
+//----------------------------
+//END GENERIC TIMERS//
+//----------------------------
+
+
+//----------------------------
+//ENCOUNTER HELPERS//
+//----------------------------
+
+//-------------------------------------------
+
+void LanternFlicker(float afTime)
+{
+	SetLanternFlickerActive(true);
+	
+	AddTimer("LanternFlickerOff", afTime, "TimerLanternFlickerOff");
+}
+
+void TimerLanternFlickerOff(string &in asTimer)
+{
+	SetLanternFlickerActive(false);
+}
+
+//-------------------------------------------
+
+void StartLampFlicker(string &in asLamp)
+{
+	AddTimer(asLamp, RandFloat(0.0f, 0.3f), "TimerLampFlickerOff");
+}
+
+void StopLampFlicker(string &in asLamp)
+{
+	RemoveTimer(asLamp);
+	SetLampLit(asLamp, true, false);
+}
+
+void StartLampFlickerBurst(string &in asLamp, float afTime)
+{
+	StartLampFlicker(asLamp);
+	AddTimer(asLamp, afTime, "TimerLampFlickerStop");
+}
+
+void TimerLampFlickerOff(string &in asLamp)
+{
+	SetLampLit(asLamp, false, false);
+	AddTimer(asLamp, RandFloat(0.1f, 0.2f), "TimerLampFlickerOn");
+}
+
+void TimerLampFlickerOn(string &in asLamp)
+{
+	SetLampLit(asLamp, true, false);
+	AddTimer(asLamp, RandFloat(0.05f, 0.15f), "TimerLampFlickerOff");
+	
+}
+
+void TimerLampFlickerStop(string &in asLamp)
+{
+	StopLampFlicker(asLamp);
+}
+
+//-------------------------------------------
+
+//----------------------------
+//END ENCOUNTER HELPERS//
+//----------------------------

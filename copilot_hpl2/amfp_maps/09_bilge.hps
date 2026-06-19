@@ -1,0 +1,3255 @@
+//***Filename: BILGE.HPS
+//***Author: Peter Howell
+//***Lines: 1887
+//***Updated: 04/02/2013
+
+										////////////////////////////////
+										//MAP INITIALISATION FUNCTIONS//
+										////////////////////////////////
+void TempTest (string &in asTimer)
+{
+	SetPropStaticPhysics("WaterPlaneHigh", false);
+	AddTimer("RestoreWaterPhysics", 5.0f, "RestorePhysics");
+}
+void OnStart()
+ 
+{
+	StopMusic(8, 0);
+	
+	//Map Preamble
+	{
+		SetMapDisplayNameEntry("Bilge");
+		//SET CHECKPOINT #1//
+		CheckPoint("CP01_Start", "MainStart", "", "", "", false);
+		//CLEAR OLD HINTS//
+		//RemoveAllHints();
+	}
+	
+	//Debugging
+		if(ScriptDebugOn()) 
+		{
+			GiveItemFromFile("lantern", "lantern.ent");
+			//SetEntityActive("WaterPlaneHigh", false);
+		}
+		
+	// Setup Local Variables
+		{
+			//SINGLE-MAP VARIABLES//
+			SetLocalVarInt("PumpDynamoStarted", 0);
+			SetLocalVarInt("CogsPlaced", 0);
+			SetLocalVarString("SmallCogToDespawn", "Void");
+			SetLocalVarString("LargeCogToDespawn", "Void");
+			SetLocalVarInt("DynamoStarted", 0);
+			SetLocalVarInt("SpraylockReady", 0);
+			SetLocalVarInt("LadderHits", 0);
+			SetLocalVarInt("WretchRemovedPermanently", 0);
+			SetLocalVarInt("LargeCogFound", 0);
+			SetLocalVarInt("DynamoSwitches", 0);
+		}
+		
+	//AutoRun Event Timers
+		{	
+			
+		}
+		
+	//Setup Initial Entity Callbacks
+		{
+			//COLLISION CALLBACKS//
+			AddEntityCollideCallback("Player", "EntryStingerTrigger", "EntryStingerTrigger", true, 1);
+			AddEntityCollideCallback("Player", "Child1RunTrigger", "ChildEventHandler", true, 1);
+			AddEntityCollideCallback("Child1", "Child1KillTrigger", "ChildEventHandler", true, 1);
+			AddEntityCollideCallback("Player", "child2spawntrigger", "ChildEventHandler", true, 1);
+			AddEntityCollideCallback("child_2", "child2killtrigger", "ChildEventHandler", true, 1);
+			AddEntityCollideCallback("Player", "child3spawntrigger", "ChildEventHandler", true, 1);
+			AddEntityCollideCallback("Player", "child4spawntrigger", "ChildEventHandler", true, 1);
+			AddEntityCollideCallback("Player", "child3killtrigger", "ChildEventHandler", true, 1);
+			AddEntityCollideCallback("child_4", "child4killtrigger", "ChildEventHandler", true, 1);
+			AddEntityCollideCallback("Player", "OfficeHidingArea", "HidingSpotHandler", false, 0);
+			AddEntityCollideCallback("Player", "HidingArea_2", "HidingSpotHandler", false, 0);
+			AddEntityCollideCallback("Player", "WaterNoCrouchArea", "NoCrouchAreaHandler", false, 0);
+			AddEntityCollideCallback("Player", "DistantChildOffTrigger", "DistantChildHandler", false, 1);
+			AddEntityCollideCallback("Player", "DistantChildOnTrigger", "DistantChildHandler", false, 1);
+			AddEntityCollideCallback("Player", "OfficeLightTrigger", "OfficeLightHandler", true, 1);
+			AddEntityCollideCallback("Player", "Wretch2Trigger", "Wretch2Handler", true, 1);
+			AddEntityCollideCallback("stone_small01_*", "LadderCollisionArea", "HittingLadder", false, 1);
+			AddEntityCollideCallback("Player", "AreaSteamBlock_2", "CollideSteamBlock", false, 0);
+			
+			AddEntityCollideCallback("Player", "AreaLurkerStart", "EnterLurkerStart", false, 0);
+			AddEntityCollideCallback("Player", "AreaLurkerStop", "LeaveLurker", false, 1);
+			AddEntityCollideCallback("Player", "AreaFakeLurk_1", "EnterFakeLurk1", true, 1);
+			AddEntityCollideCallback("Player", "AreaFakeLurk_2", "EnterFakeLurk2", true, 1);
+			AddEntityCollideCallback("Player", "AreaFakeLurk_3", "EnterFakeLurk3", true, 1);
+			AddEntityCollideCallback("Player", "AreaFakeLurk_4", "EnterFakeLurk4", true, 1);
+			
+			AddEntityCollideCallback("Player", "dynamo_lurker_trigger", "EntDynamoLurker", true, 1);
+			
+			AddEntityCollideCallback("Player", "AreaCheckPlayerInPit", "CollideCheckPlayerInPit", true, 1);
+			AddEntityCollideCallback("Player", "TrapFallArea", "BeginTrapFall", false, 1);
+			AddEntityCollideCallback("Player", "TrapStopFallArea", "StopTrapFall", false, 1);
+			AddEntityCollideCallback("Player", "TrapSlideArea", "CollisionTrapSlide", false, 0);
+			
+			//STATE CHANGE CALLBACKS//
+			SetEntityConnectionStateChangeCallback("BilgeMachinePowerWheel", "BilgeMachine1PowerUp");
+			SetEntityConnectionStateChangeCallback("BilgeMachine1Valve", "BilgeMachine1ActivationSequence");
+			SetEntityConnectionStateChangeCallback("BilgeMachine2Valve", "BilgeMachine2ActivationSequence");
+			SetEntityConnectionStateChangeCallback("OfficePowerSwitch", "SpraylockPowerUpSequence");
+			SetEntityConnectionStateChangeCallback("DynamoWheel", "DynamoHandler");
+
+			
+			//INTERACTION CALLBACKS//
+			SetEntityPlayerInteractCallback("LadderChildArea", "LadderChildEvent", true);
+			SetEntityPlayerInteractCallback("LargeCog_*", "LargeCogFound", true);
+			
+			
+
+			//Spraylock Callbacks
+			SetEntityConnectionStateChangeCallback("spraylock_valve_outside_1", "SpraylockDoorHandler");
+			SetEntityConnectionStateChangeCallback("spraylock_valve_inside_1", "SpraylockDoorHandler");
+			SetEntityConnectionStateChangeCallback("spraylock_valve_outside_2", "SpraylockDoorHandler");
+			SetEntityConnectionStateChangeCallback("spraylock_valve_inside_2", "SpraylockDoorHandler");
+			SetEntityConnectionStateChangeCallback("spraylock_power_switch", "SpraylockSequence");
+			SetEntityConnectionStateChangeCallback("spraylock_spray_switch", "SpraylockSequence");
+			AddEntityCollideCallback("Player", "spraylock_power_interaction_area", "CheckPowerSwitchProximity", false, 0);		
+		
+	
+	//Dynamo Area Set-Up
+		
+			SetMoveObjectState("gate3", 0.0f);
+			SetEntityConnectionStateChangeCallback("FuseBoxLever", "FuseBoxLeverHandler");
+			SetEntityConnectionStateChangeCallback("FuseBoxLever_1", "FuseBoxLever_1Handler");
+			SetEntityConnectionStateChangeCallback("FuseBoxLever_2", "FuseBoxLever_2Handler");
+			SetEntityConnectionStateChangeCallback("DynamoSwitch1", "DynamoSwitchHandler");
+			SetEntityConnectionStateChangeCallback("DynamoSwitch2", "DynamoSwitchHandler");
+			SetEntityConnectionStateChangeCallback("DynamoSwitch3", "DynamoSwitchHandler");
+			SetEntityConnectionStateChangeCallback("DynamoSwitch4", "DynamoSwitchHandler");
+			SetEntityConnectionStateChangeCallback("DynamoSwitch5", "DynamoSwitchHandler");
+			SetEntityActive("waterlurker_2", false);
+			SetEntityActive("waterlurker_3", false);
+			PlayPropAnimation("Dynamo_11", "static", 0.0f, true, "");	
+			PlayPropAnimation("Dynamo_12", "static", 0.0f, true, "");		
+			PlayPropAnimation("Dynamo_13", "static", 0.0f, true, "");		
+			PlayPropAnimation("Dynamo_14", "static", 0.0f, true, "");		
+			PlayPropAnimation("Dynamo_15", "static", 0.0f, true, "");		
+			PlayPropAnimation("Dynamo_16", "static", 0.0f, true, "");
+			AddEntityCollideCallback("Player", "Activate_Dynamo_On_Trigger", "ActivateDynamoOnHandler", false, 0);	
+			SetMoveObjectState("dynamo_gate_5", 1.0f);
+			SetMoveObjectState("dynamo_gate_4", 1.0f);
+			SetMoveObjectState("dynamo_gate_3", 1.0f);
+			SetMoveObjectState("dynamo_gate_2", 1.0f);
+			SetMoveObjectState("dynamo_gate_1", 1.0f);
+			SetMoveObjectState("DynamoGate", 0.65f);
+			
+		}
+		
+		//Entity Collide CAllbacks
+		{
+		AddEntityCollideCallback("Player", "door_trigger", "DoorSlamsShut_1", true, 0);
+		AddEntityCollideCallback("Player", "door_trigger_2", "DoorSlamsShut_2", true, 0);
+		AddEntityCollideCallback("Player", "dynamo_wretch_spawn", "DynamoWretchScare", true, 0);
+		AddEntityCollideCallback("Player", "dynamo_wretch_spawn_1", "DynamoWretchScare", true, 0);
+		AddEntityCollideCallback("dynamo_child_1", "dynamo_wretch_killer", "DynamoWretchScare", true, 1);
+		AddEntityCollideCallback("dynamo_child_2", "dynamo_wretch_killer", "DynamoWretchScare", true, 1);
+		AddEntityCollideCallback("dynamo_child_1", "*", "TESTER", false, 0);
+		
+		AddEntityCollideCallback("Player", "AreaCloseDynamoSection", "ColliderCloseDynamoSection", true, 1);
+		
+		AddEntityCollideCallback("Player", "AreaBreakBridge", "CollideBreakBridge", true, 1);
+		
+		AddEntityCollideCallback("Player", "AreaDisableEnemy", "CollideDisablePig", true, 1);
+		}
+		
+	//End Dynamo Area Set Up
+	
+	//Setup Initial Object States
+		{				
+			//WATER PLANE STATES//
+			SetPropStaticPhysics("WaterPlane1", true);
+			
+			//INTERACTION//
+			SetEntityInteractionDisabled("level_cistern_1", true);
+			SetWheelInteractionDisablesStuck("spraylock_valve_outside_1", false);
+			
+			SetEntityInteractionDisabled("bilge_catwalk_break_1", true);
+			SetEntityInteractionDisabled("bilge_catwalk_break_2", true);
+			SetSwingDoorLocked("bilge_catwalk_break_1", true, false);
+			SetSwingDoorLocked("bilge_catwalk_break_2", true, false);
+			
+			SetEntityInteractionDisabled("sliding_ladder_1", true);
+			
+			SetEntityInteractionDisabled("bilge_catwalk_railing_break_1", true);
+			SetEntityInteractionDisabled("bilge_catwalk_railing_break_2", true);
+			SetSwingDoorLocked("bilge_catwalk_railing_break_1", true, false);
+			SetSwingDoorLocked("bilge_catwalk_railing_break_2", true, false);
+			
+		}
+		
+	//Setup Ambience Callbacks
+		{
+			//AddEntityCollideCallback("Player", "AMBAreaTemp", "MapAmbienceAreas", false, 0);
+			//AddEntityCollideCallback("Player", "AMBAreaEngine", "MapAmbienceAreas", false, 0);
+			
+			AddEntityCollideCallback("Player", "AMB_Drip_Area", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "AMB_AreaStartArea_1", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "AMB_AreaStartArea_Tight", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "AMB_AreaHall1", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "AMB_Hall2", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "AMB_BridgeSpace", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "AMB_TightSpaceDynamo", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "AMB_PreOfficeWetSpace", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "AMB_DeathPit", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "AMB_TightSpace", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "AMB_TightSpace_1", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "AMB_MachineRoom", "MapAmbienceAreas", false, 0);
+			AddEntityCollideCallback("Player", "AMB_EndRoom", "MapAmbienceAreas", false, 0);
+		}
+	//Setup Single Shot Scare Trigger Callback
+
+		{
+			AddEntityCollideCallback("Player", "PostFlushStingerTrigger", "FlushTriggerHandler", false, 0);
+			
+		}
+		
+	//Setup Music Callbacks
+		{
+			AddEntityCollideCallback("Player", "Bilge_Ambience_01_Trigger", "MusicPlayer", true, 0);
+			AddEntityCollideCallback("Player", "flashmusic", "MusicPlayer", true, 0);
+			AddEntityCollideCallback("Player", "Bilge_Ambience_02_Trigger", "MusicPlayer", true, 0);
+		}
+		
+	//Setup Initial VO Callbacks
+		{
+			AddEntityCollideCallback("Player", "VOFlashback_1", "VOPlayer", true, 0);
+			AddEntityCollideCallback("Player", "childVO_1", "VOPlayer", true, 0);
+			AddEntityCollideCallback("Player", "childVO_2", "VOPlayer", true, 0);
+			AddEntityCollideCallback("Player", "childVO_3", "VOPlayer", true, 0);
+		}
+	//Setup Phonoautograph Callbacks
+		{
+			SetEntityConnectionStateChangeCallback("Phonautograph1", "PhonautographHandler"); 			//Arguments Required: ("Name of the Phonoautograph entity", "Name of the function to call on interaction" < this will always be the same)
+		}
+		
+
+					
+
+} 
+
+void OnEnter()
+{			
+	//DEFAULT SWITCH LANTERN TO ON//
+	{
+		SetLanternFlickerActive(false);
+	}
+	
+	//PRELOAD SOUNDS//
+	{	
+		PreloadSound("00_intro_falling");
+		PreloadSound("afx_bilge_catwalk_break");
+		PreloadSound("afx_bilge_gate_steel_close");
+		PreloadSound("afx_bilge_gate_steel_close_2D");
+		PreloadSound("afx_bilge_gate_steel_open");
+		PreloadSound("afx_bilge_gate_steel_open_2D");
+		PreloadSound("afx_bilge_stinger");
+		PreloadSound("afx_cellar_post_collapse_steam_1_quieter");
+		PreloadSound("afx_church_factory_bigscream");
+		PreloadSound("afx_enginerooms_controlroomsteamblock");
+		PreloadSound("afx_event_factory_gate_close");
+		PreloadSound("afx_event_tunnels_groan");
+		PreloadSound("afx_events_tunnels_dust_debris");
+		PreloadSound("afx_flashback_whisper");
+		PreloadSound("afx_gameplay_hightone_10sec");
+		PreloadSound("afx_sewer_drain_loop");
+		PreloadSound("afx_sewer_drain_on");
+		PreloadSound("afx_sewer_pump_engine_ignition");
+		PreloadSound("afx_spooky_bilge");
+		PreloadSound("afx_spooky_bilge_01");
+		PreloadSound("afx_spooky_child_laugh_semi_distant");
+		PreloadSound("afx_spooky_eerie_monster");
+		PreloadSound("afx_spooky_eerie_monster_type2");
+		PreloadSound("afx_spooky_hifrequencymoan");
+		PreloadSound("afx_spooky_hifrequencymoan_2D");
+		PreloadSound("afx_spooky_hightone_whoosh");
+		PreloadSound("afx_spooky_mansion_whisper");
+		PreloadSound("afx_spooky_monster_noises_tight_2D");
+		PreloadSound("afx_spooky_scream_type1");
+		PreloadSound("afx_spooky_water_splash");
+		PreloadSound("afx_temple_lightsout");
+		PreloadSound("afx_tunnels_centrifuge_switch");
+		PreloadSound("afx_zither_1_louder");
+		PreloadSound("amb_bilge_drip_loop_quieter");
+		PreloadSound("amb_bilge_env_waterfall01_2D");
+		PreloadSound("amb_bilge_env_waterfall01_3D");
+		PreloadSound("amb_bilge_env_waterfall02_02_3D");
+		PreloadSound("amb_bilge_env_waterfall02_2D");
+		PreloadSound("amb_bilge_env_waterfall02_3D");
+		PreloadSound("amb_bilge_steam01_2D");
+		PreloadSound("amb_bilge_steam01_3D");
+		PreloadSound("amb_bilge_steam02_2D");
+		PreloadSound("amb_bilge_steam02_3D");
+		PreloadSound("amb_bilge_water_splash_small_2D");
+		PreloadSound("amb_bilge_water_splash_small_3D");
+		PreloadSound("amb_bilge_watertunnel_middle_2D");
+		PreloadSound("amb_bilge_watertunnel_middle_3D");
+		PreloadSound("amb_bilge_watertunnel_sewer_2D");
+		PreloadSound("amb_bilge_watertunnel_sewer_3D");
+		PreloadSound("amb_bilge_waterwood_01_2D");
+		PreloadSound("amb_bilge_waterwood_01_3D");
+		PreloadSound("amb_church_pens_entrance");
+		PreloadSound("amb_church_pens_flies_loop");
+		PreloadSound("amb_mansion_ceiling_fan_wider");
+		PreloadSound("amb_reactor_descent_watersplash1_3D");
+		PreloadSound("amb_spraylock_drips");
+		PreloadSound("bilge_cog_attach");
+		PreloadSound("bilge_engine_loop");
+		PreloadSound("bilge_engine_on_2D");
+		PreloadSound("bilge_engine_on_3D");
+		PreloadSound("cellar_light_flicker_louder");
+		PreloadSound("dynamo_engine_idle_loop_3D");
+		PreloadSound("dynamo_idle_2D");
+		PreloadSound("dynamo_idle_2D_2");
+		PreloadSound("dynamo_idle_loop_3D");
+		PreloadSound("dynamo_idle_loop_3D_2");
+		PreloadSound("dynamo_startup_3D");
+		PreloadSound("dynamo_startup_3D_2");
+		PreloadSound("factory_piston_wheel2_pers_3D");
+		PreloadSound("impact_metal_med");
+		PreloadSound("joint_dumb_waiter_door_move_endoflevel");
+		PreloadSound("react_breath");
+		PreloadSound("react_cough");
+		PreloadSound("react_quickscare");
+		PreloadSound("react_scare");
+		PreloadSound("spooky_childcry");
+		PreloadSound("spraylock_breaker_switch_confirm");
+		PreloadSound("spraylock_door_hinge_close_INSIDE");
+		PreloadSound("spraylock_door_hinge_open");
+		PreloadSound("spraylock_door_hinge_open_INSIDE");
+		PreloadSound("spraylock_door_mech_unlock_INSIDE");
+		PreloadSound("spraylock_door_mech_unlock_INSIDE");
+		PreloadSound("spraylock_door_mech_unlock_OUTSIDE");
+		PreloadSound("spraylock_engine_end");
+		PreloadSound("spraylock_engine_loop");
+		PreloadSound("spraylock_engine_start");
+		PreloadSound("spraylock_gauge_hiss_1");
+		PreloadSound("spraylock_gauge_hiss_2");
+		PreloadSound("spraylock_gauge_hiss_3");
+		PreloadSound("spraylock_mainspray");
+		PreloadSound("spraylock_railing_down");
+		PreloadSound("spraylock_railing_up");
+		PreloadSound("spraylock_switch_confirm");
+		PreloadSound("spraylock_turbine_end");
+		PreloadSound("spraylock_turbine_end_rattle");
+		PreloadSound("spraylock_turbine_loop");
+		PreloadSound("spraylock_turbine_start");
+		PreloadSound("spraylock_turbine_start_RATTLE");
+		PreloadSound("spraylock_valve_lock_inside");
+		PreloadSound("watermonster_movement");
+		PreloadSound("watermonster_movement_high");
+		PreloadSound("wretch_amb_alert_01");
+		PreloadSound("afx_event_factory_metal_strain05");
+		PreloadSound("water_impact_high_2");
+	}
+	
+	//INITIALISE RANDOM SOUND CUE PLAYER//
+	{
+		AddTimer("InitRandomScreamSoundCuePlayer", 1.0f, "BilgeRandSoundCues");
+		AddTimer("InitRandomBodypitSoundCuePlayer", 1.0f, "BilgeRandBodypitSoundCues");
+		AddTimer("InitWaterAreaSoundCues", 10.0f, "WaterAreaSoundCues");
+		AddTimer("InitStartAreaSoundCues", 4.0f, "StartAreaSoundCues");
+		AddTimer("InitEnvCreakAreaSoundCues", 5.0f, "EnvCreakAreaSoundCues");
+
+		
+		//RANDOM SOUNDS AREAS
+		AddEntityCollideCallback("Player", "StartOfficeSounds_1", "SoundOptimiser", true, 1);
+		AddEntityCollideCallback("Player", "RandSoundArea2_Start_1", "SoundOptimiser", true, 1);
+		AddEntityCollideCallback("Player", "RandSoundArea2_Start_2", "SoundOptimiser", true, 1);
+		
+		//SOUND OPTIMISATION
+		AddEntityCollideCallback("Player", "soundopt_tunnel_start_1", "soundopt", true, 1);
+	}
+	
+	//INITIALISE LAST PLAYING AMBIENCE//
+	{
+		string sAmbienceToRestart = GetLocalVarString("CurrentAmbientTrack");
+		MapAmbienceAreas("Player", sAmbienceToRestart, 1);	
+	}
+	
+	//PRELOAD PARTICLES//
+	{
+		PreloadParticleSystem("ps_dust_impact_gate.ps");
+		PreloadParticleSystem("waterlurker_sewer_walk_splash.ps");
+	}
+	
+	//PARTICLE SYSTEM STATES//
+	{
+		if (GetLocalVarInt("DynamoStarted") == 1)
+		{
+			SetParticleSystemActive("DynamoWheelSteam_*", true);
+		}
+		if (GetLocalVarInt("PumpDynamoStarted") == 1)
+		{
+			SetParticleSystemActive("PumpDynamoSteam_*", true);
+		}
+	}
+	
+	//SOUND CUES//
+	{
+		//START MUSIC
+		PlaySoundAtEntity("STARTZITHER", "afx_zither_1_louder.snt", "Player", 0.0f, true);
+		
+		//WATER
+		PlaySoundAtEntity("WaterWood3D", "amb_bilge_water_splash_small_3D.snt", "WaterWoodSource01", 0.0f, true);
+		PlaySoundAtEntity("WaterWood2D", "amb_bilge_water_splash_small_2D.snt", "WaterWoodSource01", 0.0f, true);
+		PlaySoundAtEntity("WaterWood3D", "amb_bilge_waterwood_01_3D", "smallwatersplatsource", 0.0f, true);
+		PlaySoundAtEntity("WaterWood2D", "amb_bilge_waterwood_01_2D", "smallwatersplatsource", 0.0f, true);
+		PlaySoundAtEntity("Waterfall01Sound2D", "amb_bilge_env_waterfall01_2D.snt", "Waterfall01Source", 0.0f, true);
+		PlaySoundAtEntity("Waterfall01Sound3D", "amb_bilge_env_waterfall01_3D.snt", "Waterfall01Source", 0.0f, true);
+		PlaySoundAtEntity("smallwatersplat2D", "amb_bilge_water_splash_small_2D.snt", "smallwatersplatsource", 0.0f, true);
+		PlaySoundAtEntity("smallwatersplat3D", "amb_bilge_water_splash_small_3D.snt", "smallwatersplatsource", 0.0f, true);
+		PlaySoundAtEntity("Waterfall02_Verb", "amb_bilge_env_waterfall02_2D.snt", "Waterfall022DSource", 0.0f, true);
+		PlaySoundAtEntity("Waterfall02_01", "amb_bilge_env_waterfall02_3D.snt", "Waterfall02WaterSource01", 0.0f, true);
+		PlaySoundAtEntity("Waterfall02_02", "amb_bilge_env_waterfall02_02_3D.snt", "Waterfall02WaterSource02", 0.0f, true);
+		PlaySoundAtEntity("Watersplatter_01", "amb_reactor_descent_watersplash1_3D.snt", "Waterfall02WaterSplatterSource01", 0.0f, true);
+		PlaySoundAtEntity("sound_watersewer_3D", "amb_bilge_watertunnel_sewer_3D.snt", "sound_water_bridge_source_5", 0.0f, true);
+		PlaySoundAtEntity("sound_watersewer_2D", "amb_bilge_watertunnel_sewer_2D.snt", "sound_water_bridge_source_5", 0.0f, true);
+		PlaySoundAtEntity("sound_watersewer_3D", "amb_bilge_watertunnel_middle_3D.snt", "sound_water_bridge_source_1", 0.0f, true);
+		PlaySoundAtEntity("sound_watersewer_2D", "amb_bilge_watertunnel_middle_2D.snt", "sound_water_bridge_source_1", 0.0f, true);
+		
+		//STEAM
+		PlaySoundAtEntity("Steam012D", "amb_bilge_steam02_2D.snt", "SteamSoundSource01", 0.0f, true);
+		PlaySoundAtEntity("Steam013D", "amb_bilge_steam02_3D.snt", "SteamSoundSource01", 0.0f, true);
+		PlaySoundAtEntity("Steam023D", "amb_bilge_steam02_3D.snt", "SteamSoundSource02", 0.0f, true);
+		PlaySoundAtEntity("Steam022D", "amb_bilge_steam02_2D.snt", "SteamSoundSource02", 0.0f, true);
+		PlaySoundAtEntity("opensteam_3D", "afx_cellar_post_collapse_steam_1_quieter.snt", "sound_opensteampipesource", 0.0f, true);
+		PlaySoundAtEntity("sound_steam2_2D", "amb_bilge_steam02_2D.snt", "sound_steamsource_2", 0.0f, true);
+		PlaySoundAtEntity("sound_steam2_3D", "amb_bilge_steam02_3D.snt", "sound_steamsource_2", 0.0f, true);
+		PlaySoundAtEntity("sound_steam3_2D", "amb_bilge_steam02_2D.snt", "sound_steamsource_3", 0.0f, true);
+		PlaySoundAtEntity("sound_steam3_3D", "amb_bilge_steam02_3D.snt", "sound_steamsource_3", 0.0f, true);
+		PlaySoundAtEntity("sound_steam4_2D", "amb_bilge_steam01_2D.snt", "sound_steamsource_4", 0.0f, true);
+		PlaySoundAtEntity("sound_steam4_3D", "amb_bilge_steam01_3D.snt", "sound_steamsource_4", 0.0f, true);
+		PlaySoundAtEntity("sound_steam5_2D", "amb_bilge_steam02_2D.snt", "sound_steamsource_5", 0.0f, true);
+		PlaySoundAtEntity("sound_steam5_3D", "amb_bilge_steam02_3D.snt", "sound_steamsource_5", 0.0f, true);
+		PlaySoundAtEntity("sound_steam6_3D", "afx_cellar_post_collapse_steam_1_quieter.snt", "sound_steamsource_6", 0.0f, true);	
+		
+		//OTHER
+		PlaySoundAtEntity("fansource_1", "amb_mansion_ceiling_fan_wider.snt", "FanSource_1", 0.0f, true);
+		PlaySoundAtEntity("sound_flies_1", "amb_church_pens_flies_loop.snt", "sound_fliessource_1", 0.0f, true);
+		PlaySoundAtEntity("sound_flies_2", "amb_church_pens_flies_loop.snt", "sound_fliessource_2", 0.0f, true);
+		PlaySoundAtEntity("sound_flies_3", "amb_church_pens_flies_loop.snt", "sound_fliessource_3", 0.0f, true);
+		PlaySoundAtEntity("sound_EntranceFliesSource", "amb_church_pens_flies_loop.snt", "sound_EntranceFliesSource", 0.0f, true);
+	}
+	
+	//ANIMATION STATES//
+	{
+		if (GetLocalVarInt("PumpDynamoStarted") == 0)
+		{
+			SetEntityActive("bilge_engine_1_animated", false);
+			SetEntityActive("bilge_engine_2_animated", false);
+			SetEntityActive("bilge_engine_1_static", true);
+			SetEntityActive("bilge_engine_2_static", true);
+		}                               
+		else
+		{
+			SetEntityActive("bilge_engine_1_animated", true);
+			SetEntityActive("bilge_engine_2_animated", true);
+			SetEntityActive("bilge_engine_1_static", false);
+			SetEntityActive("bilge_engine_2_static", false);
+		}
+		
+		if (GetLocalVarInt("DynamoStarted") == 0)
+		{
+			SetEntityActive("bilge_engine_3_animated", false);
+			SetEntityActive("bilge_engine_3_static", true);
+			PlayPropAnimation("Dynamo", "static", 0.0f, true, "");
+			PlayPropAnimation("CogsAnimated", "static", 0.0f, true, "");
+		}
+		else
+		{
+			SetEntityActive("bilge_engine_3_animated", true);
+			SetEntityActive("bilge_engine_3_static", false);
+			PlayPropAnimation("Dynamo", "loop", 0.0f, true, "");
+			PlayPropAnimation("CogsAnimated", "animation", 0.0f, true, "");
+		}
+		PlayPropAnimation("Phonautograph1", "Stop", 0.0f, true, "");							//Initialises Phonautograph to non-animated.
+	}
+	
+	//MOVE OBJECT STATES//
+	{
+		if (GetLocalVarInt("PumpDynamoStarted") == 0)
+		{
+			SetMoveObjectState("reactor_door_1", 0);
+		}
+		else
+		{
+			SetMoveObjectState("reactor_door_1", 1);
+		}
+	}
+	
+	//ENTITY STATES//
+	{
+		if (GetLocalVarInt("PumpDynamoStarted") == 1)
+		{
+			SetEntityActive("Mask1", true);
+		}
+		else
+		{
+			SetEntityActive("Mask1", false);
+		}
+		
+		if (GetLocalVarInt("DynamoStarted") == 1)
+		{
+			SetEntityActive("WaterPlaneHigh", false);
+			SetEntityActive("waterlurker_1", false);
+		}
+		
+	}
+	
+	//WATER AREA CONNECTIONS//
+	{
+		SetPropStaticPhysics("WaterPlaneHigh", true);
+		AttachAreaToProp("WaterNoCrouchAreaLiquid", "WaterPlaneHigh", 0);
+		AttachAreaToProp("WaterNoCrouchArea", "WaterPlaneHigh", 0);
+	}
+	//ENEMY STATES//
+	{
+		SetManPigType("Child1", "Freddy");
+		SetEnemyMoveType("Child1", "ChargeBiped");
+		SetManPigType("child_2", "Freddy");
+		SetEnemyMoveType("child_2", "RunBiped");
+		SetManPigType("child_3", "Freddy");
+		SetEnemyMoveType("child_3", "ChargeBiped");
+		SetManPigType("child_4", "Freddy");
+		SetEnemyMoveType("child_4", "RunBiped");
+	}
+	
+	//SPRAYLOCK INITIALISATION//
+	{
+		//SPRAYLOCK LIGHT STATES//
+		SetLampLit("spraylock_green_light", false, false);
+		SetLightVisible("spraylock_spark_light", false);
+		
+		//SPRAYLOCK ENTITY INTERACTION// 
+		SetEntityInteractionDisabled("spraylock_engines", true);
+		SetEntityInteractionDisabled("spraylock_power_switch", true);
+		
+		//SOUND INITIALISATION//
+		PlaySoundAtEntity("sl_hiss_1", "spraylock_gauge_hiss_1.snt", "spraylock_hiss_outside_1", 0.0f, true);
+		
+		//SPRAYLOCK PARTICLE SYSTEM STATES//
+		SetParticleSystemActive("spraylock_sparks_1", false);
+		SetParticleSystemActive("spraylock_sparks_2", false);
+		SetParticleSystemActive("spraylock_spray1", false);
+		SetParticleSystemActive("spraylock_spray2", false);
+		SetParticleSystemActive("spraylock_spray3", false);
+		SetParticleSystemActive("spraylock_spray4", false);
+		SetParticleSystemActive("spraylock_spray5", false);
+		SetParticleSystemActive("spraylock_spray6", false);
+		SetParticleSystemActive("spraylock_risingmist", false);
+		
+		//SPRAYLOCK SPECIFIC STATES//
+		if (GetLocalVarInt("SpraylockReady") == 1)
+		{
+			PlayPropAnimation("spraylock_gauge_outside_1", "on", 0.0f, true, "");
+		}
+		else
+		{
+			PlayPropAnimation("spraylock_gauge_outside_1", "off", 0.0f, true, "");
+		}
+		PlayPropAnimation("spraylock_gauge_inside_1", "off", 0.0f, true, "");
+		PlayPropAnimation("spraylock_gauge_inside_2", "off", 0.0f, true, "");
+		PlayPropAnimation("spraylock_engines", "off", 0.0f, true, "");
+		PlayPropAnimation("spraylock_railing", "off", 0.0f, true, "");
+		PlayPropAnimation("spraylock_electric_cabin", "on", 0.0f, true, "");
+		PlayPropAnimation("spraylock_steam_gauges", "on", 0.0f, true, "");
+		SetSwingDoorDisableAutoClose("spraylock_door_1", true);
+		SetEntityInteractionDisabled("spraylock_door_1", true);
+		SetSwingDoorClosed("spraylock_door_1", false, false);
+		SetSwingDoorDisableAutoClose("spraylock_door_2", true);
+		SetEntityInteractionDisabled("spraylock_door_2", true);
+	}
+	
+	//AUTOSAVE//
+	{
+		//AutoSave();
+	}
+}
+
+void OnLeave()
+{
+	SetupLoadScreen("LoadingText", "Reactor_", 3, "game_loading_reactor.jpg");
+}
+
+									//////////////////////////
+										//MAP-SPECIFIC FUNCTIONS//
+										//////////////////////////
+										
+// -------------------------------------------------------------
+// BREAK BRIDGE
+// -------------------------------------------------------------
+
+void CollideBreakBridge(string &in asParent, string &in asChild, int alState)
+{
+	// ------------------------------
+	// SETUP 
+	// ---------------------------
+	CheckPoint("BreakBridge", "AboveLurkerLadder", "SetLookAtLadder", "", "", false); //boring but to show player ladder location.
+	
+	//Limit player movement
+	SetPlayerRunSpeedMul(0);
+	SetPlayerMoveSpeedMul(0.1);
+	SetPlayerJumpDisabled(true);
+	SetPlayerLookSpeedMul(0.5);
+	
+	//Remove entities keeping stuff solid
+	SetEntityActive("waterlurker_amb_3", false);
+	SetEntityActive("AreaDisableEnemy", false);
+	SetEntityActive("BridgeBlock_2", true);
+	SetEntityActive("BridgeBlock_3", true);
+	SetEntityActive("BridgeBlock", false);
+	SetEntityActive("BridgeBlock_1", false);
+	SetEntityActive("AreaLurkerStart", false);
+	SetEntityActive("AreaBridgeLurkerEnd", true);
+	AddEntityCollideCallback("Player", "AreaBridgeLurkerEnd", "CollideBridgeLurkerEnd", true, 1);
+	
+	//Push down on bridge pieces that on bend a bit
+	AddPropImpulse("bilge_catwalk_break_1", 0, -1, 0, "World");
+	AddPropImpulse("bilge_catwalk_railing_break_1", 0, -1, 0, "World");
+	
+	//Disable locked on bridge pieces that should fall down
+	SetSwingDoorLocked("bilge_catwalk_railing_break_2", false, false);
+	SetSwingDoorClosed("bilge_catwalk_railing_break_2", false, false);
+	SetSwingDoorDisableAutoClose("bilge_catwalk_railing_break_2", true);
+	
+	SetSwingDoorLocked("bilge_catwalk_break_2", false, false);
+	SetSwingDoorClosed("bilge_catwalk_break_2", false, false);
+	SetSwingDoorDisableAutoClose("bilge_catwalk_break_2", true);
+	
+	//Push bordhe pieces fallign down
+	AddTimer("bilge_catwalk_railing_break_2", 0, "TimerPushBridge");
+	AddTimer("bilge_catwalk_break_2", 0, "TimerPushBridge");
+	
+	// ----------------------------
+	// BRIDGE BREAK EVENT
+	// --------------------------
+	StartScreenShake(0.3, 1, 0.05, 0.5);
+	FadeImageTrailTo(2, 1);
+	PlaySoundAtEntity("bridge_break2", "afx_bilge_catwalk_break.snt", "Player", 0, false);
+	PlayGuiSound("afx_event_factory_metal_strain05.ogg", 1);
+	
+	AddTimer("TimerEventSteps", 0.1, "TimerEventSteps");
+	
+	// ------------------
+	// AFTER EVENT BLOCK
+	// ------------------
+	
+	//Enable a steam burst to block trying to pass this way again
+	AddTimer("steam_on", 4, "TimerSteamExplosion");
+}								
+
+// -------------------------------------------------------------
+
+void SetLookAtLadder(string &in asName, int alCount)
+{
+	StartPlayerLookAt("LookAtLadder", 10, 10, "");
+	AddTimer("stoplookat", 0.5, "TimerStopLookAtLadder");
+}
+
+// -------------------------------------------------------------
+
+void TimerStopLookAtLadder(string &in asTimer)
+{
+	StopPlayerLookAt();
+}
+
+// -------------------------------------------------------------
+
+void TimerEventSteps(string &in asTimer)
+{
+	AddLocalVarInt("BBEvent", 1);
+	SetLocalVarInt("BBEventContinue", 1);
+	SetLocalVarFloat("BBEventStepTime", 0.2);
+	
+	AddDebugMessage("Seq: "+GetLocalVarInt("BBEvent"), false);
+	
+	switch(GetLocalVarInt("BBEvent"))
+	{
+		case 1:
+			if(GetLocalVarInt("BreakBridgeButNoLurky") != 1) PlayMusic("music_church_threat_sting.ogg", false, 1, 0.5, 10, false);
+			StartPlayerLookAt("LookAt_1", 8, 8, "");
+		break;
+		
+		case 2:
+			MandusReactionPlayer("Scared", 0);
+			FadePlayerRollTo(45, 12, 12);
+		break;
+		
+		case 3:
+			StartPlayerLookAt("LookAt_2", 8, 8, "");
+		break;
+		
+		case 4:
+			StartPlayerLookAt("LookAt_3", 8, 8, "");
+			FadePlayerRollTo(0, 6, 6);
+			if(GetLocalVarInt("BreakBridgeButNoLurky") != 1) PlayGuiSound("water_impact_high_2.wav", 1);
+			SetLocalVarFloat("BBEventStepTime", 0.6);
+		break;
+		
+		case 5:
+			StopPlayerLookAt();
+			SetLocalVarFloat("BBEventStepTime", 0.4);
+		break;
+		
+		case 6:
+			MandusReactionPlayer("Scared", 0.5);
+			SetEntityActive("BridgeBlock_3", false);
+			if(GetLocalVarInt("BreakBridgeButNoLurky") != 1) SetEntityActive("WaterLurkerX_1", true);
+			if(GetLocalVarInt("BreakBridgeButNoLurky") != 1) AddEntityCollideCallback("Player", "AreaSecondLurker", "CollideSecondLurker", true, 1);
+		break;
+	
+		case 7:
+			
+			SetPlayerRunSpeedMul(1);
+			SetPlayerMoveSpeedMul(1);
+			SetPlayerJumpDisabled(false);
+			SetPlayerLookSpeedMul(1);
+			
+			FadeImageTrailTo(0, 0.5f);
+			SetLocalVarInt("BBEventContinue", 0);
+		break;
+	}
+	
+	if(GetLocalVarInt("BBEventContinue") == 1)
+		AddTimer("TimerEventSteps", GetLocalVarFloat("BBEventStepTime"), "TimerEventSteps");
+}
+
+// -------------------------------------------------------------
+
+void CollideSecondLurker(string &in asParent, string &in asChild, int alState)
+{
+	SetEntityActive("WaterLurkerX_2", true);
+} 
+
+// -------------------------------------------------------------
+
+void CollideBridgeLurkerEnd(string &in asParent, string &in asChild, int alState)
+{
+	SetEntityActive("AreaLurkerStart", true);
+	SetEntityActive("AreaBridgeLurkerEnd", false);
+	
+	SetEntityActive("WaterLurkerX_2", false);
+	
+	AddTimer("lurkxer", 4, "TimerRemoveLurkerX1");
+} 
+
+// -------------------------------------------------------------
+
+void TimerRemoveLurkerX1(string &in asTimer)
+{
+	SetEntityActive("WaterLurkerX_1", false);
+}
+
+// -------------------------------------------------------------
+
+void TimerPushBridge(string &in asTimer)
+{
+	//Push bridge pieces down to assure they fall
+	AddPropForce(asTimer, 0, -1000, 0, "World");
+	
+	AddLocalVarInt("BridgePushCount", 1);
+	
+	//Push Player forward and down, then back and down
+	if(GetLocalVarInt("BridgePushCount") <= 15)
+		AddPlayerBodyForce(0,-2000,-4000, false);
+	else if(GetLocalVarInt("BridgePushCount") > 15)
+		AddPlayerBodyForce(0,-2000,2000, false);
+	
+	if(GetLocalVarInt("BridgePushCount") <= 30)
+		AddTimer(asTimer, 0.05, "TimerPushBridge");
+}
+
+// -------------------------------------------------------------
+
+void TimerSteamExplosion(string &in asTimer)
+{
+	PlaySoundAtEntity("BlockingSteamSound_1", "afx_enginerooms_controlroomsteamblock.snt", "SoundSteamBlock_1", 0.1, true);
+	SetEntityActive("SteamBlock_1", true);
+	SetParticleSystemActive("PSSteamBlock_1", true);
+	SetParticleSystemActive("PSSteamBlock_2", true);
+	SetEntityActive("AreaSteamBlock_1", true);
+	AddEntityCollideCallback("Player", "AreaSteamBlock_1", "CollideSteamBlock", false, 0);
+}
+
+// -------------------------------------------------------------
+// CLOSE VALVE 2 SECTION
+// -------------------------------------------------------------
+								
+void ColliderCloseDynamoSection(string &in asParent, string &in asChild, int alState)
+{
+	SetMoveObjectState("DynamoGate", 0);
+}
+
+// -------------------------------------------------------------
+// 
+// -------------------------------------------------------------
+
+//SOUND OPTIMISATION//
+void SoundOptimiser (string &in asParent, string &in asChild, int alState)
+{
+	if (asChild == "StartOfficeSounds_1")
+	{	
+	
+	//Office SOUNDS
+	//AddTimer("InitBilgeGateAreaSoundCues", 8.0f, "BilgeGateAreaSoundCues");
+	AddTimer("InitBilgeGateMonsterAreaSoundCues", 2.0f, "BilgeGateMonsterAreaSoundCues");
+	AddTimer("InitOfficeAreaSoundCues", 9.0f, "OfficeAreaSoundCues");
+	AddTimer("InitBodyCorridorSoundCues", 8.0f, "BodyCorridorSoundCues");
+	
+	//AREAS
+	RemoveEntityCollideCallback("Player", "StartOfficeSounds_1");
+	AddEntityCollideCallback("Player", "StopOfficeSounds_1", "SoundOptimiser", true, 1);
+	
+	AddDebugMessage("Office Sounds START!", true);
+	return;
+	}
+	
+	else if (asChild == "StopOfficeSounds_1")
+	{
+	//REMOVE Office SOUNDS
+	RemoveTimer("Sound_RandOfficeArea_1");
+	RemoveTimer("RandSound_OfficeArea_2"); 
+	RemoveTimer("RandSound_OfficeArea_3");
+	RemoveTimer("RandSound_OfficeArea_4");
+	RemoveTimer("RandSound_OfficeArea_5");
+	RemoveTimer("RandSound_OfficeArea_6");
+	RemoveTimer("RandSound_OfficeArea_7");
+/*	RemoveTimer("Sound_RandGateArea_1"); 
+	RemoveTimer("Sound_RandGateArea_2"); 
+	RemoveTimer("Sound_RandGateArea_3");
+	RemoveTimer("Sound_RandGateArea_4");
+	RemoveTimer("Sound_RandGateArea_5");
+	RemoveTimer("Sound_RandGateArea_6");
+	RemoveTimer("Sound_RandGateArea_7");
+	RemoveTimer("Sound_RandGateArea_8");
+	RemoveTimer("InitBilgeGateAreaSoundCues");
+	RemoveTimer("BilgeGateAreaSoundCues");*/
+	RemoveTimer("InitBilgeGateMonsterAreaSoundCues");
+	RemoveTimer("BilgeGateMonsterAreaSoundCues");
+	RemoveTimer("InitOfficeAreaSoundCues");
+	RemoveTimer("OfficeAreaSoundCues");
+	RemoveTimer("InitBodyCorridorSoundCues");
+	RemoveTimer("BodyCorridorSoundCues");
+	
+	//AREAS
+	RemoveEntityCollideCallback("Player", "StopOfficeSounds_1");
+	AddEntityCollideCallback("Player", "StartOfficeSounds_1", "SoundOptimiser", true, 1);
+			
+	AddDebugMessage("Office Area Sounds STOP!", true);
+	return;
+	}	
+	
+	if (asChild == "RandSoundArea2_Start_1"|| asChild == "RandSoundArea2_Start_2")
+	{	
+	
+	//Area 2 SOUNDS
+	AddTimer("InitCryingSoundCues", 8.0f, "CryingSoundCues");
+	AddTimer("InitMonsterSoundCues", 7.0f, "MonsterSoundCues");
+	AddTimer("InitScreamSoundCues", 6.0f, "ScreamSoundCues");
+	
+	//AREAS
+	RemoveEntityCollideCallback("Player", "RandSoundArea2_Start_1");
+	RemoveEntityCollideCallback("Player", "RandSoundArea2_Start_2");
+	AddEntityCollideCallback("Player", "RandSoundArea2_Stop_1", "SoundOptimiser", true, 1);
+	AddEntityCollideCallback("Player", "RandSoundArea2_Stop_2", "SoundOptimiser", true, 1);
+	
+	AddDebugMessage("Area 2 Sounds START!", true);
+	return;
+	}
+	
+	else if (asChild == "RandSoundArea2_Stop_1"|| asChild == "RandSoundArea2_Stop_2")
+	{
+	//REMOVE AREA 2 SOUNDS
+	RemoveTimer("afx_bilgearea2_1");
+	RemoveTimer("afx_bilgearea2_2");
+	RemoveTimer("afx_bilgearea2_3");
+	RemoveTimer("afx_bilgearea2_4");
+	RemoveTimer("afx_bilgearea2_5");
+	RemoveTimer("afx_bilgearea2_6");
+	RemoveTimer("afx_bilgearea2_7");
+	RemoveTimer("afx_bilgearea2_8");
+	RemoveTimer("InitCryingSoundCues");
+	RemoveTimer("CryingSoundCues");
+	RemoveTimer("InitMonsterSoundCues");
+	RemoveTimer("MonsterSoundCues");
+	RemoveTimer("InitScreamSoundCues");
+	RemoveTimer("ScreamSoundCues");
+	
+	//AREAS
+	RemoveEntityCollideCallback("Player", "RandSoundArea2_Stop_1");
+	RemoveEntityCollideCallback("Player", "RandSoundArea2_Stop_2");
+	AddEntityCollideCallback("Player", "RandSoundArea2_Start_1", "SoundOptimiser", true, 1);
+	AddEntityCollideCallback("Player", "RandSoundArea2_Start_2", "SoundOptimiser", true, 1);
+	AddDebugMessage("Area 2 Sounds STOP!", true);
+	return;
+	}
+}
+
+void soundopt (string &in asParent, string &in asChild, int alState)
+{
+//BILGE MACHINE QUIETER
+	if (asChild == "soundopt_quietermachdrone_start")
+	{
+	//REMOVE START TRIGGERS
+	RemoveEntityCollideCallback("Player", "soundopt_quietermachdrone_start");
+	
+	//ADD STOP TRIGGERS
+	AddEntityCollideCallback("Player", "soundopt_quietermachdrone_stop", "soundopt", true, 1);
+	
+	//Stop Loud Drone
+	StopSound("MachineDrone", 4.0f);
+	
+	//Start Quieter Sound
+	PlaySoundAtEntity("MachineDroneQuieter", "amb_bilge_machine_drone_quieter.snt", "Player", 3.5f, true);
+	
+	//DEBUG MESSAGE
+	AddDebugMessage("Start Quieter Machine Drone", true);
+	}
+//BREAK
+	if (asChild == "soundopt_quietermachdrone_stop")
+	{
+	//REMOVE STOP TRIGGERS
+	RemoveEntityCollideCallback("Player", "soundopt_quietermachdrone_stop");
+	
+	//ADD START TRIGGERS
+	AddEntityCollideCallback("Player", "soundopt_quietermachdrone_start", "soundopt", true, 1);
+	
+	//Stop Quieter Drone
+	StopSound("MachineDroneQuieter", 4.0f);
+	
+	//Start Louder Drone
+	PlaySoundAtEntity("MachineDrone", "amb_bilge_machine_drone.snt", "Player", 3.5f, true);
+	
+	//DEBUG MESSAGE
+	AddDebugMessage("Stop Quieter Machine Drone", true);
+	}
+//BREAK
+//ENTER BACK AREA
+	if (asChild == "soundopt_enterbackroom_1"|| asChild == "soundopt_enterbackroom_2")
+	{
+	//REMOVE ENTER TRIGGERS
+	RemoveEntityCollideCallback("Player", "soundopt_enterbackroom_1");
+	RemoveEntityCollideCallback("Player", "soundopt_enterbackroom_2");
+	
+	//ADD EXIT TRIGGERS
+	AddEntityCollideCallback("Player", "soundopt_exitbackroom_1", "soundopt", true, 1);
+	AddEntityCollideCallback("Player", "soundopt_exitbackroom_2", "soundopt", true, 1);
+	
+	//STOP QUIETER DRONE
+	StopSound("MachineDroneQuieter", 4.0f);
+	
+	//REMOVE OFFICE SOUNDS
+	RemoveTimer("Sound_RandOfficeArea_1");
+	RemoveTimer("RandSound_OfficeArea_2"); 
+	RemoveTimer("RandSound_OfficeArea_3");
+	RemoveTimer("RandSound_OfficeArea_4");
+	RemoveTimer("RandSound_OfficeArea_5");
+	RemoveTimer("RandSound_OfficeArea_6");
+	RemoveTimer("RandSound_OfficeArea_7");
+/*	RemoveTimer("Sound_RandGateArea_1"); 
+	RemoveTimer("Sound_RandGateArea_2"); 
+	RemoveTimer("Sound_RandGateArea_3");
+	RemoveTimer("Sound_RandGateArea_4");
+	RemoveTimer("Sound_RandGateArea_5");
+	RemoveTimer("Sound_RandGateArea_6");
+	RemoveTimer("Sound_RandGateArea_7");
+	RemoveTimer("Sound_RandGateArea_8");
+	RemoveTimer("InitBilgeGateAreaSoundCues");
+	RemoveTimer("BilgeGateAreaSoundCues");*/
+	RemoveTimer("InitBilgeGateMonsterAreaSoundCues");
+	RemoveTimer("BilgeGateMonsterAreaSoundCues");
+	RemoveTimer("InitOfficeAreaSoundCues");
+	RemoveTimer("OfficeAreaSoundCues");
+	RemoveTimer("InitBodyCorridorSoundCues");
+	RemoveTimer("BodyCorridorSoundCues");
+	
+	//DEBUG MESSAGE
+	AddDebugMessage("ENTER BACK AREA", true);
+	}
+//BREAK
+	if (asChild == "soundopt_exitbackroom_1"|| asChild == "soundopt_exitbackroom_2")
+	{
+	//REMOVE EXIT TRIGGERS
+	RemoveEntityCollideCallback("Player", "soundopt_exitbackroom_1");
+	RemoveEntityCollideCallback("Player", "soundopt_exitbackroom_2");
+	
+	//ADD ENTER TRIGGERS
+	AddEntityCollideCallback("Player", "soundopt_enterbackroom_1", "soundopt", true, 1);
+	AddEntityCollideCallback("Player", "soundopt_enterbackroom_2", "soundopt", true, 1);
+	
+	//START OFFICE SOUNDS
+/*	AddTimer("InitBilgeGateAreaSoundCues", 8.0f, "BilgeGateAreaSoundCues");*/
+	AddTimer("InitBilgeGateMonsterAreaSoundCues", 2.0f, "BilgeGateMonsterAreaSoundCues");
+	AddTimer("InitOfficeAreaSoundCues", 9.0f, "OfficeAreaSoundCues");
+	AddTimer("InitBodyCorridorSoundCues", 8.0f, "BodyCorridorSoundCues");
+	
+	//START QUIETER DRONE
+	PlaySoundAtEntity("MachineDroneQuieter", "amb_bilge_machine_drone_quieter.snt", "Player", 3.5f, true);
+	
+	//DEBUG MESSAGE
+	AddDebugMessage("EXIT BACK AREA", true);
+	}
+//BREAK
+//TUNNEL OPT
+	if (asChild == "soundopt_tunnel_start_1")
+	{
+	//REMOVE START TRIGGERS
+	RemoveEntityCollideCallback("Player", "soundopt_tunnel_start_1");
+	
+	//ADD STOP TRIGGERS
+	AddEntityCollideCallback("Player", "soundopt_tunnel_stop_1", "soundopt", true, 1);
+	
+	//START SOUND TIMER
+	AddTimer("InitTunnelGroanSoundCues", 3.0f, "TunnelGroanSoundCues");
+	AddTimer("InitTunnelDustSoundCues", 4.0f, "TunnelDustSoundCues");
+	AddTimer("InitTunnelWhisperSoundCues", 5.0f, "TunnelWhisperSoundCues");
+	
+	//DEBUG MESSAGE
+	AddDebugMessage("Start Tunnels Sounds", true);
+	}
+//BREAK
+	if (asChild == "soundopt_tunnel_stop_1")
+	{
+	//REMOVE STOP TRIGGERS
+	RemoveEntityCollideCallback("Player", "soundopt_tunnel_stop_1");
+	
+	//ADD START TRIGGERS
+	AddEntityCollideCallback("Player", "soundopt_tunnel_start_1", "soundopt", true, 1);
+	
+	//REMOVE SOUNDS
+	RemoveTimer("InitTunnelGroanSoundCues");
+	RemoveTimer("InitTunnelDustSoundCues");
+	RemoveTimer("InitTunnelWhisperSoundCues");	
+	RemoveTimer("TunnelGroanSoundCues");
+	RemoveTimer("AFX_Tunnels_1_1");
+	RemoveTimer("AFX_Tunnels_1_2");
+	RemoveTimer("AFX_Tunnels_1_6");
+	RemoveTimer("AFX_Tunnels_1_4");
+	RemoveTimer("TunnelDustSoundCues");
+	RemoveTimer("AFX_Tunnels_1_1");
+	RemoveTimer("AFX_Tunnels_1_2");
+	RemoveTimer("AFX_Tunnels_1_6");
+	RemoveTimer("AFX_Tunnels_1_4");
+	RemoveTimer("TunnelWhisperSoundCues");
+	RemoveTimer("AFX_Tunnels_1_1");
+	RemoveTimer("AFX_Tunnels_1_2");
+	RemoveTimer("AFX_Tunnels_1_6");
+	RemoveTimer("AFX_Tunnels_1_4");
+	
+	//DEBUG MESSAGE
+	AddDebugMessage("Stop Tunnels Sounds", true);
+	}
+//BREAK
+}
+//END SOUND OPTIMISATION
+										
+//ENTRY STINGER//
+void EntryStingerTrigger (string &in asParent, string &in asChild, int alState)	
+{
+	AddDebugMessage("Stinger Triggered", false);
+	PlaySoundAtEntity("Stinger", "afx_spooky_bilge.snt", "Player", 0.0f, false);
+	AddHint("Bilge1", "");
+	return;
+}
+//END ENTRY STINGER//
+
+//COG MACHINE HANDLER//
+void AttachCogs (string &in asArea, string &in asBody)
+{
+	PlaySoundAtEntity("", "bilge_cog_attach.snt", asArea, 0.0f, false);
+	AddDebugMessage("asArea = "+asArea, false);
+	if (asArea == "SmallStickyArea")
+	{
+		string sLocalSmallCogToDespawn = StringSub(asBody, 0, 10);
+		AddLocalVarInt("CogsPlaced", 1);
+		AddDebugMessage("CogsPlaced + 1", false);
+		AddDebugMessage("BodyName = "+sLocalSmallCogToDespawn, false);
+		SetLocalVarString("SmallCogToDespawn", sLocalSmallCogToDespawn);
+		
+		if (GetLocalVarInt("LargeCogFound") == 0)
+		{
+			//AddHint("Bilge3", ""); //The hint no longer matches what actually happens here.
+		}
+	}
+	else if (asArea == "LargeStickyArea")
+	{
+		string sLocalLargeCogToDespawn = StringSub(asBody, 0, 10);
+		AddLocalVarInt("CogsPlaced", 1);
+		AddDebugMessage("CogsPlaced + 1", false);
+		AddDebugMessage("BodyName = "+sLocalLargeCogToDespawn, false);
+		SetLocalVarString("LargeCogToDespawn", sLocalLargeCogToDespawn);
+	}
+	if (GetLocalVarInt("CogsPlaced") == 2)
+	{
+		AddDebugMessage("Wheel Unstuck", false);
+		SetWheelInteractionDisablesStuck("DynamoWheel", true);
+	}
+}
+
+void LargeCogFound (string &in asEntity)
+{
+	SetLocalVarInt("LargeCogFound", 1);
+}
+//END COG MACHINE HANDLER//
+
+//POST FLUSH STINGER//
+void FlushTriggerHandler (string &in asParent, string &in asChild, int alState)	
+{
+	AddDebugMessage("Post Flush Stinger", false);
+	PlaySoundAtEntity("Flusher", "wretch_amb_alert_01", "Player", 0.0f, false);
+	return;
+}
+//END POST FLUSH STINGER// 
+
+//LADDER CHILD EVENT//
+void LadderChildEvent (string &in asEntity)
+{
+	AddTimer("ChildLadderTimer1", 0.35f, "ChildLadderTimedEvents");
+	AddTimer("ChildLadderTimer2", 0.45f, "ChildLadderTimedEvents");
+	AddTimer("ChildLadderTimer3", 4.5f, "ChildLadderTimedEvents");
+	PlaySoundAtEntity("", "afx_bilge_stinger.snt", "Player", 0.0f, false);
+}
+
+void ChildLadderTimedEvents (string &in asTimer)
+{
+	if (asTimer == "ChildLadderTimer1")
+	{
+		SetEntityActive("LadderChild", true);
+		SetEntityActive("ChildMask", true);
+		return;
+	}
+	else if (asTimer == "ChildLadderTimer2")
+	{
+		SetEntityActive("LadderChild", false);
+		SetEntityActive("ChildMask", false);
+		return;
+	}
+	else if (asTimer == "ChildLadderTimer3")
+	{
+		PlaySoundAtEntity("", "afx_spooky_child_laugh_semi_distant.snt", "ChildLadderSoundSource", 0.0f, false);
+		return;
+	}
+}
+//END LADDER CHILD EVENT//
+
+//DYNAMO HANDLER//
+void DynamoHandler (string &in asEntity, int alState)
+{
+	if (alState == -1)
+	{
+		string sLocalSmallCogToDespawn = (GetLocalVarString("SmallCogToDespawn"));
+		string sLocalLargeCogToDespawn = (GetLocalVarString("LargeCogToDespawn"));
+		AddDebugMessage("Dynamo Startup Triggered", false);
+		
+		//DYNAMO 2 SOUNDSET
+		PlaySoundAtEntity("DynamoLoop2", "dynamo_idle_loop_3D_2.snt", "DynamoSource", 3.5f, true);
+		PlaySoundAtEntity("Dynamo2D2", "dynamo_idle_2D_2.snt", "DynamoSource", 3.5f, true);
+		PlaySoundAtEntity("DynamoStartup2", "dynamo_startup_3D_2.snt", "DynamoSource", 0.0f, true);
+		
+		//PISTON WHEEL SOUND
+		PlaySoundAtEntity("PistonWheel", "factory_piston_wheel2_pers_3D.snt", "PistonWheelSource", 0.0f, true);
+		
+		PlaySoundAtEntity("Steam022D", "amb_bilge_steam02_3D.snt", "dynamosteamsource", 1.0f, true);
+		PlaySoundAtEntity("Steam023D", "amb_bilge_steam02_2D.snt", "dynamosteamsource", 1.0f, true);
+		
+		//BILGE ENGINE SOUND
+		PlaySoundAtEntity("BilgeEngineLoop3", "bilge_engine_loop.snt", "bilge_engine_3_animated", 4.0f, true);
+		
+		//REMOVE BACK AREA TRIGGERS
+		RemoveEntityCollideCallback("Player", "soundopt_enterbackroom_1");
+		RemoveEntityCollideCallback("Player", "soundopt_enterbackroom_2");
+		RemoveEntityCollideCallback("Player", "soundopt_exitbackroom_1");
+		RemoveEntityCollideCallback("Player", "soundopt_exitbackroom_2");
+		
+		
+		//START ANIMATIONS	
+		SetMoveObjectState("DynamoGate", 0.65f);
+	
+		PlayPropAnimation("Dynamo", "loop", 0.0f, true, "");
+		PlayPropAnimation("factory_pistons_1", "on", 0.0f, true, "");
+		PlayPropAnimation("factory_pistons_2", "on", 0.0f, true, "");
+		SetEntityActive("bilge_engine_3_animated", true);
+		SetEntityActive("bilge_engine_3_static", false);
+		PlayPropAnimation("Sluice1", "gate_opening", 0.0f, false, "");
+		
+		SetEntityActive("CogsStatic", false);
+		SetEntityActive(sLocalSmallCogToDespawn, false);
+		SetEntityActive(sLocalLargeCogToDespawn, false);
+		SetEntityActive("CogsAnimated", true);
+
+		PlayPropAnimation("CogsAnimated", "animation", 0.0f, true, "");
+
+		SetLocalVarInt("DynamoStarted", 1);
+		SetParticleSystemActive("DynamoWheelSteam_*", true);
+		SetEntityActive("PostFlushStingerTrigger", true);
+		SetPropStaticPhysics("WaterPlaneHigh", false);
+		AddTimer("RestoreWaterPhysics", 5.0f, "RestorePhysics");
+		SetEntityActive("WaterNoCrouchArea", false);
+		
+		SetWheelInteractionDisablesStuck("spraylock_valve_outside_1", true);
+		AddEntityCollideCallback("Player", "SluiceGateTrigger", "SluiceGateHandler", true, 1);
+		AddEntityCollideCallback("Player", "FloodDrainedHintTrigger", "HintHandler", true, 1);
+		SetLocalVarInt("SpraylockReady", 0);
+		SetLocalVarInt("BreakBridgeButNoLurky", 1);
+		
+		SetEntityActive("map_bilge_3", true);
+		SetEntityActive("map_bilge_2", false);
+		SetEntityActive("SignArea_3", true);
+		SetEntityActive("SignArea_2", false);
+		
+		//ENEMY
+		SetEntityActive("waterlurker_1", false);
+		SetEntityActive("waterlurker_amb_3", true);
+		RemoveEntityCollideCallback("Player", "AreaLurkerStart");
+		SetEntityActive("AreaFakeLurk_3", true);
+		SetEntityActive("AreaFakeLurk_4", true);
+		
+		//REMOVE SOUNDS
+		RemoveTimer("afx_bilgearea2_1");
+		RemoveTimer("afx_bilgearea2_2");
+		RemoveTimer("afx_bilgearea2_3");
+		RemoveTimer("afx_bilgearea2_4");
+		RemoveTimer("afx_bilgearea2_5");
+		RemoveTimer("afx_bilgearea2_6");
+		RemoveTimer("afx_bilgearea2_7");
+		RemoveTimer("afx_bilgearea2_8");
+		RemoveTimer("InitCryingSoundCues");
+		RemoveTimer("CryingSoundCues");
+		RemoveTimer("InitMonsterSoundCues");
+		RemoveTimer("MonsterSoundCues");
+		RemoveTimer("InitScreamSoundCues");
+		RemoveTimer("ScreamSoundCues");
+		RemoveEntityCollideCallback("Player", "RandSoundArea2_Stop_1");
+		RemoveEntityCollideCallback("Player", "RandSoundArea2_Stop_2");
+		RemoveEntityCollideCallback("Player", "RandSoundArea2_Start_1");
+		RemoveEntityCollideCallback("Player", "RandSoundArea2_Start_2");
+		RemoveTimer("Sound_RandOfficeArea_1");
+		RemoveTimer("RandSound_OfficeArea_2"); 
+		RemoveTimer("RandSound_OfficeArea_3");
+		RemoveTimer("RandSound_OfficeArea_4");
+		RemoveTimer("RandSound_OfficeArea_5");
+		RemoveTimer("RandSound_OfficeArea_6");
+		RemoveTimer("RandSound_OfficeArea_7");
+/*		RemoveTimer("Sound_RandGateArea_1"); 
+		RemoveTimer("Sound_RandGateArea_2"); 
+		RemoveTimer("Sound_RandGateArea_3");
+		RemoveTimer("Sound_RandGateArea_4");
+		RemoveTimer("Sound_RandGateArea_5");
+		RemoveTimer("Sound_RandGateArea_6");
+		RemoveTimer("Sound_RandGateArea_7");
+		RemoveTimer("Sound_RandGateArea_8");
+		RemoveTimer("InitBilgeGateAreaSoundCues");
+		RemoveTimer("BilgeGateAreaSoundCues");*/
+		RemoveTimer("InitBilgeGateMonsterAreaSoundCues");
+		RemoveTimer("BilgeGateMonsterAreaSoundCues");
+		RemoveTimer("InitOfficeAreaSoundCues");
+		RemoveTimer("OfficeAreaSoundCues");
+		RemoveTimer("InitBodyCorridorSoundCues");
+		RemoveTimer("BodyCorridorSoundCues");
+		RemoveEntityCollideCallback("Player", "StartOfficeSounds_1");
+		RemoveEntityCollideCallback("Player", "StopOfficeSounds_1");
+		RemoveTimer("AFX_Bilge_Oneshot_1");
+		RemoveTimer("AFX_Bilge_Oneshot_2");
+		RemoveTimer("AFX_Bilge_Oneshot_3");
+		RemoveTimer("AFX_Bilge_Oneshot_4");
+		RemoveTimer("AFX_Bilge_Oneshot_5");
+		RemoveTimer("AFX_Bilge_Oneshot_6");
+		RemoveTimer("AFX_Bilge_Oneshot_7");
+		RemoveTimer("AFX_Bilge_Oneshot_8");
+		RemoveTimer("AFX_Bilge_Oneshot_9");
+		RemoveTimer("AFX_Bilge_Oneshot_10");
+		RemoveTimer("AFX_Bilge_Oneshot_11");
+		RemoveTimer("AFX_Bilge_Oneshot_12");
+		RemoveTimer("AFX_Start_1");
+		RemoveTimer("AFX_Start_2");
+		RemoveTimer("AFX_Start_3");
+		RemoveTimer("StartAreaSoundCues");
+		RemoveTimer("InitStartAreaSoundCues");
+	}
+}
+
+
+//BILGE MACHINE DRONE//
+void machinedronesound (string &in asTimer)
+{
+	AddDebugMessage("Drone Triggered", false);
+	PlaySoundAtEntity("MachineDrone", "amb_bilge_machine_drone.snt", "Player", 5.0f, true);
+	AddEntityCollideCallback("Player", "soundopt_quietermachdrone_start", "soundopt", true, 1);
+
+	//ADD BACK AREA SOUND TRIGGERS
+	AddEntityCollideCallback("Player", "soundopt_enterbackroom_1", "soundopt", true, 1);
+	AddEntityCollideCallback("Player", "soundopt_enterbackroom_2", "soundopt", true, 1);
+
+	AddDebugMessage("Drone Started - Quieter Area Added", true);
+}
+
+//BILGE ENGINE LOOPS
+void BilgeEngine1Timer (string &in asTimer)
+{
+ AddTimer("BilgeEngine1Timer", 3.492, "BilgeEngine1Timer");
+ PlaySoundAtEntity("BilgeEngine13D", "bilge_engine_on_3D.snt", "bilge_engine_1_animated", 0.0f, false);
+ PlaySoundAtEntity("BilgeEngine12D", "bilge_engine_on_2D.snt", "bilge_engine_1_animated", 0.0f, false);
+ }
+ 
+void BilgeEngine2Timer (string &in asTimer)
+{
+ AddTimer("BilgeEngine2Timer", 3.492, "BilgeEngine2Timer");
+ PlaySoundAtEntity("BilgeEngine23D", "bilge_engine_on_3D.snt", "bilge_engine_2_animated", 0.0f, false);
+ PlaySoundAtEntity("BilgeEngine22D", "bilge_engine_on_2D.snt", "bilge_engine_2_animated", 0.0f, false);
+ }
+ 
+ void BilgeEngine3Timer (string &in asTimer)
+{
+ AddTimer("BilgeEngine3Timer", 3.492, "BilgeEngine3Timer");
+ PlaySoundAtEntity("BilgeEngine33D", "bilge_engine_on_3D.snt", "bilge_engine_3_animated", 0.0f, false);
+ PlaySoundAtEntity("BilgeEngine32D", "bilge_engine_on_2D.snt", "bilge_engine_3_animated", 0.0f, false);
+ }
+ //BILGE ENGINE LOOPS END
+ 
+void DynamoIdleLoops (string &in asTimer)
+{
+	if (asTimer == "DynamoIdleFirstLoop")
+	{
+		AddDebugMessage("Dynamo Loop Triggered", false);
+		AddTimer("DynamoIdleStandardLoop", 11.12f, "DynamoIdleLoops");
+		PlaySoundAtEntity("DynamoEngineLoop", "dynamo_engine_idle_loop_3D.snt", "DynamoEngineSource", 0.0f, true);
+		PlaySoundAtEntity("DynamoLoop", "dynamo_idle_loop_3D.snt", "Dynamo", 0.0f, true);
+		PlaySoundAtEntity("Dynamo2D", "dynamo_idle_2D.snt", "DynamoEngineSource", 0.0f, true);
+		PlayPropAnimation("Dynamo", "loop", 0.0f, true, "");
+		return;
+	}
+	else if (asTimer == "DynamoIdleStandardLoop")
+	{
+		AddDebugMessage("Dynamo Loop Triggered", false);
+		PlaySoundAtEntity("Dynamo2D", "dynamo_idle_2D.snt", "DynamoEngineSource", 3.0f, true);
+		return;
+	}
+}
+
+void RestorePhysics (string &in asTimer)
+{
+
+	SetPropStaticPhysics("WaterPlaneHigh", true);
+}
+//END DYNAMO HANDLER//
+										
+//BILGE MACHINE 1 POWER UP SEQUENCE//
+void BilgeMachine1PowerUp (string &in asEntity, int alState)
+{
+	if (alState == -1)
+	{
+		//DYNAMO SOUNDSET
+		PlaySoundAtEntity("DynamoLoop", "dynamo_idle_loop_3D.snt", "PumpDynamoSource", 3.5f, true);
+		PlaySoundAtEntity("Dynamo2D", "dynamo_idle_2D.snt", "PumpDynamoSource", 3.5f, true);
+		PlaySoundAtEntity("DynamoStartup", "dynamo_startup_3D", "PumpDynamoSource", 0.0f, true);
+		//END DYNAMO SOUNDSET
+		
+		//STEAM SOUND//
+		PlaySoundAtEntity("Steam", "amb_bilge_steam02_3D.snt", "pumpdynamosteamsource", 3.5f, true);
+		
+		//BILGE SOUNDS
+		PlaySoundAtEntity("BilgeEngineLoop2", "bilge_engine_loop.snt", "bilge_engine_2_animated", 4.0f, true);
+		PlaySoundAtEntity("BilgeEngineLoop1", "bilge_engine_loop.snt", "bilge_engine_1_animated", 4.0f, true);
+		AddTimer("MachineDroneSound", 1.0f, "machinedronesound");
+		
+		//ANIMATION
+		PlayPropAnimation("PumpCogsAnimated", "animation", 0.0f, true, "");
+		PlayPropAnimation("PumpDynamo", "loop", 0.0f, true, "");
+		SetMoveObjectState("reactor_door_1", 1);
+		
+		//STATES
+		SetEntityActive("waterlurker_amb_1", false);
+		SetEntityActive("waterlurker_amb_2", false);
+		SetEntityActive("waterlurker_amb_3", true);
+		SetLocalVarInt("PumpDynamoStarted", 1);
+		SetEntityActive("bilge_engine_1_animated", true);
+		SetEntityActive("bilge_engine_2_animated", true);
+		SetEntityActive("bilge_engine_1_static", false);
+		SetEntityActive("bilge_engine_2_static", false);		
+		SetEntityActive("Mask1", true);
+		SetLeverStuckState("BilgeMachinePowerWheel", -1, false);
+		SetEntityInteractionDisabled("BilgeMachinePowerWheel", true);
+		SetWheelInteractionDisablesStuck("BilgeMachine1Valve", true);
+		AddDebugMessage("Bilge Machine 1 Powered Up", false);
+		
+		//PARTICLE FX
+		SetParticleSystemActive("PumpWheelSteam_5", true);
+		SetParticleSystemActive("PumpWheelSteam_6", true);
+		SetParticleSystemActive("PumpWheelSteam_7", true);
+		SetParticleSystemActive("PumpWheelSteam_8", true);
+		SetParticleSystemActive("PumpDynamoWheelSteam_*", true);
+		
+		//STEAM BLOCK
+		PlaySoundAtEntity("BlockingSteamSound", "afx_enginerooms_controlroomsteamblock.snt", "SoundSteamBlock", 7.0f, true);
+		SetEntityActive("SteamBlock", true);
+		SetParticleSystemActive("PSSteamBlock", true);
+		SetEntityActive("AreaSteamBlock", true);
+		AddEntityCollideCallback("Player", "AreaSteamBlock", "CollideSteamBlock", false, 0);
+		
+		//REMOVE RANDOM SOUNDS
+		RemoveTimer("TunnelGroanSoundCues");
+		RemoveTimer("InitTunnelGroanSoundCues");
+		RemoveTimer("AFX_Tunnels_1_1"); 
+		RemoveTimer("AFX_Tunnels_1_2"); 
+		RemoveTimer("AFX_Tunnels_1_6");
+		RemoveTimer("AFX_Tunnels_1_4");
+		RemoveTimer("AFX_Tunnels_1_3");
+		RemoveTimer("TunnelDustSoundCues");
+		RemoveTimer("TunnelWhisperSoundCues");
+		RemoveTimer("InitTunnelDustSoundCues");
+		RemoveTimer("InitTunnelWhisperSoundCues");
+		RemoveTimer("WaterAreaSoundCues");
+		RemoveTimer("InitWaterAreaSoundCues");
+		RemoveTimer("InitEnvCreakAreaSoundCues");
+		RemoveTimer("EnvCreakAreaSoundCues");
+		RemoveTimer("AFX_Water_1");
+		RemoveTimer("AFX_Water_2");
+		RemoveTimer("AFX_Water_3");
+		RemoveTimer("AFX_Water_4");
+		RemoveTimer("AFX_Water_5"); 
+		RemoveTimer("AFX_Water_6");
+		RemoveTimer("AFX_Water_7");
+		RemoveTimer("AFX_Water_8");
+		RemoveTimer("AFX_Bilge_Oneshot_1");
+		RemoveTimer("AFX_Bilge_Oneshot_2"); 
+		RemoveTimer("AFX_Bilge_Oneshot_3");
+		RemoveTimer("AFX_Bilge_Oneshot_4");
+		RemoveTimer("AFX_Bilge_Oneshot_5");
+		RemoveTimer("AFX_Bilge_Oneshot_6");
+		RemoveTimer("AFX_Bilge_Oneshot_7");
+		RemoveTimer("AFX_Bilge_Oneshot_8");
+		RemoveTimer("AFX_Bilge_Oneshot_9");
+		RemoveTimer("AFX_Bilge_Oneshot_10"); 
+		RemoveTimer("AFX_Bilge_Oneshot_11");
+		RemoveTimer("BilgeRandSoundCues");
+		RemoveTimer("InitBilgeRandSoundCues");
+	}
+}
+
+void PumpDynamoIdleLoops (string &in asTimer)
+{
+	if (asTimer == "DynamoIdleFirstLoop")
+	{
+		AddDebugMessage("Pump Dynamo Loop Triggered", false);
+		AddTimer("DynamoIdleStandardLoop", 11.12f, "PumpDynamoIdleLoops");
+		PlaySoundAtEntity("Dynamo2D", "dynamo_idle_2D.snt", "PumpDynamoEngineSource", 0.0f, true);
+		
+		return;
+	}
+	else if (asTimer == "DynamoIdleStandardLoop")
+	{
+		AddDebugMessage("Dynamo Loop Triggered", false);
+		PlaySoundAtEntity("Dynamo2D", "dynamo_idle_2D.snt", "PumpDynamoEngineSource", 3.0f, true);
+		return;
+	}
+}
+
+void CollideSteamBlock(string &in asParent, string &in asChild, int alState)
+{
+	if (alState == 1)
+	{
+		FadeImageTrailTo(2.0f, 2);
+		SetPlayerMoveSpeedMul(0.5f);
+		SetPlayerRunSpeedMul(0.0f);
+		SetPlayerJumpDisabled(true);
+		MandusReactionPlayer("Cough", 0.0f);
+		AddTimer("InSteamLoop", RandFloat(1.75f, 2.25f), "SteamCoughing");
+
+		return;
+	}
+	else if (alState == -1)
+	{
+		RemoveTimer("InSteamLoop");
+		FadeImageTrailTo(0.0f, 3.5f);
+		SetPlayerMoveSpeedMul(1.0f);
+		SetPlayerRunSpeedMul(1.0f);
+		SetPlayerJumpDisabled(false);
+		return;
+	}
+}
+
+void SteamCoughing (string &in asTimer)
+{
+	MandusReactionPlayer("Cough", RandFloat(0.15f, 0.3f));
+	StartScreenShake(0.03, 0.3, 0.2, 0.5);
+	AddTimer("InSteamLoop", RandFloat(1.75f, 2.25f), "SteamCoughing");
+}
+//END BILGE MACHINE 1 POWER UP SEQUENCE//
+
+//BILGE MACHINE 1 ACTIVATION SEQUENCE//
+void BilgeMachine1ActivationSequence (string &in asEntity, int alState)
+{
+	if (alState == -1)
+	{
+		AddDebugMessage("Bilge Machine 1 Activated", false);
+		SetEntityActive("WaterPlane1", false);
+		SetEntityActive("FloodInfectionArea", false);
+		PlaySoundAtEntity("Bilge_1_Ignition", "afx_sewer_pump_engine_ignition", "Bilge_1_SoundArea", 1.0f, false);
+		PlaySoundAtEntity("Drain_1_Loop", "afx_sewer_drain_loop", "Drain_1_SoundArea", 1.0f, true);
+		PlaySoundAtEntity("Drain_1_Loop", "afx_sewer_drain_on", "Drain_1_SoundArea", 1.0f, true);
+		SetWheelInteractionDisablesStuck("BilgeMachine1Valve", false);
+		SetWheelStuckState("BilgeMachine1Valve", -1, false);
+	}
+}
+
+//SLUICE GATE HANDLER//
+void SluiceGateHandler (string &in asParent, string &in asChild, int alState)
+{
+	AddTimer("Sluice2StartBuffer", 1.5f, "SluiceTimers");
+	AddTimer("Sluice3StartBuffer", 3.5f, "SluiceTimers");
+}
+
+void SluiceTimers (string &in asTimer)
+{
+	if (asTimer == "Sluice2StartBuffer")
+	{
+		PlayPropAnimation("Sluice2", "gate_opening", 0.0f, false, "");
+		SetParticleSystemActive("Sluice2Particles_*", true);
+		AddTimer("Sluice2ParticleTimer", 0.8f, "SluiceParticlesTimedEvent");
+		return;
+	}
+	else if (asTimer == "Sluice3StartBuffer")
+	{
+		PlayPropAnimation("Sluice3", "gate_opening", 0.0f, false, "");
+		SetParticleSystemActive("Sluice3Particles_*", true);
+		AddTimer("Sluice3ParticleTimer", 0.8f, "SluiceParticlesTimedEvent");
+		return;
+	}
+}
+void SluiceParticlesTimedEvent (string &in asTimer)
+{
+	if (asTimer == "Sluice2ParticleTimer")
+	{
+		DestroyParticleSystem("Sluice2Particles_1");
+		DestroyParticleSystem("Sluice2Particles_2");
+		DestroyParticleSystem("Sluice2Particles_3");
+		DestroyParticleSystem("Sluice2Particles_4");
+		return;
+	}
+	else if (asTimer == "Sluice3ParticleTimer")
+	{
+		DestroyParticleSystem("Sluice3Particles_1");
+		DestroyParticleSystem("Sluice3Particles_2");
+		DestroyParticleSystem("Sluice3Particles_3");
+		DestroyParticleSystem("Sluice3Particles_4");
+		return;
+	}
+}
+//END SLUICE GATE HANDLER//
+
+
+//GATE HANDLER
+
+void FuseBoxLeverHandler(string &in asEntity, int alState)
+{
+     if (alState == 1)
+     {
+     SetEntityActive("block_box_gate7", false);
+	 SetMoveObjectState("gate7",1.0f);
+     PlaySoundAtEntity("Drag", "afx_bilge_gate_steel_open", "gate7", 0.0f, false);
+	 PlaySoundAtEntity("Drag", "afx_bilge_gate_steel_open_2D", "gate7", 0.0f, false);
+   	 //SetButtonSwitchedOn("FuseBoxLever*", true, true);
+	 PlaySoundAtEntity("Switch", "afx_tunnels_centrifuge_switch", "Player", 0.0f, false);
+     return;
+     }
+}
+
+// DOOR SHUTS BEHIND YOU ONE
+void DoorSlamsShut_1 (string &in asParent, string &in asChild, int alState)
+{
+	SetEntityActive("block_box_gate7", true);
+	SetEntityActive("block_box_gate2", true);
+	SetEntityActive("gate2", true);
+	SetMoveObjectState("gate7",0.0f);
+    PlaySoundAtEntity("Drag", "afx_bilge_gate_steel_close", "gate7", 0.0f, false);
+	PlaySoundAtEntity("Drag", "afx_bilge_gate_steel_close_2D", "gate7", 0.0f, false);
+   	SetButtonSwitchedOn("FuseBoxLever", false, false);
+}
+
+// FUSE BOX LEVER 1 HANDLER
+void FuseBoxLever_1Handler(string &in asEntity, int alState)
+{
+     if (alState == 1)
+     {
+     SetEntityActive("block_box_gate3", false);
+	 SetMoveObjectState("gate3",1.0f);
+	 PlaySoundAtEntity("Drag", "afx_bilge_gate_steel_open", "gate3", 0.0f, false);
+	 PlaySoundAtEntity("Drag", "afx_bilge_gate_steel_open_2D", "gate3", 0.0f, false);
+   	 SetButtonSwitchedOn("FuseBoxLever_1*", true, true);
+	 PlaySoundAtEntity("Switch", "afx_tunnels_centrifuge_switch", "Player", 0.0f, false);
+
+     return;
+     }
+}
+
+//DYNAMOS TURN ON
+void ActivateDynamoOnHandler (string &in asParent, string &in asChild, int alState)
+{
+	 AddDebugMessage("ActivateDynamoOnHandlerFired", false);
+	 AddEntityCollideCallback("gate3", "dynamo_on_trigger", "DynamoOnHandler", false, 0);
+}
+
+	 
+void DynamoOnHandler (string &in asParent, string &in asChild, int alState)
+{	 
+	 AddDebugMessage("DynamoOnHandlerFired", false);
+	 PlayPropAnimation("Dynamo_11", "loop", 0.0f, true, "");
+	 PlayPropAnimation("Dynamo_12", "loop", 0.0f, true, "");
+	 PlayPropAnimation("Dynamo_13", "loop", 0.0f, true, "");
+	 PlayPropAnimation("Dynamo_16", "loop", 0.0f, true, "");
+	 PlayPropAnimation("Dynamo_15", "loop", 0.0f, true, "");
+	 PlayPropAnimation("Dynamo_14", "loop", 0.0f, true, "");
+	 PlaySoundAtEntity("DynamoOn", "dynamo_idle_loop_3D.snt", "DynamoSource_21", 0.0f, true);
+	 PlaySoundAtEntity("DynamoOn", "dynamo_idle_loop_3D.snt", "DynamoSource_11", 0.0f, true);
+	 PlaySoundAtEntity("DynamoOn", "dynamo_idle_loop_3D.snt", "DynamoSource_12", 0.0f, true);
+	 PlaySoundAtEntity("DynamoOn", "dynamo_idle_loop_3D.snt", "DynamoSource_16", 0.0f, true);
+	 PlaySoundAtEntity("DynamoOn", "dynamo_idle_loop_3D.snt", "DynamoSource_14", 0.0f, true);
+	 PlaySoundAtEntity("DynamoOn", "dynamo_idle_loop_3D.snt", "DynamoSource_10", 0.0f, true);
+	PlaySoundAtEntity("DynamoRoomStartup", "dynamo_startup_3D", "DynamoSource_14", 0.0f, false);
+	PlaySoundAtEntity("DynamoRoomStartup", "dynamo_startup_3D", "DynamoSource_16", 0.0f, false);
+	
+}
+
+// FUSE BOX LEVER 2 HANDLER
+void FuseBoxLever_2Handler(string &in asEntity, int alState)
+{
+     if (alState == 1)
+     {
+     SetEntityActive("block_box_gate1", false);
+	 SetMoveObjectState("gate1",1.0f);
+	SetEntityActive("waterlurker_3", true);	
+     PlaySoundAtEntity("Drag", "afx_bilge_gate_steel_open", "gate1", 0.0f, false);
+	 PlaySoundAtEntity("Drag", "afx_bilge_gate_steel_open_2D", "gate1", 0.0f, false);
+	 PlaySoundAtEntity("Switch", "afx_tunnels_centrifuge_switch", "Player", 0.0f, false);
+     return;
+     }
+}
+
+// DOOR SHUTS BEHIND YOU TWO
+void DoorSlamsShut_2 (string &in asParent, string &in asChild, int alState)
+{
+	SetEntityActive("block_box_gate3", true);
+	 SetMoveObjectState("gate3",0.0f);
+     PlaySoundAtEntity("Drag", "afx_bilge_gate_steel_close", "gate3", 0.0f, false);
+	 PlaySoundAtEntity("Drag", "afx_bilge_gate_steel_close_2D", "gate3", 0.0f, false);
+	 SetEntityActive("block_box_gate4", false);
+	 SetMoveObjectState("gate4",1.0f);
+     PlaySoundAtEntity("Drag", "afx_bilge_gate_steel_open", "gate4", 0.0f, false);
+	 PlaySoundAtEntity("Drag", "afx_bilge_gate_steel_open_2D", "gate4", 0.0f, false);
+}
+
+//END HIDING SPOT HANDLER//
+
+//NO CROUCH AREA HANDLER//
+void NoCrouchAreaHandler (string &in asParent, string &in asChild, int alState)
+{
+	if (alState == 1)
+	{
+		SetPlayerCrouchDisabled(true);
+		SetPlayerCrouching(false);
+		return;
+	}
+	else if (alState == -1)
+	{
+		SetPlayerCrouchDisabled(false);
+		return;
+	}
+}
+//END NO CROUCH AREA HANDLER//
+
+// DYNAMO WRETCH SCARE
+void DynamoWretchScare (string &in asParent, string &in asChild, int alState)
+{
+	return;
+	if (asChild == "dynamo_wretch_spawn")
+	{
+		SetEntityActive("dynamo_child_1", true);
+		AddEnemyPatrolNode("dynamo_child_1", "PathNodeArea_11", 0.0f, "", false);
+		SetEntityActive("dynamo_child_2", true);
+		AddEnemyPatrolNode("dynamo_child_2", "PathNodeArea_11", 0.0f, "", false);
+		return;
+	}
+	else if (asChild == "dynamo_wretch_killer")
+	{
+		ClearEnemyPatrolNodes("dynamo_child_1");
+		SetEntityActive("dynamo_child_1", false);
+		ClearEnemyPatrolNodes("dynamo_child_2");
+		SetEntityActive("dynamo_child_2", false);
+		return;
+	}
+}
+
+//LEVEL CHILD EVENT HANDLER//
+void ChildEventHandler (string &in asParent, string &in asChild, int alState)
+{
+	if (asChild == "Child1RunTrigger")
+	{
+		SetEntityActive("Child1", true);
+		AddEnemyPatrolNode("Child1", "PathNodeArea_21", 0.0f, "", false);
+		AddEnemyPatrolNode("Child1", "PathNodeArea_22", 0.0f, "", false);
+		AddEnemyPatrolNode("Child1", "PathNodeArea_23", 0.0f, "", false);
+		return;
+	}
+	
+	else if (asChild == "Child1KillTrigger")
+	{
+		ClearEnemyPatrolNodes("Child1");
+		SetEntityActive("Child1", false);
+		return;
+	}	
+	
+	else if (asChild == "child2spawntrigger")
+	{
+		SetEntityActive("child_2", true);
+		
+		LanternFlicker(5);
+		
+		AddEnemyPatrolNode("child_2", "PathNodeArea_2", 0.0f, "", false);
+		AddEnemyPatrolNode("child_2", "PathNodeArea_3", 0.0f, "", false);
+		return;
+	}
+	
+	else if (asChild == "child2killtrigger")
+	{
+		ClearEnemyPatrolNodes("child_2");
+		SetEntityActive("child_2", false);
+		return;
+	}	
+	
+	else if (asChild == "child3spawntrigger")
+	{
+		SetEntityActive("child_3", true);
+		AddEnemyPatrolNode("child_3", "PathNodeArea_1", 0.0f, "IdleBiped01", false);
+		return;
+	}
+	
+	else if (asChild == "child3killtrigger")
+	{
+		FadeEnemyToSmoke("child_3", true);
+		//SetLanternFlickerActive(false);
+		AddTimer("Child3SpookTimer1", 0.2f, "Child3SpookSound");
+		AddTimer("Child3SpookTimer2", 0.9f, "Child3SpookSound");
+		return;
+	}	
+	
+	else if (asChild == "child4spawntrigger")
+	{
+		SetEntityActive("child_4", true);
+		AddEnemyPatrolNode("child_4", "PathNodeArea_4", 0.0f, "", false);
+		AddEnemyPatrolNode("child_4", "PathNodeArea_5", 0.0f, "", false);
+		AddEnemyPatrolNode("child_4", "PathNodeArea_6", 0.0f, "", false);
+		AddEnemyPatrolNode("child_4", "PathNodeArea_7", 0.0f, "", false);
+		AddEnemyPatrolNode("child_4", "PathNodeArea_8", 0.0f, "", false);
+		AddEnemyPatrolNode("child_4", "PathNodeArea_9", 0.0f, "", false);
+		return;
+	}
+	
+	else if (asChild == "child4killtrigger")
+	{
+		ClearEnemyPatrolNodes("child_4");
+		SetEntityActive("child_4", false);
+		return;
+	}	
+	
+}
+
+void Child3SpookSound (string &in asTimer)
+{
+	if (asTimer == "Child3SpookTimer1")
+	{
+		PlaySoundAtEntity("", "afx_spooky_hightone_whoosh.snt", "Child3SpookySource", 0.0f, false);
+		return;
+	}
+	else if (asTimer == "Child3SpookTimer2")
+	{
+		PlaySoundAtEntity("", "afx_spooky_bilge_01.snt", "Player", 0.0f, false);
+		return;
+	}
+}
+
+void DistantChildHandler (string &in asParent, string &in asChild, int alState)
+{
+	if (asChild == "DistantChildOffTrigger")
+	{
+		SetEntityActive("DistantChild", false);
+		AddHint("Bilge2", "");
+		
+		return;
+	}
+	else if (asChild == "DistantChildOnTrigger")
+	{
+		SetEntityActive("DistantChild", true);
+		return;
+	}
+}
+//END LEVEL CHILD EVENT HANDLER//
+
+//SPRAYLOCK POWER UP SEQUENCE//
+void SpraylockPowerUpSequence (string &in asEntity, int alState)
+{
+	if (alState == 1)
+	{
+		AddDebugMessage("Spraylock Powered Up", false);
+		SetLeverStuckState("OfficePowerSwitch", 1, false);
+		SetEntityInteractionDisabled("OfficePowerSwitch", true);
+		SetLampLit("OfficePowerSwitchRedLight", false, false);
+		SetLampLit("OfficePowerSwitchGreenLight", true, false);
+	}
+}
+//END SPRAYLOCK POWER UP SEQUENCE//
+
+//WRETCH 2 HANDLER//
+void Wretch2Handler (string &in asParent, string &in asChild, int alState)
+{
+	if (GetLocalVarInt("WretchRemovedPermanently") == 0)
+	{
+		if (asChild == "Wretch2Trigger")
+		{
+			SetEntityActive("Wretch2", true);
+			PlaySoundAtEntity("", "afx_church_factory_bigscream.snt", "Wretch2", 0.0f, false);
+			return;
+		}
+		else if (asChild == "Wretch2TempDespawn" && GetEnemyStateName("Wretch2") == "Patrol")
+		{
+			ClearEnemyPatrolNodes("Wretch2");
+			SetEntityActive("Wretch2", false);
+
+		}
+		else if (asChild == "Wretch2LoopTrigger2" && GetEnemyStateName("Wretch2") == "Patrol")
+		{
+			ClearEnemyPatrolNodes("Wretch2");
+
+		}
+	}
+}
+//END WRETCH 2 HANDLER//
+//END LEVEL PIG HANDLERS//
+
+//DEATH HANDLER//
+void DeathHandler (string &in asName, int alCount)
+{
+	if (alCount == 0)
+	{
+		AddDebugMessage("Player Has Died. Death Count is "+alCount+".", false);
+		SetPlayerCrouching(true);
+		SetPlayerActive(false);
+		AddTimer("Death1Timer1", 2.0f, "DeathTimer1Sequence");
+		AddTimer("Death1Timer2", 5.0f, "DeathTimer1Sequence");
+		AddTimer("Death1Timer3", 6.0f, "DeathTimer1Sequence");
+		AddTimer("Death1Timer4", 8.0f, "DeathTimer1Sequence");
+		AddTimer("Death1Timer5", 9.0f, "DeathTimer1Sequence");
+		AddTimer("Death1Timer6", 12.5f, "DeathTimer1Sequence");
+		return;
+	}
+	else if (alCount >= 1)
+	{
+		AddDebugMessage("Player Has Died. Death Count is "+alCount+".", false);
+		AddTimer("Death2Timer1", 2.0f, "DeathTimer2Sequence");
+		AddTimer("Death2Timer2", 5.0f, "DeathTimer2Sequence");
+		AddTimer("Death2Timer3", 6.0f, "DeathTimer2Sequence");
+		AddTimer("Death2Timer4", 8.0f, "DeathTimer2Sequence");
+		AddTimer("Death2Timer5", 9.0f, "DeathTimer2Sequence");
+		AddTimer("Death2Timer6", 10.5f, "DeathTimer2Sequence");
+		AddTimer("Death2Timer7", 13.0f, "DeathTimer2Sequence");
+		return;
+	}
+	else
+	{
+		ReleasePlayerFromLimbo();
+		return;
+	}
+}
+
+void DeathTimer1Sequence (string &in asTimer)
+{
+	if (asTimer == "Death1Timer1")
+	{
+		PlaySoundAtEntity("", "afx_spooky_hifrequencymoan_2D.snt", "Player", 0.0f, false);
+		return;
+	}
+	else if (asTimer == "Death1Timer2" || asTimer == "Death1Timer3" || asTimer == "Death1Timer4")
+	{
+		PlaySoundAtEntity("", "afx_spooky_monster_noises_tight_2D.snt", "Player", 0.0f, false);
+	}
+	else if (asTimer == "Death1Timer5")
+	{
+		PlaySoundAtEntity("", "00_intro_falling.snt", "Player", 0.0f, false);
+		return;
+	}
+	else if (asTimer == "Death1Timer6")
+	{
+		ReleasePlayerFromLimbo();
+		SetPlayerActive(true);
+		return;
+	}
+}
+
+void DeathTimer2Sequence (string &in asTimer)
+{
+	if (asTimer == "Death2Timer1")
+	{
+	}
+	else if (asTimer == "Death2Timer2" || asTimer == "Death2Timer3" || asTimer == "Death2Timer4")
+	{
+	}
+	else if (asTimer == "Death2Timer5")
+	{
+	}
+	else if (asTimer == "Death2Timer6")
+	{
+	}
+	else if (asTimer == "Death2Timer7")
+	{
+		ReleasePlayerFromLimbo();
+		SetPlayerActive(true);
+		SetEntityActive("Wretch2", false);
+		SetLocalVarInt("WretchRemovedPermanently", 1);
+		return;
+	}
+}
+//END DEATH HANDLER//
+
+//FALL INTO PIT HANDLER//
+void BeginTrapFall(string &in asParent, string &in asChild, int alState)
+{
+	MandusReactionPlayer("Quick", 0.1);
+	SetPlayerCrouching(true);
+	SetPlayerCrouchDisabled(true);
+	SetPlayerJumpDisabled(true);
+	SetPlayerMoveSpeedMul(0.3);
+	SetEntityActive("TrapStopFallArea", true);
+}
+
+void StopTrapFall(string &in asParent, string &in asChild, int alState)
+{
+	SetPlayerCrouching(false);
+	SetPlayerCrouchDisabled(false);
+	SetPlayerJumpDisabled(false);
+	SetPlayerMoveSpeedMul(1);
+	FadeImageTrailTo(0, 0.1);
+	MandusReactionPlayer("Breath", 1.25);
+	SetEntityActive("TrapStopFallArea", false);
+}
+
+void CollisionTrapSlide(string &in asParent, string &in asChild, int alState)
+{
+	if (alState == 1)
+	{
+		PlaySoundAtEntity("TrapSlide", "joint_dumb_waiter_door_move_endoflevel.snt", "Player", 0.1, false);
+		StartScreenShake(0.03, 0.4, 0.1, 0.1);
+		FadeImageTrailTo(1.2, 6);
+		TrapSlideLoop("");
+	}
+	else
+	{
+		StopSound("TrapSlide", 0.1);
+		RemoveTimer("TrapSlideLoop");
+	}
+}
+
+void TrapSlideLoop(string &in asTimer)
+{
+	if (GetPlayerSpeed() < 10)
+	{
+		AddPlayerBodyForce(4000,-5000, 0, false);
+	}
+	AddTimer("TrapSlideLoop", 0.05, "TrapSlideLoop");
+}
+
+//END FALL INTO PIT HANDLER//
+
+//HITTING LADDER EVENT HANDLER//
+void HittingLadder (string &in asParent, string &in asChild, int alState)
+{
+	PlaySoundAtEntity("soundbump", "impact_metal_med.snt", "LadderEffect", 0, false);
+	CreateParticleSystemAtEntity("psbump", "ps_dust_impact_gate.ps", "LadderEffect", false);
+	RemoveTimer("ThrowHint");
+	
+	if (GetLocalVarInt("LadderHits") == 0)
+	{
+		PlaySoundAtEntity("slidedown", "afx_event_factory_gate_close.snt", "LadderEffect", 0.5, false);
+		AddPropForce("sliding_ladder_1", 0, 10, 0, "World");
+		SetEntityActive("LadderBlockerA", false);
+		AddLocalVarInt("LadderHits", 1);
+		RemoveTimer("help_player1");
+		AddTimer("help_player2", 20, "AutoCompleteLadder");
+		HittingLadder("","", 1);	//add so only need one hit
+		return;
+	}
+	else if (GetLocalVarInt("LadderHits") == 1)
+	{
+		AddPropForce("sliding_ladder_1", 0, 10, 0, "World");
+		SetEntityActive("LadderBlockerB", false);
+		SetEntityActive("PitLadderAreaFull", true);
+		SetEntityActive("PitLadderAreaShort", false);
+		RemoveTimer("help_player2");
+		return;
+	}
+}
+
+void CollideCheckPlayerInPit(string &in asParent, string &in asChild, int alState)
+{
+	AddTimer("help_player2", 46, "AutoCompleteLadder");
+	AddTimer("help_player1", 45, "AutoCompleteLadder");
+	
+	AddTimer("ThrowHint", 10, "TimerShowHint");
+}
+
+void TimerShowHint(string &in asTimer)
+{
+	GiveHint("ThrowHint", "Hints", "ThrowHint", -1);
+}
+
+void AutoCompleteLadder(string &in asTimer)
+{
+	if(asTimer == "help_player1")
+	{
+		StartScreenShake(0.02, 0.5, 0.5, 1);
+		PlaySoundAtEntity("wez_shakes", "afx_church_pens_vo_shake_1", "Player",1, false);
+	}
+	
+	if(asTimer == "help_player2")
+	{
+		HittingLadder("","", 1);
+		HittingLadder("","", 1);
+		StopSound("wez_shakes", 2);
+	}
+}
+
+//END HITTING LADDER//
+
+//RESTORE TO NORMAL//
+void RestoreToNormal (string &in asTimer)
+{
+//RETURN TO NORMAL VISION
+	if (asTimer == "ReturnToNormalVision")
+	{
+		FadeRadialBlurTo(0.0f, 4.0f);
+		FadeImageTrailTo(0.0f, 4.0f);
+		return;
+	}
+
+//RETURN TO NORMAL ALL//
+	else if (asTimer == "ReturnToNormal")
+	{
+		FadeImageTrailTo(0.0f, 3.0f);
+		SetPlayerLookSpeedMul(1.0f);
+		SetPlayerMoveSpeedMul(1.0f);
+		StopPlayerLookAt();
+		return;
+	}
+	
+//END VISUAL EFFECT FOR SCREAM//
+	else if (asTimer == "EndVisEffect")
+	{
+		FadeImageTrailTo(0.0f, 0.5f);
+		FadeSepiaColorTo(0.0f, 0.5f);
+		return;
+	}
+}
+//END RESTORE TO NORMAL//
+
+//SPRAYLOCK SWITCH PROXIMITY CHECKER//
+void CheckPowerSwitchProximity (string &in asParent, string &in asChild, int alState)
+{
+	if (GetLocalVarInt("spraylocksequenced") == 0)
+	{
+		if (alState == 1)
+		{
+			AddDebugMessage("Power Switch CAN Be Interacted With", false);
+			SetEntityInteractionDisabled("spraylock_power_switch", false);
+			AddTimer("MovementPreventionTimer", 0.1f, "MovementPreventionChecker");
+			return;
+		}
+		else if (alState == -1)
+		{
+			AddDebugMessage("Power Switch CANNOT Be Interacted With", false);
+			SetEntityInteractionDisabled("spraylock_power_switch", true);
+			RemoveTimer("MovementPreventionTimer");
+			return;
+		}
+	}
+}
+//END PROXIMITY CHECKER//	
+
+//STOP MOVEMENT ON POWER SWITCH INTERACT//
+void MovementPreventionChecker (string &in asTimer)
+{
+	if (GetPropIsInteractedWith("spraylock_power_switch") == true)
+	{
+		SetPlayerMoveSpeedMul(0.0f);
+		SetPlayerRunSpeedMul(0.0f);
+		AddTimer("MovementPreventionTimer", 0.1f, "MovementPreventionChecker");
+		return;
+	}
+	else
+	{
+		SetPlayerMoveSpeedMul(1.0f);
+		SetPlayerRunSpeedMul(1.0f);
+		AddTimer("MovementPreventionTimer", 0.1f, "MovementPreventionChecker");
+		return;
+	}
+}
+//END STOP MOVEMENT//									
+
+//SPRAYLOCK SEQUENCER//
+void SpraylockSequence (string &in asEntity, int alState)
+{
+	if (asEntity == "spraylock_power_switch" && alState == 1 && GetLocalVarInt("spraylocksequenced") == 0)
+	{
+		AddDebugMessage("Spraylock Power Switch Activated", false);
+		PlaySoundAtEntity("", "spraylock_breaker_switch_confirm.snt", "spraylock_power_switch", 0.0f, false);
+		//PLAY SPARKS//
+		SetParticleSystemActive("spraylock_sparks_1", true);
+		SetParticleSystemActive("spraylock_sparks_2", true);
+		SetLightVisible("spraylock_spark_light", true);
+		AddTimer("SpraylockPowerSwitchSparkLightTimer", 0.4, "SpraylockTimedEvents");
+		//STICK POWER SWITCH//
+		SetLeverInteractionDisablesStuck("spraylock_power_switch", false);
+		SetLeverStuckState("spraylock_power_switch", 1, false);
+		//UNSTICK INTERIOR VALVE 1//
+		SetWheelInteractionDisablesStuck("spraylock_valve_inside_1", true);
+		PlaySoundAtEntity("sl_hiss_2", "spraylock_gauge_hiss_2.snt", "spraylock_hiss_inside_1", 0.0f, false);
+		//ACTIVATE CONTAINING RAILS//
+		PlayPropAnimation("spraylock_railing", "offtoon", 0.0f, false, "");
+		PlaySoundAtEntity("sl_railing_up", "spraylock_railing_up.snt", "spraylock_railing", 0.0f, false);
+		SetEntityActive("spraylock_railing_collision", true);
+		AddTimer("SpraylockRailingActivationAnimationTimer", 1.5f, "SpraylockTimedEvents");
+		//REMOVE PROXIMITY CHECKER//
+		RemoveEntityCollideCallback("Player", "spraylock_power_interaction_area");
+		SetEntityInteractionDisabled("spraylock_power_switch", false);
+		//PLAY SEQUENCE OUT
+		PlaySoundAtEntity("sl_turbinestart", "spraylock_turbine_start.snt", "spraylock_center_sound", 0.0f, false);
+		PlaySoundAtEntity("sl_enginestart", "spraylock_engine_start.snt", "spraylock_center_sound", 0.0f, false);
+		PlaySoundAtEntity("sl_turbinestart_rattle", "spraylock_turbine_start_RATTLE.snt", "spraylock_rattlesound", 0.0f, false);
+		SetLampLit("spraylock_red_light", false, false);
+		SetLampLit("spraylock_green_light", true, false);
+		AddTimer("SpraylockInitLoopTimer", 3.0f, "SpraylockTimedEvents");
+		AddTimer("SpraylockEngineOnAnimationBuffer", 1.9f, "SpraylockTimedEvents");
+		PlayPropAnimation("spraylock_engines", "on", 0.0f, false, "");
+		AddTimer("SpraylockCabinetGauge1AnimationTimer", 3.2f, "SpraylockTimedEvents");
+		AddTimer("SpraylockCabinetGauge2AnimationTimer", 2.0f, "SpraylockTimedEvents");
+		PlayPropAnimation("spraylock_power_gauges", "offtoon", 0.0f, false, "");
+		PlayPropAnimation("spraylock_spray_switch_gauges", "on", 0.0f, true, "");
+		PlayPropAnimation("spraylock_spray_switch_gauges_1", "on", 0.0f, true, "");
+		PlayPropAnimation("spraylock_gauge_inside_1", "on", 0.0f, true, "");
+		AddTimer("SpraylockPowerGaugesOffToOnTimer", 0.3, "SpraylockTimedEvents");
+		return;
+	}
+	else if (asEntity == "spraylock_power_switch" && alState == -1 && GetLocalVarInt("spraylocksequenced") == 1)
+	{
+		//STICK POWER SWITCH//
+		SetLeverInteractionDisablesStuck("spraylock_power_switch", false);
+		SetLeverStuckState("spraylock_power_switch", -1, false);
+		//SWITCH LIGHTS//
+		SetLampLit("spraylock_red_light", true, false);
+		SetLampLit("spraylock_green_light", false, false);
+		//DEACTIVATE CONTAINING RAILS//
+		PlayPropAnimation("spraylock_railing", "ontooff", 0.0f, false, "");
+		PlaySoundAtEntity("sl_railing_down", "spraylock_railing_down.snt", "spraylock_railing", 0.0f, false);
+		SetEntityActive("spraylock_railing_collision", true);
+		AddTimer("SpraylockRailingDeactivationAnimationTimer", 1.5f, "SpraylockTimedEvents");		
+		//PLAY SEQUENCE OUT//
+		PlaySoundAtEntity("sl_turbine_end", "spraylock_turbine_end.snt", "spraylock_center_sound", 1.0f, false);
+		PlaySoundAtEntity("sl_turbine_end_rattle", "spraylock_turbine_end_rattle.snt", "spraylock_rattlesound", 1.0f, false);
+		PlaySoundAtEntity("sl_engine_end", "spraylock_engine_end.snt", "spraylock_center_sound", 1.0f, false);
+		StopSound("sl_turbine_loop", 1.0f);
+		StopSound("sl_engine_loop", 1.0f);
+		PlayPropAnimation("spraylock_engines", "ontooff", 0.0f, false, "");
+		PlayPropAnimation("spraylock_power_gauges", "ontooff", 1.0f, false, "");
+		return;
+	}
+	else if (asEntity == "spraylock_spray_switch" && alState == 1)
+	{
+		AddDebugMessage("Spraylock Spray Switch Activated", false);
+		AddTimer("SpraylockGaugesStartUpPadding", 0.4f, "SpraylockTimedEvents");
+		AddTimer("SpraylockSprayGaugesAnimationPadding", 0.6f, "SpraylockTimedEvents");
+		PlayPropAnimation("spraylock_spray_switch_gauges", "ontooff", 7.0f, false, "");
+		PlayPropAnimation("spraylock_spray_switch_gauges_1", "ontooff", 7.0f, false, "");
+		PlaySoundAtEntity("", "spraylock_switch_confirm.snt", "spraylock_spray_switch", 0, false);
+		//STICK SPRAY SWITCH
+		SetLeverInteractionDisablesStuck("spraylock_spray_switch", false);
+		SetLeverStuckState("spraylock_spray_switch", 1, false);
+		AddTimer("SpraylockSprayPadding", 0.3f, "SpraylockTimedEvents");
+		AddTimer("SpraylockSprayToEndTimer", 8.0f, "SpraylockTimedEvents");
+		return;
+	}
+}
+//END SEQUENCER//
+
+//SPRAYLOCK DOOR SEQUENCER//
+void SpraylockDoorHandler (string &in asEntity, int alState)
+{
+	if (asEntity == "spraylock_valve_outside_1" && alState == -1) //Office Valve Opens Door 1//
+	{
+		AddDebugMessage("Opening Spraylock Door 1", false);
+		StopSound("sl_hiss_1", 0.5f);
+		PlayPropAnimation("spraylock_door_1", "opening", 0.0f, false, "");
+		PlaySoundAtEntity("", "spraylock_door_mech_unlock_OUTSIDE.snt", "spraylock_door1source", 0.0f, false);
+		PlayPropAnimation("spraylock_gauge_outside_1", "ontooff", 4.0f, false, "");
+		AddTimer("SpraylockDoor1AnimationPadding", 2.2f, "SpraylockTimedEvents");
+		//STICK THIS VALVE
+		SetWheelInteractionDisablesStuck("spraylock_valve_outside_1", false);
+		SetWheelStuckState("spraylock_valve_outside_1", -1, false);
+		return;
+	}
+	
+	else if (asEntity == "spraylock_valve_inside_1" && alState == -1 && GetLocalVarInt("spraylocksequenced") == 0) //Left Interior Valve Closes Door 1//
+	{
+		AddDebugMessage("Closing Spraylock Door 1", false);
+		StopSound("sl_hiss_2", 0.5f);
+		AddTimer("SpraylockDoor1ClosingAnimationPadding", 3.0f, "SpraylockTimedEvents");
+		PlayPropAnimation("spraylock_gauge_inside_1", "ontooff", 4.0f, false, "");
+		PlaySoundAtEntity("", "spraylock_door_hinge_close_INSIDE.snt", "spraylock_door2source", 0.0f, false);
+		PlaySoundAtEntity("", "spraylock_valve_lock_inside.snt", "spraylock_valve_inside_1", 0.0f, false);
+		SetSwingDoorOpenAmount("spraylock_door_1", 0, 3.0f, true);
+		//UNSTICK SPRAY SWITCH
+		SetLeverInteractionDisablesStuck("spraylock_spray_switch", true);
+		//STICK THIS VALVE
+		SetWheelInteractionDisablesStuck("spraylock_valve_inside_1", false);
+		SetWheelStuckState("spraylock_valve_inside_1", -1, false);
+		//STOPPING EXTERIOR MACHINE SOUNDS
+		StopSound("PistonWheel", 1.0f);
+		StopSound("BilgeEngineLoop3", 1.0f);
+		StopSound("DynamoLoop2", 1.0f);
+		StopSound("DynamoLoop", 1.0f);
+		StopSound("Dynamo2D2", 1.0f);
+		StopSound("Dynamo2D", 1.0f);
+		StopSound("DynamoStartup2", 1.0f);
+		StopSound("DynamoStartup", 1.0f);
+		StopSound("MachineDrone", 1.0f);
+		StopSound("MachineDroneQuieter", 1.0f);
+		StopSound("DynamoEngineStartup", 3.0f);
+		StopSound("DynamoStartup", 3.0f);
+		StopSound("DynamoStartup2D", 3.0f);
+		StopSound("BilgeEngine33D", 3.0f);
+		StopSound("BilgeEngine32D", 3.0f);
+		StopSound("BilgeEngine23D", 3.0f);
+		StopSound("BilgeEngine22D", 3.0f);
+		StopSound("BilgeEngine13D", 3.0f);
+		StopSound("BilgeEngine12D", 3.0f);
+		StopSound("DynamoEngineLoop", 3.0f);
+		StopSound("DynamoLoop", 3.0f);
+		StopSound("Dynamo2D", 3.0f);
+		StopSound("Dynamo", 3.0f);
+		RemoveTimer("afx_bilgearea2_1");
+		RemoveTimer("afx_bilgearea2_2");
+		RemoveTimer("afx_bilgearea2_3");
+		RemoveTimer("afx_bilgearea2_4");
+		RemoveTimer("afx_bilgearea2_5");
+		RemoveTimer("afx_bilgearea2_6");
+		RemoveTimer("afx_bilgearea2_7");
+		RemoveTimer("afx_bilgearea2_8");
+		RemoveTimer("InitCryingSoundCues");
+		RemoveTimer("CryingSoundCues");
+		RemoveTimer("InitMonsterSoundCues");
+		RemoveTimer("MonsterSoundCues");
+		RemoveTimer("InitScreamSoundCues");
+		RemoveTimer("ScreamSoundCues");
+		RemoveEntityCollideCallback("Player", "RandSoundArea2_Stop_1");
+		RemoveEntityCollideCallback("Player", "RandSoundArea2_Stop_2");
+		RemoveEntityCollideCallback("Player", "RandSoundArea2_Start_1");
+		RemoveEntityCollideCallback("Player", "RandSoundArea2_Start_2");
+		RemoveTimer("Sound_RandOfficeArea_1");
+		RemoveTimer("RandSound_OfficeArea_2"); 
+		RemoveTimer("RandSound_OfficeArea_3");
+		RemoveTimer("RandSound_OfficeArea_4");
+		RemoveTimer("RandSound_OfficeArea_5");
+		RemoveTimer("RandSound_OfficeArea_6");
+		RemoveTimer("RandSound_OfficeArea_7");
+/*		RemoveTimer("Sound_RandGateArea_1"); 
+		RemoveTimer("Sound_RandGateArea_2"); 
+		RemoveTimer("Sound_RandGateArea_3");
+		RemoveTimer("Sound_RandGateArea_4");
+		RemoveTimer("Sound_RandGateArea_5");
+		RemoveTimer("Sound_RandGateArea_6");
+		RemoveTimer("Sound_RandGateArea_7");
+		RemoveTimer("Sound_RandGateArea_8");
+		RemoveTimer("InitBilgeGateAreaSoundCues");
+		RemoveTimer("BilgeGateAreaSoundCues");*/
+		RemoveTimer("InitBilgeGateMonsterAreaSoundCues");
+		RemoveTimer("BilgeGateMonsterAreaSoundCues");
+		RemoveTimer("InitOfficeAreaSoundCues");
+		RemoveTimer("OfficeAreaSoundCues");
+		RemoveTimer("InitBodyCorridorSoundCues");
+		RemoveTimer("BodyCorridorSoundCues");
+		RemoveEntityCollideCallback("Player", "StartOfficeSounds_1");
+		RemoveEntityCollideCallback("Player", "StopOfficeSounds_1");
+		RemoveTimer("AFX_Bilge_Oneshot_1");
+		RemoveTimer("AFX_Bilge_Oneshot_2");
+		RemoveTimer("AFX_Bilge_Oneshot_3");
+		RemoveTimer("AFX_Bilge_Oneshot_4");
+		RemoveTimer("AFX_Bilge_Oneshot_5");
+		RemoveTimer("AFX_Bilge_Oneshot_6");
+		RemoveTimer("AFX_Bilge_Oneshot_7");
+		RemoveTimer("AFX_Bilge_Oneshot_8");
+		RemoveTimer("AFX_Bilge_Oneshot_9");
+		RemoveTimer("AFX_Bilge_Oneshot_10");
+		RemoveTimer("AFX_Bilge_Oneshot_11");
+		RemoveTimer("AFX_Bilge_Oneshot_12");
+		RemoveTimer("AFX_Start_1");
+		RemoveTimer("AFX_Start_2");
+		RemoveTimer("AFX_Start_3");
+		RemoveTimer("StartAreaSoundCues");
+		RemoveTimer("InitStartAreaSoundCues");
+		return;
+	}
+	
+	else if (asEntity == "spraylock_valve_outside_2" && alState == -1) //Annex Valve Closes Door 2//
+	{/*
+		PlayPropAnimation("spraylock_door_1", "door", 0.0f, false, "");
+		PlaySoundAtEntity("", "spraylock_door_hinge_open.snt", "spraylock_door2source", 0.0f, false);
+		SetSwingDoorOpenAmount("spraylock_door_2", 0, 3.0f, false);
+		return;
+	*/
+	}
+	
+	else if (asEntity == "spraylock_valve_inside_2" && alState == -1 && GetLocalVarInt("spraylocksequenced") == 1) //Right Interior Valve Opens Door 2//
+	{
+		AddDebugMessage("Opening Spraylock Door 2", false);
+		StopSound("sl_hiss_3", 0.5f);
+		PlayPropAnimation("spraylock_gauge_inside_2", "ontooff", 4.0f, false, "");
+		PlayPropAnimation("spraylock_door_2", "opening", 0.0f, false, "");
+		PlaySoundAtEntity("", "spraylock_door_mech_unlock_INSIDE.snt", "spraylock_door1source", 0.0f, false);
+		AddTimer("SpraylockDoor2AnimationPadding", 2.0f, "SpraylockTimedEvents");
+		//STICK THIS VALVE
+		SetWheelInteractionDisablesStuck("spraylock_valve_inside_2", false);
+		SetWheelStuckState("spraylock_valve_inside_2", -1, false);
+		//UNSTICK POWER SWITCH FOR SECOND USE
+		SetLeverInteractionDisablesStuck("spraylock_power_switch", true);
+		return;		
+	}
+}
+//END SPRAYLOCK DOOR SEQUENCER//
+
+										//////////////////////////////
+										//NON MAP-SPECIFIC FUNCTIONS//
+										//////////////////////////////
+										
+void SpraylockTimedEvents (string &in asTimer)
+{
+	//SPRAYLOCK EVENTS//
+	if (asTimer == "SpraylockDoor1AnimationPadding")
+	{
+		PlayPropAnimation("spraylock_door_1", "open", 0.0f, false, "");
+		PlaySoundAtEntity("", "spraylock_door_hinge_open.snt", "spraylock_door1source", 0.0f, false);
+		SetSwingDoorOpenAmount("spraylock_door_1", 1, 3.0f, true);
+		return;
+	}
+	else if (asTimer == "SpraylockDoor1ClosingAnimationPadding")
+	{
+		PlayPropAnimation("spraylock_door_1", "closing", 0.0f, false, "");
+		PlaySoundAtEntity("", "spraylock_door_mech_unlock_INSIDE.snt", "spraylock_door1source", 0.0f, false);
+		return;
+	}
+	else if (asTimer == "SpraylockPowerGaugesOffToOnTimer")
+	{
+		PlayPropAnimation("spraylock_power_gauges", "on", 0.2f, true, "");
+		return;
+	}
+	else if (asTimer == "SpraylockDoor2AnimationPadding")
+	{
+		PlaySoundAtEntity("", "spraylock_door_hinge_open_INSIDE.snt", "spraylock_door2source", 0.0f, false);
+		PlaySoundAtEntity("", "spraylock_valve_lock_inside.snt", "spraylock_valve_inside_2", 0.0f, false);
+		SetSwingDoorOpenAmount("spraylock_door_2", 1, 3.0f, false);
+		return;
+	}
+	else if (asTimer == "SpraylockGaugesStartUpPadding")
+	{
+		PlayPropAnimation("spraylock_gauges", "offtoon", 0.0f, false, "");
+	}
+	else if (asTimer == "SpraylockSprayGaugesAnimationPadding")
+	{
+		PlayPropAnimation("spraylock_gauges", "on", 0.0f, true, "");
+		AddTimer("SpraylockSprayGaugesTimeout", 6.0f, "SpraylockTimedEvents");
+		return;
+	}
+	else if (asTimer == "SpraylockSprayGaugesTimeout")
+	{
+		PlayPropAnimation("spraylock_gauges", "ontooff", 0.0f, false, "");
+		return;
+	}
+	else if (asTimer == "SpraylockPowerSwitchSparkLightTimer")
+	{
+		SetLightVisible("spraylock_spark_light", false);
+		return;
+	}
+	else if (asTimer == "SpraylockRailingActivationAnimationTimer")
+	{
+		PlayPropAnimation("spraylock_railing", "on", 0.0f, true, "");
+		return;
+	}
+	else if (asTimer == "SpraylockRailingDeactivationAnimationTimer")
+	{
+		PlayPropAnimation("spraylock_railing", "off", 0.0f, true, "");
+		SetEntityActive("spraylock_railing_collision", false);
+		return;
+	}
+	else if (asTimer == "SpraylockInitLoopTimer")
+	{
+		AddDebugMessage("Spraylock Engines Starting Up", false);
+		PlaySoundAtEntity("sl_turbine_loop", "spraylock_turbine_loop.snt", "spraylock_center_sound", 0.0f, false);
+		PlaySoundAtEntity("sl_engine_loop", "spraylock_engine_loop.snt", "spraylock_center_sound", 0.0f, false);
+		return;
+	}
+	else if (asTimer == "SpraylockSprayPadding")
+	{
+		AddDebugMessage("Spraylock Particles Activated", false);
+		PlaySoundAtEntity("sl_spray", "spraylock_mainspray.snt", "Player", 0.0f, false);
+		PlaySoundAtEntity("sl_drips", "amb_spraylock_drips.snt", "spraylock_spray_switch_gauges_1", 0.0f, false);
+		SetParticleSystemActive("spraylock_spray1", true);
+		SetParticleSystemActive("spraylock_spray2", true);
+		SetParticleSystemActive("spraylock_spray3", true);
+		SetParticleSystemActive("spraylock_spray4", true);
+		SetParticleSystemActive("spraylock_spray5", true);
+		SetParticleSystemActive("spraylock_spray6", true);
+		SetParticleSystemActive("spraylock_risingmist", true);
+		SetPlayerInfection(0.0f);
+		return;
+	}
+	else if (asTimer == "SpraylockSprayToEndTimer")
+	{
+		AddDebugMessage("Spraylock Engines Spinning Down", false);
+		AddTimer("SpraylockInteriorValveAnimationTimer", 1.9f, "SpraylockTimedEvents");
+		PlayPropAnimation("spraylock_gauge_inside_2", "offtoon", 2.0f, false, "");
+		SetLocalVarInt("spraylocksequenced", 1);
+		return;
+	}
+	else if (asTimer == "SpraylockEngineOnAnimationBuffer")
+	{
+		PlayPropAnimation("spraylock_engines", "on", 0.25f, true, "");
+		return;
+	}
+	else if (asTimer == "SpraylockInteriorValveAnimationTimer")
+	{
+		PlayPropAnimation("spraylock_gauge_inside_2", "on", 0.25f, true, "");
+		//UNSTICK INTERIOR VALVE 2//
+		SetWheelStuckState("spraylock_valve_inside_2", 0, false);
+		PlaySoundAtEntity("sl_hiss_3", "spraylock_gauge_hiss_3.snt", "spraylock_hiss_inside_2", 0.0f, false);
+		return;
+	}
+	else if (asTimer == "SpraylockCabinetGauge1AnimationTimer")
+	{
+		PlayPropAnimation("spraylock_gauge_power1", "on", 0.25f, true, "");
+		return;
+	}
+	else if (asTimer == "SpraylockCabinetGauge2AnimationTimer")
+	{
+		PlayPropAnimation("spraylock_gauge_power2", "on", 0.25f, true, "");
+		return;
+	}
+	//END SPRAYLOCK EVENTS//
+}
+
+
+										//////////////////////////////
+										//NON MAP-SPECIFIC FUNCTIONS//
+										//////////////////////////////
+
+//AMBIENT SOUNDTRACK PLAYER//
+void MapAmbienceAreas (string &in asParent, string &in asChild, int alState)
+
+{
+		if (asChild == "AMB_AreaStartArea_1")
+	{
+		if (alState == 1)
+		{
+			PlaySoundAtEntity("AMB_AreaStartArea_1", "amb_bilge_startarea.snt", "Player", 1.0f, true);
+			SetLocalVarString("CurrentAmbientTrack", asChild);
+			return;
+		}
+		else if (alState == -1) 
+		{
+			StopSound("AMB_AreaStartArea_1", 1.0f);
+			return;
+		}
+	}
+//BREAK
+		if (asChild == "AMB_EndRoom")
+	{
+		if (alState == 1)
+		{
+			PlaySoundAtEntity("AMB_EndRoom", "amb_church_pens_entrance.snt", "Player", 1.0f, true);
+			SetLocalVarString("CurrentAmbientTrack", asChild);
+			return;
+		}
+		else if (alState == -1) 
+		{
+			StopSound("AMB_EndRoom", 1.0f);
+			return;
+		}
+	}
+//BREAK
+		if (asChild == "AMB_AreaStartArea_Tight")
+	{
+		if (alState == 1)
+		{
+			PlaySoundAtEntity("AMB_AreaStartArea_Tight", "amb_bilge_startareawater.snt", "Player", 1.0f, true);
+			SetLocalVarString("CurrentAmbientTrack", asChild);
+			return;
+		}
+		else if (alState == -1) 
+		{
+			StopSound("AMB_AreaStartArea_Tight", 1.0f);
+			return;
+		}
+	}
+//BREAK
+		if (asChild == "AMB_AreaHall1")
+	{
+		if (alState == 1)
+		{
+			PlaySoundAtEntity("AMB_AreaHall1", "amb_bilge_mainhall.snt", "Player", 1.0f, true);
+			SetLocalVarString("CurrentAmbientTrack", asChild);
+			return;
+		}
+		else if (alState == -1) 
+		{
+			StopSound("AMB_AreaHall1", 1.0f);
+			return;
+		}
+	}
+//BREAK
+		if (asChild == "AMB_Hall2")
+	{
+		if (alState == 1)
+		{
+			PlaySoundAtEntity("AMB_Hall2", "amb_bilge_mainhall.snt", "Player", 1.0f, true);
+			SetLocalVarString("CurrentAmbientTrack", asChild);
+			return;
+		}
+		else if (alState == -1) 
+		{
+			StopSound("AMB_Hall2", 1.0f);
+			return;
+		}
+	}
+//BREAK	
+		if (asChild == "AMB_BridgeSpace")
+	{
+		if (alState == 1)
+		{
+			PlaySoundAtEntity("AMB_BridgeSpace", "amb_bilge_mainhall_bridgearea.snt", "Player", 1.0f, true);
+			SetLocalVarString("CurrentAmbientTrack", asChild);
+			return;
+		}
+		else if (alState == -1) 
+		{
+			StopSound("AMB_BridgeSpace", 1.0f);
+			return;
+		}
+	}
+//BREAK	
+		if (asChild == "AMB_TightSpaceDynamo")
+	{
+		if (alState == 1)
+		{
+			PlaySoundAtEntity("AMB_TightSpaceDynamo", "amb_bilge_metalcorridor.snt", "Player", 1.0f, true);
+			SetLocalVarString("CurrentAmbientTrack", asChild);
+			return;
+		}
+		else if (alState == -1) 
+		{
+			StopSound("AMB_TightSpaceDynamo", 1.0f);
+			return;
+		}
+	}
+//BREAK
+		if (asChild == "AMB_PreOfficeWetSpace")
+	{
+		if (alState == 1)
+		{
+			PlaySoundAtEntity("AMB_PreOfficeWetSpace", "amb_bilge_preofficewatercorridor.snt", "Player", 1.0f, true);
+			SetLocalVarString("CurrentAmbientTrack", asChild);
+			return;
+		}
+		else if (alState == -1) 
+		{
+			StopSound("AMB_PreOfficeWetSpace", 1.0f);
+			return;
+		}
+	}
+//BREAK	
+		if (asChild == "AMB_DeathPit")
+	{
+		if (alState == 1)
+		{
+			PlaySoundAtEntity("AMB_DeathPit", "amb_bilge_startareawater.snt", "Player", 1.0f, true);
+			SetLocalVarString("CurrentAmbientTrack", asChild);
+			return;
+		}
+		else if (alState == -1) 
+		{
+			StopSound("AMB_DeathPit", 1.0f);
+			return;
+		}
+	}
+//BREAK	
+		if (asChild == "AMB_TightSpace")
+	{
+		if (alState == 1)
+		{
+			PlaySoundAtEntity("AMB_TightSpace", "amb_bilge_startareawater.snt", "Player", 1.0f, true);
+			SetLocalVarString("CurrentAmbientTrack", asChild);
+			return;
+		}
+		else if (alState == -1) 
+		{
+			StopSound("AMB_TightSpace", 1.0f);
+			return;
+		}
+	}
+//BREAK	
+		if (asChild == "AMB_TightSpace_1")
+	{
+		if (alState == 1)
+		{
+			PlaySoundAtEntity("AMB_TightSpace_1", "amb_bilge_startareawater.snt", "Player", 1.0f, true);
+			SetLocalVarString("CurrentAmbientTrack", asChild);
+			return;
+		}
+		else if (alState == -1) 
+		{
+			StopSound("AMB_TightSpace_1", 1.0f);
+			return;
+		}
+	}
+//BREAK	
+		if (asChild == "AMB_MachineRoom")
+	{
+		if (alState == 1)
+		{
+			PlaySoundAtEntity("AMB_MachineRoom", "amb_bilge_mainhall_generatorroom.snt", "Player", 1.0f, true);
+			SetLocalVarString("CurrentAmbientTrack", asChild);
+			return;
+		}
+		else if (alState == -1) 
+		{
+			StopSound("AMB_MachineRoom", 1.0f);
+			return;
+		}
+	}
+//BREAK	
+		if (asChild == "AMB_Drip_Area")
+	{
+		if (alState == 1)
+		{
+			PlaySoundAtEntity("bilge_drips", "amb_bilge_drip_loop_quieter.snt", "Player", 4.0f, true);
+			SetLocalVarString("CurrentAmbientTrack", asChild);
+			return;
+		}
+		else if (alState == -1) 
+		{
+			StopSound("bilge_drips", 1.0f);
+			return;
+		}
+	}
+
+}
+//END AMBIENT SOUNDTRACK PLAYER//
+
+
+//TRIGGERED VO PLAYER//
+void VOPlayer (string &in asParent, string &in asChild, int alState)
+{
+	if (asChild == "VOFlashback_1")
+	{
+		AddDebugMessage("Flashback Activated", false);
+		AddEffectVoice2("vo_bilge_flashback_mandus", "", "Voice", "vo_bilge_flashback_mandus", 0.0f, "vo_bilge_flashback_mandus_1", 8.6f, false, "", 0.0f, 0.0f);
+		PlayMusic("music_bilge_flashback.ogg", false, 0.50f, 0.0f, 6, false);
+		PlaySoundAtEntity("", "afx_gameplay_hightone_10sec.snt", "Player", 1.0f, false);
+		PlaySoundAtEntity("", "afx_flashback_whisper.snt", "Player", 1.0f, false);
+		FadeImageTrailTo(2.0f, 2.5f);
+		SetPlayerMoveSpeedMul(0.35f);
+		SetPlayerLookSpeedMul(0.35f);
+		AddTimer("ReturnToNormal", 15.0f, "RestoreToNormal");
+		return;
+	}
+	else if (asChild == "childVO_1")
+	{
+		AddEffectVoice("vo_bilge_child_01.ogg", "", "Voice", "vo_bilge_child_01", false, "", 0.0f, 0.0f);
+	}
+	else if (asChild == "childVO_2")
+	{
+		AddEffectVoice("vo_bilge_child_02.ogg", "", "Voice", "vo_bilge_child_02", false, "", 0.0f, 0.0f);
+	}
+	else if (asChild == "childVO_3")
+	{
+		AddEffectVoice("vo_bilge_child_03.ogg", "", "Voice", "vo_bilge_child_03", false, "", 0.0f, 0.0f);
+	}
+	
+}
+//END TRIGGERED VO PLAYER//
+
+//PHONAUTOGRAPH HANDLER//
+void PhonautographHandler (string &in asEntity, int alState)																//This function must be present for all maps containing Phonautograph entities.
+{
+	if (alState == 1)																										//DO NOT EDIT
+	{																														///////////////////////////START OF IF CASE FOR DUPLICATING TO OTHER PHONAUTOGRAPH INSTANCES////////////////////////////////////
+		if (asEntity == "Phonautograph1")																					
+		{
+			SetEntityInteractionDisabled(asEntity, true);																	//DO NOT EDIT
+			PlayPropAnimation("Phonautograph1", "Play", 1.0f, true, "");													//Starts Animation. The name of the Phonautograph entity will need changing for other instances.
+			AddEffectVoice7("vo_bilge_phono.ogg", "", "Voice", "vo_bilge_phono_prof_1", 0.0f, "vo_bilge_phono_mandus_1", 4.0f, "vo_bilge_phono_mandus_1_2", 12.17f, "vo_bilge_phono_mandus_1_3", 17.38f, "vo_bilge_phono_prof_2", 23.0f, "vo_bilge_phono_mandus_2", 27.0f, "vo_bilge_phono_mandus_2_2", 32.4f, false, "", 0.0f, 0.0f);	    		//Plays voice. The .ogg file being called, and the entry name from the .lang file will need changing for other instances.
+			AddTimer("Phono1Timer", 39.5f, "PhonautographDeactivateHandler");	
+		}																													
+	}																														//////////////////////////END OF IF CASE FOR DUPLICATING TO OTHER PHONAUTOGRAPH INSTANCES///////////////	
+}
+
+void PhonautographDeactivateHandler (string &in asTimer)																	//This function must be present for all maps containing Phonautograph entities.
+{																															///////////////////////////START OF IF CASE FOR DUPLICATING TO OTHER PHONAUTOGRAPH INSTANCES////////////
+	if (asTimer == "Phono1Timer")																							//This if statement must be updated for each different phonautograph instance.
+	{
+		PlayPropAnimation("Phonautograph1", "Stop", 1.0f, true, "");														//Stops Animation. The name of the Phonautograph entity will need changing for other instances.
+	}
+}																															//////////////////////////END OF IF CASE FOR DUPLICATING TO OTHER PHONAUTOGRAPH INSTANCES/////////////
+//END PHONAUTOGRAPH HANDLER//
+
+//RANDOM SOUND PLAYER//
+void BilgeRandSoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"AFX_Bilge_Oneshot_1", "AFX_Bilge_Oneshot_2", "AFX_Bilge_Oneshot_3", "AFX_Bilge_Oneshot_4", "AFX_Bilge_Oneshot_5", "AFX_Bilge_Oneshot_6", "AFX_Bilge_Oneshot_7", "AFX_Bilge_Oneshot_8", "AFX_Bilge_Oneshot_9", "AFX_Bilge_Oneshot_10", "AFX_Bilge_Oneshot_11"};
+	asTimer = sCueSources[RandInt(0, 11)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_eerie_monster.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected BILGE SPOOKY Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(6.0f, 16.0f), "BilgeRandSoundCues");
+}
+
+void BilgeRandBodypitSoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_BodyPitRand"};
+	asTimer = sCueSources[0];
+	PlaySoundAtEntity(asTimer, "afx_spooky_scream_type1.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Bodypit: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(15.0f, 20.0f), "BilgeRandBodypitSoundCues");
+}
+
+void BilgeGateAreaSoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_RandGateArea_1", "Sound_RandGateArea_2", "Sound_RandGateArea_3", "Sound_RandGateArea_4", "Sound_RandGateArea_5", "Sound_RandGateArea_6", "Sound_RandGateArea_7", "Sound_RandGateArea_8"};
+	asTimer = sCueSources[RandInt(0, 7)];
+	PlaySoundAtEntity(asTimer, "afx_event_tunnels_groan.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Bilge Gate Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(6.0f, 16.0f), "BilgeGateAreaSoundCues");
+}
+
+void BilgeGateMonsterAreaSoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_RandGateArea_1", "Sound_RandGateArea_2", "Sound_RandGateArea_3", "Sound_RandGateArea_4", "Sound_RandGateArea_5", "Sound_RandGateArea_6", "Sound_RandGateArea_7", "Sound_RandGateArea_8"};
+	asTimer = sCueSources[RandInt(0, 7)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_eerie_monster_type2.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Bilge Gate MONSTER Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(5.0f, 15.0f), "BilgeGateMonsterAreaSoundCues");
+}
+
+void OfficeAreaSoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"Sound_RandOfficeArea_1", "RandSound_OfficeArea_2", "RandSound_OfficeArea_3", "RandSound_OfficeArea_4", "RandSound_OfficeArea_5", "RandSound_OfficeArea_6", "RandSound_OfficeArea_7"};
+	asTimer = sCueSources[RandInt(0, 6)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_hifrequencymoan.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Bilge Gate Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(4.0f, 10.0f), "OfficeAreaSoundCues");
+}
+
+void WaterAreaSoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"AFX_Water_1", "AFX_Water_2", "AFX_Water_3", "AFX_Water_4", "AFX_Water_5", "AFX_Water_6", "AFX_Water_7", "AFX_Water_8"};
+	asTimer = sCueSources[RandInt(0, 7)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_water_splash.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Water Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(15.0f, 30.0f), "WaterAreaSoundCues");
+}
+
+void StartAreaSoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"AFX_Start_1", "AFX_Start_2", "AFX_Start_3"};
+	asTimer = sCueSources[RandInt(0, 2)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_eerie_monster_type2.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Start Area Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(5.0f, 12.0f), "StartAreaSoundCues");
+}
+
+void BodyCorridorSoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"RandSound_BodyArea_1", "RandSound_BodyArea_2", "RandSound_BodyArea_6", "RandSound_BodyArea_4", "RandSound_BodyArea_5", "RandSound_BodyArea_6"};
+	asTimer = sCueSources[RandInt(0, 5)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_eerie_monster_type2.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Water Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(8.0f, 15.0f), "BodyCorridorSoundCues");
+}
+
+void TunnelGroanSoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"AFX_Tunnels_1_1", "AFX_Tunnels_1_2", "AFX_Tunnels_1_6", "AFX_Tunnels_1_4"};
+	asTimer = sCueSources[RandInt(0, 3)];
+	PlaySoundAtEntity(asTimer, "afx_event_tunnels_groan.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Groan Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(8.0f, 15.0f), "TunnelGroanSoundCues");
+}
+
+void TunnelDustSoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"AFX_Tunnels_1_1", "AFX_Tunnels_1_2", "AFX_Tunnels_1_6", "AFX_Tunnels_1_4"};
+	asTimer = sCueSources[RandInt(0, 5)];
+	PlaySoundAtEntity(asTimer, "afx_events_tunnels_dust_debris.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Debris Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(8.0f, 10.0f), "TunnelDustSoundCues");
+}
+
+void TunnelWhisperSoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"AFX_Tunnels_1_1", "AFX_Tunnels_1_2", "AFX_Tunnels_1_6", "AFX_Tunnels_1_4"};
+	asTimer = sCueSources[RandInt(0, 5)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_mansion_whisper.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Debris Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(10.0f, 15.0f), "TunnelWhisperSoundCues");
+}
+
+void CryingSoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"afx_bilgearea2_1", "afx_bilgearea2_2", "afx_bilgearea2_3", "afx_bilgearea2_4", "afx_bilgearea2_5", "afx_bilgearea2_6", "afx_bilgearea2_7", "afx_bilgearea2_8"};
+	asTimer = sCueSources[RandInt(0, 7)];
+	PlaySoundAtEntity(asTimer, "spooky_childcry.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Crying Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(15.0f, 25.0f), "CryingSoundCues");
+}
+
+void MonsterSoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"afx_bilgearea2_1", "afx_bilgearea2_2", "afx_bilgearea2_3", "afx_bilgearea2_4", "afx_bilgearea2_5", "afx_bilgearea2_6", "afx_bilgearea2_7", "afx_bilgearea2_8"};
+	asTimer = sCueSources[RandInt(0, 7)];
+	PlaySoundAtEntity(asTimer, "afx_spooky_eerie_monster_type2.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Monster Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(10.0f, 15.0f), "MonsterSoundCues");
+}
+
+void ScreamSoundCues(string &in asTimer)
+{
+	string[] sCueSources = {"afx_bilgearea2_1", "afx_bilgearea2_2", "afx_bilgearea2_3", "afx_bilgearea2_4", "afx_bilgearea2_5", "afx_bilgearea2_6", "afx_bilgearea2_7", "afx_bilgearea2_8"};
+	asTimer = sCueSources[RandInt(0, 7)];
+	PlaySoundAtEntity(asTimer, "amb_tesla_granulized_scream.snt", asTimer, 0, false);
+	AddDebugMessage("Random Sound Cue Function Selected Scream Sound Source: "+asTimer, false);
+	AddTimer(asTimer, RandFloat(10.0f, 25.0f), "ScreamSoundCues");
+}
+//END RANDOM SOUND PLAYER//
+
+//MUSIC PLAYER//
+void MusicPlayer (string &in asParent, string &in asChild, int alState)
+{
+
+	if (asChild == "Bilge_Ambience_01_Trigger")
+	{
+		PlayMusic("music_bilge_ambience_01.ogg", false, 0.45f, 0.0f, 6, false);
+		return;
+	}
+	else if (asChild == "Bilge_Ambience_02_Trigger")
+	{
+		PlayMusic("music_bilge_ambience_02.ogg", false, 0.45f, 0.0f, 6, false);
+		
+		//SET CHECKPOINT #3//
+		CheckPoint("CP03_BodyDump", "CheckpointStart_2", "DeathHandler", "", "", false);
+		return;
+	}
+}
+//END MUSIC PLAYER//
+
+// HINT HANDLER//
+void HintHandler (string &in asParent, string &in asChild, int alState)
+{
+	if (asChild == "FloodDrainedHintTrigger")
+	{
+		AddHint("Bilge4", "");
+		return;
+	}
+}
+//END HINT HANDLER//
+
+//DELAYED HINT//
+void TimerDelayedHint(string &in asEntity)
+{
+	AddHint(asEntity, "");
+}
+//END DELAYED HINT//
+
+//----------------------------
+//ENCOUNTER HELPERS//
+//----------------------------
+
+//-------------------------------------------
+
+void LanternFlicker(float afTime)
+{
+	SetLanternFlickerActive(true);
+	
+	AddTimer("LanternFlickerOff", afTime, "TimerLanternFlickerOff");
+}
+
+void TimerLanternFlickerOff(string &in asTimer)
+{
+	SetLanternFlickerActive(false);
+}
+
+//-------------------------------------------
+
+void StartLampFlicker(string &in asLamp)
+{
+	AddTimer(asLamp, RandFloat(0.0f, 0.3f), "TimerLampFlickerOff");
+}
+
+void StopLampFlicker(string &in asLamp)
+{
+	RemoveTimer(asLamp);
+	SetLampLit(asLamp, true, false);
+}
+
+void StartLampFlickerBurst(string &in asLamp, float afTime)
+{
+	StartLampFlicker(asLamp);
+	AddTimer(asLamp, afTime, "TimerLampFlickerStop");
+}
+
+void TimerLampFlickerOff(string &in asLamp)
+{
+	SetLampLit(asLamp, false, false);
+	AddTimer(asLamp, RandFloat(0.1f, 0.2f), "TimerLampFlickerOn");
+}
+
+void TimerLampFlickerOn(string &in asLamp)
+{
+	SetLampLit(asLamp, true, false);
+	AddTimer(asLamp, RandFloat(0.05f, 0.15f), "TimerLampFlickerOff");
+	
+	//*InsertSoundHere*: Sound that fits with the lamps in this level, make sure there is a pretty good distance to the sound
+}
+
+void TimerLampFlickerStop(string &in asLamp)
+{
+	StopLampFlicker(asLamp);
+}
+
+//-------------------------------------------
+
+//----------------------------
+//END ENCOUNTER HELPERS//
+//----------------------------
+
+//--------------------
+//WATER LURKER HELPERS//
+//--------------------
+
+//-------------------------------------------
+
+void LurkerSplashHigh(string &in asArea, float afTime)
+{
+	AddTimer(asArea, afTime, "TimerLurkerSplashHigh");
+}
+
+void TimerLurkerSplashHigh(string &in asArea)
+{
+	CreateParticleSystemAtEntity("Splash", "waterlurker_sewer_walk_splash.ps", asArea, false);
+	PlaySoundAtEntity("Splash", "watermonster_movement_high", asArea, 0, false);
+	PlaySoundAtEntity("Splashelec", "cellar_light_flicker_louder.snt", asArea, 0, false);
+	//*InsertSoundHere*: Low, subtle lurker glow.
+}
+
+//-------------------------------------------
+
+void LurkerSplashLow(string &in asArea, float afTime)
+{
+	AddTimer(asArea, afTime, "TimerLurkerSplashLow");
+}
+
+void TimerLurkerSplashLow(string &in asArea)
+{
+	CreateParticleSystemAtEntity("Splash", "waterlurker_sewer_walk_splash.ps", asArea, false);
+	PlaySoundAtEntity("Splash", "watermonster_movement", asArea, 0, false);
+	PlaySoundAtEntity("Splashelec", "cellar_light_flicker_louder.snt", asArea, 0, false);
+}
+
+//-------------------------------------------
+
+//--------------------
+//END WATER LURKER HELPERS//
+//--------------------
+
+//----------------------------
+//WATER LURKER//
+//----------------------------
+
+//-------------------------------------------
+
+void EnterLurkerStart(string &in asParent, string &in asChild, int alState)
+{
+	if (GetEntityActive("waterlurker_1")) return;
+	
+	SetEntityActive("waterlurker_amb_3", false);
+	SetEntityActive("waterlurker_1", true);
+	
+	CheckPoint("LurkerCheckPoint", "CheckpointStart_2", "CheckpointLurker", "", "", false);
+	
+	StartLampFlickerBurst("hanging_lantern_wall_9", 4);
+}
+
+//-------------------------------------------
+
+void CheckpointLurker(string &in asName, int alCount)
+{
+	LeaveLurker("", "", 1);
+	//AddEntityCollideCallback("Player", "AreaLurkerStart", "EnterLurkerStart", true, 1);
+}
+
+//-------------------------------------------
+
+void LeaveLurker (string &in asParent, string &in asChild, int alState)
+{
+	TeleportEnemyToNode("waterlurker_1", "PathNodeArea_82", false);
+	SetEntityActive("waterlurker_1", false);
+	SetEntityActive("waterlurker_amb_3", true);
+}
+
+//-------------------------------------------
+
+void EnterFakeLurk1(string &in asParent, string &in asChild, int alState)
+{
+	LanternFlicker(3);
+
+	LurkerSplashHigh("AreaLurk1_Splash_1", 0.4);
+	LurkerSplashHigh("AreaLurk1_Splash_2", 1.4);
+	LurkerSplashHigh("AreaLurk1_Splash_3", 2.4);
+}
+
+void EnterFakeLurk2(string &in asParent, string &in asChild, int alState)
+{
+	LanternFlicker(3);
+	
+	LurkerSplashHigh("AreaLurk2_Splash_1", 0.4);
+	LurkerSplashHigh("AreaLurk2_Splash_2", 1.0);
+	LurkerSplashHigh("AreaLurk2_Splash_3", 1.4);
+	LurkerSplashHigh("AreaLurk2_Splash_4", 1.9);
+	LurkerSplashHigh("AreaLurk2_Splash_5", 2.4);
+	LurkerSplashHigh("AreaLurk2_Splash_6", 2.8);
+}
+
+void EnterFakeLurk3(string &in asParent, string &in asChild, int alState)
+{
+	LanternFlicker(4);
+	
+	LurkerSplashHigh("AreaLurk3_Splash_1", 0.5);
+	LurkerSplashHigh("AreaLurk3_Splash_2", 1.25);
+	LurkerSplashHigh("AreaLurk3_Splash_3", 2.0);
+	LurkerSplashHigh("AreaLurk3_Splash_4", 2.75);
+	LurkerSplashHigh("AreaLurk3_Splash_5", 3.5);
+}
+
+void EnterFakeLurk4(string &in asParent, string &in asChild, int alState)
+{
+	LanternFlicker(3);
+	
+	LurkerSplashHigh("AreaLurk4_Splash_1", 0.5);
+	LurkerSplashHigh("AreaLurk4_Splash_2", 1.25);
+	LurkerSplashHigh("AreaLurk4_Splash_3", 2.0);
+	LurkerSplashHigh("AreaLurk4_Splash_4", 2.75);
+}
+//-------------------------------------------
+
+
+
+//-------------------------------------------
+
+//----------------------------
+//END WATER LURKER//
+//----------------------------
+
+// Dynamo Luker Handler//
+void EntDynamoLurker(string &in asParent, string &in asChild, int alState)
+{
+	if (asChild == "dynamo_lurker_trigger")
+		{	
+		SetMoveObjectState("gate4",0.0f);
+		PlaySoundAtEntity("Drag", "afx_bilge_gate_steel_close", "gate4", 0.0f, false);
+		PlaySoundAtEntity("Drag", "afx_bilge_gate_steel_close_2D", "gate4", 0.0f, false);
+		PlayPropAnimation("Dynamo_11", "static", 0.0f, true, "");	
+		PlayPropAnimation("Dynamo_12", "static", 0.0f, true, "");		
+		PlayPropAnimation("Dynamo_13", "static", 0.0f, true, "");		
+		PlayPropAnimation("Dynamo_14", "static", 0.0f, true, "");		
+		PlayPropAnimation("Dynamo_15", "static", 0.0f, true, "");		
+		PlayPropAnimation("Dynamo_16", "static", 0.0f, true, "");
+		AddTimer("DynamoKillTimer", 3.0f, "KillDynamos");
+		}
+
+}
+
+void ActivateDynamoLurker()
+{
+	AddDebugMessage("Dynamo Luker Event Fired", false);
+	SetEntityActive("waterlurker_2", true);	
+	StartLampFlickerBurst("sewer_wall_lamp_40", 4);
+	StartLampFlickerBurst("sewer_wall_lamp_30", 4);
+	StartLampFlickerBurst("sewer_wall_lamp_39", 4);
+	StartLampFlickerBurst("sewer_wall_lamp_41", 4);
+}
+
+void KillDynamos (string &in asTimer)
+{
+	if (asTimer == "DynamoKillTimer")
+	{
+	StopSound("DynamoOn", 1.0f);
+	StopSound("DynamoRoomStartup", 1.0f);
+		return;
+	}
+}
+//End Dynamo Luker Handler//
+
+//Dynamo Switch Handler//
+//Switch One//
+void DynamoSwitchHandler(string &in asEntity, int alState)
+{
+	if (alState != 1) return;
+	
+	if (asEntity == "DynamoSwitch1")
+		{
+			AddDebugMessage("Switch 1 Activated", false);
+			PlaySoundAtEntity("", "spraylock_breaker_switch_confirm.snt", "DynamoSwitch1", 0.0f, false);
+			PlaySoundAtEntity("BulkheadDown2D", "afx_bilge_gate_steel_close", "dynamo_gate_2", 0.0f, false);
+			SetLampLit("dynamo_light_1", true, false);
+			SetLeverInteractionDisablesStuck("DynamoSwitch1", false);
+			SetMoveObjectState("dynamo_gate_2",0.0f);
+			SetLeverStuckState("DynamoSwitch1", 1, false);
+			AddLocalVarInt("DynamoSwitches", 1);
+			DynamoSolved();
+		}
+//Switch Two//
+	else if (asEntity == "DynamoSwitch2")
+		{
+			AddDebugMessage("Switch 2 Activated", false);
+			PlaySoundAtEntity("", "spraylock_breaker_switch_confirm.snt", "DynamoSwitch2", 0.0f, false);
+			PlaySoundAtEntity("BulkheadDown2D", "afx_bilge_gate_steel_close", "dynamo_gate_1", 0.0f, false);
+			SetLampLit("dynamo_light_2", true, false);
+			SetMoveObjectState("dynamo_gate_1",0.0f);
+			SetLeverInteractionDisablesStuck("DynamoSwitch2", false);
+			SetLeverStuckState("DynamoSwitch2", 1, false);
+			AddLocalVarInt("DynamoSwitches", 1);
+			DynamoSolved();
+		}
+//Switch Three//
+	else if (asEntity == "DynamoSwitch3")
+		{
+			AddDebugMessage("Switch 3 Activated", false);
+			PlaySoundAtEntity("", "spraylock_breaker_switch_confirm.snt", "DynamoSwitch3", 0.0f, false);
+			PlaySoundAtEntity("BulkheadDown2D", "afx_bilge_gate_steel_close", "dynamo_gate_3", 0.0f, false);
+			SetLampLit("dynamo_light_3", true, false);
+			SetLeverInteractionDisablesStuck("DynamoSwitch3", false);
+			SetMoveObjectState("dynamo_gate_3",0.0f);
+			SetLeverStuckState("DynamoSwitch3", 1, false);
+			AddLocalVarInt("DynamoSwitches", 1);
+			DynamoSolved();
+		}
+//Switch Four//
+	else if (asEntity == "DynamoSwitch4")
+		{
+			AddDebugMessage("Switch 4 Activated", false);
+			PlaySoundAtEntity("", "spraylock_breaker_switch_confirm.snt", "DynamoSwitch4", 0.0f, false);
+			PlaySoundAtEntity("BulkheadDown2D", "afx_bilge_gate_steel_close", "dynamo_gate_4", 0.0f, false);
+			SetLampLit("dynamo_light_4", true, false);
+			SetLeverInteractionDisablesStuck("DynamoSwitch4", false);
+			SetMoveObjectState("dynamo_gate_4",0.0f);
+			SetLeverStuckState("DynamoSwitch4", 1, false);
+			AddLocalVarInt("DynamoSwitches", 1);
+			DynamoSolved();
+		}
+//Switch Five//
+	else if (asEntity == "DynamoSwitch5")
+		{
+			AddDebugMessage("Switch 5 Activated", false);
+			PlaySoundAtEntity("", "spraylock_breaker_switch_confirm.snt", "DynamoSwitch5", 0.0f, false);
+			PlaySoundAtEntity("BulkheadDown2D", "afx_bilge_gate_steel_close", "dynamo_gate_5", 0.0f, false);
+			SetLampLit("dynamo_light_5", true, false);
+			SetLeverInteractionDisablesStuck("DynamoSwitch5", false);
+			SetMoveObjectState("dynamo_gate_5",0.0f);
+			SetLeverStuckState("DynamoSwitch5", 1, false);
+			AddLocalVarInt("DynamoSwitches", 1);
+			DynamoSolved();
+		}
+		
+	if (GetLocalVarInt("DynamoSwitches") == 2)
+	{
+		ActivateDynamoLurker();
+	}
+}
+//On all switches triggered, make door switch come online//
+	
+void DynamoSolved()
+{	
+	if(GetLocalVarInt("DynamoSwitches") == 5)
+		{
+		AddDebugMessage("All Switches Activated", false);
+		SetMoveObjectState("fuse_box_glass_1",-1.0f);
+		SetLampLit("dynamo_light_6", true, false);
+		SetLampLit("dynamo_light_7", true, false);
+		SetLampLit("dynamo_light_8", true, false);
+		SetLampLit("dynamo_light_9", true, false);
+		SetLampLit("dynamo_light_10", true, false);
+		SetLampLit("dynamo_light_11", true, false);
+		SetLampLit("dynamo_light_12", true, false);
+		SetLampLit("dynamo_light_13", true, false);
+		PlaySoundAtEntity("", "afx_temple_lightsout.snt", "Player", 0.0f, false);
+		PlayMusic("music_bilge_dynamo.ogg", false, 0.45f, 0.0f, 6, false);
+		}
+
+}
+//End Dynamo Switch Handler//
+
+//MANDUS REACTION SOUND PLAYER//
+void MandusReactionPlayer (string asReactType, float afWaitTime)
+{
+	SetLocalVarString("CurrentReactType", asReactType);
+	AddTimer("MandusReactionInternalTimer", afWaitTime, "MandusReactionPlayerTimerEnd");
+}
+
+void MandusReactionPlayerTimerEnd (string &in asTimer)
+{
+	if (GetLocalVarString("CurrentReactType") == "Scared")
+	{
+		AddDebugMessage("SCARED REACTION", false);
+		PlaySoundAtEntity("React_Scared", "react_scare.snt", "Player", 0.0f, false);
+		return;
+	}
+	else if (GetLocalVarString("CurrentReactType") == "Breath")
+	{
+		AddDebugMessage("BREATH REACTION", false);
+		PlaySoundAtEntity("React_Breath", "react_breath.snt", "Player", 0.0f, false);
+		return;
+	}
+	else if (GetLocalVarString("CurrentReactType") == "Quick")
+	{
+		AddDebugMessage("QUICK SCARE REACTION", false);
+		PlaySoundAtEntity("React_Quick", "react_quickscare.snt", "Player", 0.0f, false);
+		return;
+	}
+	else if (GetLocalVarString("CurrentReactType") == "Cough")
+	{
+		AddDebugMessage("COUGH REACTION", false);
+		PlaySoundAtEntity("", "react_cough.snt", "Player", 0.0f, false);
+		return;
+	}
+}
+//END MANDUS REACTION SOUND PLAYER//
+
+void InteractExitDoor(string &in asEntity)
+{
+	StopMusic(1, 6);
+	PlayMusic("music_transition_09bilge_10reactor.ogg", false, 1.0f, 1.0f, 0, false);
+	FadeOut(1);
+	AddTimer("", 1.0, "TimerSwitchLevel");
+}
+
+void TimerSwitchLevel(string &in asTimer)
+{
+	ChangeMap("10_reactor.map", "MainStart", "afx_events_leveltransition_tesladoor_enter.snt", "afx_events_leveltransition_tesladoor_exit.snt");
+}
