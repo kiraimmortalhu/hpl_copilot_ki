@@ -8,6 +8,8 @@ HPL Copilot is an AI-grounding workspace designed to improve AI-assisted scripti
 Rather than relying solely on general AI knowledge, the workspace provides structured documentation, API references, scripting examples, and compatibility guidance that AI assistants such as GitHub Copilot can use as retrieval sources.
 The goal is to improve the quality, accuracy, and engine compatibility of AI-assisted scripting workflows, specifically inside HPL.
 
+IMPORTANT NOTE: HPL Copilot MIGHT work with other Agent AIs as well - such as Codex that one our testers have tried - integrated similarly into the VS code environment. The AI descriptor and example files are universally structured for such models to work with. Feel free to try, and let me know how it went! 
+
 ---
 
 ## Features
