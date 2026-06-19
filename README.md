@@ -82,6 +82,7 @@ Before using this workspace, you should already be familiar with:
 * Testing - and DEBUGGING - in game
 
 It is advised but not mandatory to have:
+* Experience with AI tool prompts and agents - helps making better use of your monthly quota
 * Git basics knowledge
 * Ability to use Git bash / Github Desktop for your own project management
 * Amnesia Remodded Editor tools (for advanced custom assets management)
@@ -120,6 +121,7 @@ my_mod/
 ### Folder Purpose
 
 * `.github/` - Copilot workspace instructions
+* `.vscode/` - Helps VScode recognize .hps files / wip autocomplete setup
 * `copilot_shared/` - Configuration files and changelogs
 * `copilot_hpl2/` - HPL2 documentation and version-specific references
 
