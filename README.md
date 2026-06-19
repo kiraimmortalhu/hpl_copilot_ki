@@ -8,8 +8,6 @@ HPL Copilot is an AI-grounding workspace designed to improve AI-assisted scripti
 Rather than relying solely on general AI knowledge, the workspace provides structured documentation, API references, scripting examples, and compatibility guidance that AI assistants such as GitHub Copilot can use as retrieval sources.
 The goal is to improve the quality, accuracy, and engine compatibility of AI-assisted scripting workflows, specifically inside HPL.
 
-IMPORTANT NOTE: HPL Copilot MIGHT work with other Agent AIs as well - such as Codex that one our testers have tried - integrated similarly into the VS code environment. The AI descriptor and example files are universally structured for such models to work with. Feel free to try, and let me know how it went! 
-
 ---
 
 ## Features
@@ -340,6 +338,19 @@ you should add the following lines to the root folder gitignore:
 */copilot_shared
 *README.md
 ```
+
+### 10 [Optional] Add autocomplete and scripts documentation support for HPL2
+
+This will make Visual Studio Code recognize functions you are typing from the HPL2 wiki, with its documentation taken from the wiki as well, being able to autocomplete it and guide you through the parameters it needs. 
+
+It also is able to autocomplete and show documentation of functions and variables/constants you've made from your current file or from your #include files.  
+
+How to enable:
+- At the top left side of Visual Studio Code, you will see some icons (File Explorer, Search, ...), the last one that looks like 4 squares is the Extensions tab icon. 
+- Click it, then at the top left a search bar will appear. 
+- Search "C++ extension", it will show one called "C/C++ Extension Pack". 
+- Click it and then click Install. 
+
 
 ### Important
 
