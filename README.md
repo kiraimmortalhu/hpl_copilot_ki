@@ -4,6 +4,7 @@ HPL Copilot is an AI-grounding workspace designed to improve AI-assisted scripti
 * Provide more accurate answers, that reflect the code quality of the original game. A certain improvement upon saved ChatGPT contexts of asking prompts in an online GUI from a barely known scripting language such as HPL2
 * Be as beginner friendly as possible, installing only a lightweight IDE shell to use Copilot with. In the future with updates, it might get some additional automations that do not consume Copilot resources - courtesy of already having this local setup.
 * Having an offline workspace with all necessary information preexistent inside. Internet connection is still required to get AI assisted answers!
+* FREE PLAN COMPATIBILITY
 
 Rather than relying solely on general AI knowledge, the workspace provides structured documentation, API references, scripting examples, and compatibility guidance that AI assistants such as GitHub Copilot can use as retrieval sources.
 The goal is to improve the quality, accuracy, and engine compatibility of AI-assisted scripting workflows, specifically inside HPL.
