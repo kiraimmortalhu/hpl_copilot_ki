@@ -2,7 +2,7 @@
 name: exampleHPL2
 description: An example task for HPL2 to remember how it's structured
 model: Auto (copilot)
-tools: ['web', search, 'edit/createFile']
+tools: ['web', 'search', 'edit/createFile']
 
 ---
 
