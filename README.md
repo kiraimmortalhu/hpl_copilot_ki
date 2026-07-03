@@ -113,6 +113,7 @@ Example:
 │
 ├── copilot_shared/
 ├── copilot_hpl2/
+├── copilot_hpl3/
 │
 ├── maps/
 ├── entities/
@@ -129,6 +130,7 @@ Example:
 * `.vscode/` - Helps VScode recognize .hps files / wip autocomplete setup
 * `copilot_shared/` - Configuration files and changelogs
 * `copilot_hpl2/` - HPL2 documentation and version-specific references
+* `copilot_hpl3/` - HPL3 quick guidance and helper search instructions
 
 * `maps/` - Gameplay scripts and mod implementation files
 * `"project configuration"` - The filename and format differs between engines. Contains the info necessary for the mod to show up in game.
@@ -476,8 +478,12 @@ These files contain:
 ## HPL3 Documentation
 
 HPL3 comes with "its own documentation".
-Copilot uses the specific game' root folder "maps" and "scripts" folders
-to accurately suggest SOMA/Rebirth/Bunker specific code conventions.
+For this workspace, use `copilot_hpl3/` for HPL3-specific lookup guidance and quick search heuristics.
+
+> If memory is cleared, start here: `copilot_hpl3/quick_start.md`, then `copilot_hpl3/README.md`, before searching engine scripts.
+
+When `TARGET_ENGINE=HPL3`, do not use `copilot_hpl2/` for implementation guidance.
+Copilot should instead rely on HPL3 helper wrapper patterns and the external engine script files.
 
 ---
 

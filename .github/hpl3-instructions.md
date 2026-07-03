@@ -36,8 +36,9 @@ Before reading or using any engine documentation, first read:
 If `TARGET_ENGINE=HPL3`, then:
 
 - ignore `copilot_hpl2/` entirely
-- do not use HPL2 examples as implementation guidance
+- do not use HPL2 examples or HPL2 stub files as implementation guidance
 - resolve all engine references from `<ENGINE_ROOT>` and `<MOD_ROOT>` only
+- search external engine APIs only under `<ENGINE_ROOT>/script/`
 
 ---
 
@@ -49,6 +50,11 @@ Copilot must resolve the engine root as:
 
 <ENGINE_ROOT> = <MOD_ROOT>/../../..
 
+Before using this value, verify that `<ENGINE_ROOT>` is inside the host game's root folder and contains `BlackBox.dll`.
+
+This check prevents traversing above the real game install directory or into an unrelated folder.
+
+For example, if the mod is installed in `<game_root>/mods/ChairNoble`, then `<ENGINE_ROOT>` should resolve to `<game_root>`.
 
 This applies regardless of the host game (e.g. SOMA, Amnesia Rebirth or Amnesia The Bunker).
 
