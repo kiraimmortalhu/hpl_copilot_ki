@@ -1,7 +1,7 @@
 # HPL Copilot
 
 HPL Copilot is an AI-grounding workspace designed to improve AI-assisted scripting for Frictional Games' HPL engine titles. It was created mainly for the possibility of the following:
-* Provide more accurate answers, that reflect the code quality of the original game. A certain improvement upon saved ChatGPT contexts of asking prompts in an online GUI from a barely known scripting language such as HPL2
+* Provide more accurate answers, that reflect the code quality of the original game. A certain improvement upon saved ChatGPT contexts of asking prompts in an online GUI from a barely known scripting language such as HPL
 * Be as beginner friendly as possible, installing only a lightweight IDE shell to use Copilot with. In the future with updates, it might get some additional automations that do not consume Copilot resources - courtesy of already having this local setup.
 * Having an offline workspace with all necessary information preexistent inside. Internet connection is still required to get AI assisted answers!
 * FREE PLAN COMPATIBILITY
@@ -47,9 +47,7 @@ Used by:
 * Amnesia: Justine
 * Amnesia: A Machine for Pigs
 
-### Currently NOT Supported
-
-#### HPL3
+#### HPL3 (currently in beta)
 
 Used by:
 
@@ -65,7 +63,7 @@ You will need:
 
 * Visual Studio Code
 * GitHub Copilot for VS Code
-* The game and editor suite installed
+* The game, editor suite installed, your mod set up
 * About 1 GB of additional space for the tools
 
 Downloads:
@@ -76,8 +74,8 @@ Downloads:
 
 Before using this workspace, you should already be familiar with:
 
-* Basic HPL2 mod creation
-* The HPL2 Editor Suite in particular
+* Basic HPL mod creation, for the specific game you're modding
+* The HPL Editor Suite in particular
 * General mod folder structure
 * Basic HPL scripting practices
 * Testing - and DEBUGGING - in game
@@ -86,15 +84,18 @@ It is advised but not mandatory to have:
 * Experience with AI tool prompts and agents - helps making better use of your monthly quota
 * Git basics knowledge
 * Ability to use Git bash / Github Desktop for your own project management
-* Amnesia Remodded Editor tools (for advanced custom assets management)
+* Amnesia Remodded Editor tools for HPL2 (for advanced custom assets management)
 [DOWNLOAD](https://www.moddb.com/mods/amnesia-remodded/downloads)
 
 Useful tutorials:
 
-* HPL2 Tutorials:
-[by Mudbill](https://https://code.visualstudio.com/Download)
 * Visual Studio Copilot setup: 
-[Youtube](https://www.youtube.com/watch?v=X_Aet9ndh_Y)
+[Youtube](https://https://code.visualstudio.com/Download)
+* HPL2 Tutorials:
+[by Mudbill](https://www.youtube.com/watch?v=X_Aet9ndh_Y)
+* HPL3 Tutorials:
+[SOMA, by Draugemalf](https://www.youtube.com/watch?v=lR-4OlG4uuc&list=PLwJXvfVZGcJljQs1G-rAnipVf5SeuXawX)
+[Rebirth, by Draugemalf](https://www.youtube.com/watch?v=-jFnEk7peTE&list=PL4KkjlmOwLwwMVqedCNpi6caUxhgyf8Qr)
 
 ---
 
@@ -105,21 +106,22 @@ The intended workspace root is your actual mod project, represented by "my_mod".
 Example:
 
 ```text
-my_mod/
+"my_mod"/
 ├── .github/
-│   └── copilot-instructions.md
 │
 ├── copilot_shared/
 ├── copilot_hpl2/
 │
 ├── maps/
 ├── entities/
-├── custom_story_settings.cfg
+├── "project configuration"
 │
 └── README.md
 ```
 
-### Folder Purpose
+### Folder Purposes
+
+* `"my_mod"` - Your mod project's root folder, usually the name of your mod.
 
 * `.github/` - Copilot workspace instructions
 * `.vscode/` - Helps VScode recognize .hps files / wip autocomplete setup
@@ -127,6 +129,9 @@ my_mod/
 * `copilot_hpl2/` - HPL2 documentation and version-specific references
 
 * `maps/` - Gameplay scripts and mod implementation files
+* `"project configuration"` - The filename and format differs between engines. Contains the info necessary for the mod to show up in game.
+    * `"custom_story_settings.cfg"`- HPL2 configuration file
+    * `"entry.hpc"`- HPL3 configuration file
 
 The workspace is designed so that the engine documentation exists alongside your real mod project rather than inside a separate SDK.
 
@@ -158,22 +163,16 @@ Tutorial:
 
 ---
 
-### 3. Confirm the HPL2 Editor Suite working
+### 3. Confirm the HPL Editor Suite is working
 
-Ensure that the HPL2 Editor Suite is installed and functioning correctly.
+Ensure that the editors are installed and functioning correctly.
 
 This workspace is intended for users who already know how to:
 
-* Create HPL2 mods
+* Create HPL2/3 mods
 * Use the Level Editor
-* Create and edit scripts
+* Create and edit scripts (for which VS code can now be used)
 * Test and debug projects
-
-Tutorials:
-
-[Retail / Non-steam](https://youtu.be/cyoKpwehW-o)
-
-[Steam](https://www.youtube.com/watch?v=lPAFjs677hk)
 
 ---
 
@@ -209,7 +208,7 @@ Amnesia The Dark Descent\custom_stories\MyCustomStory\
 or
 
 ```text
-Amnesia The Dark Descent\redist\MyMod\
+SOMA\mods\MyMod\
 ```
 
 The folder should already contain your project files such as:
@@ -217,7 +216,7 @@ The folder should already contain your project files such as:
 ```text
 maps/
 entities/
-custom_story_settings.cfg
+configuration (custom_story_settings.cfg or entry.hpc)
 ```
 
 and/or similar project-specific content.
@@ -244,6 +243,7 @@ Inside you should see folders similar to:
 
 ```text
 .github/
+.vscode/
 copilot_shared/
 copilot_hpl2/
 README.md
@@ -263,6 +263,7 @@ This is a very common mistake.
 MyCustomStory/
 └── hpl_copilot_ki-master/
     ├── .github/
+    ├── .vscode/
     ├── copilot_shared/
     └── copilot_hpl2/
 ```
@@ -272,11 +273,12 @@ MyCustomStory/
 ```text
 MyCustomStory/
 ├── .github/
+├── .vscode/
 ├── copilot_shared/
 ├── copilot_hpl2/
 ├── maps/
 ├── entities/
-└── custom_story_settings.cfg
+└── and so on...
 ```
 
 The Copilot folders should sit alongside your existing project files.
@@ -299,6 +301,10 @@ Example:
 
 ```text
 .../Amnesia The Dark Descent/custom_stories/MyCustomStory/
+or
+.../SOMA/mods/MyCustomStory/
+.../Amnesia Rebirth/mods/MyCustomStory/
+.../Amnesia The Bunker/mods/MyCustomStory/
 ```
 
 Do NOT open only the `maps` folder.
@@ -389,11 +395,15 @@ HPL2_12
 HPL2_13
 HPL2_14
 HPL2_15
+
 HPL2_AMFP
+
+HPL3
 ```
 
 This value determines which documentation and APIs Copilot should consider valid.
 12 is treated as default, while AMFP should be considered work in progress.
+HPL3 works in a slightly different way, so it is VERY IMPORTANT to set it as so.
 
 ---
 
@@ -404,15 +414,14 @@ After opening your mod project in VSCode:
 1. Verify `TARGET_ENGINE` in `project_config.cfg`
 2. Open or create scripts inside `maps/`
 3. Use GitHub Copilot normally
-4. Test and debug with the HPL2 tools
-5. Update documentation when verified behavior is discovered
+4. Test and debug with the HPL tools
 
 Copilot should automatically use the workspace documentation to provide more accurate suggestions.
 
 
 ---
 
-## Documentation Structure
+## HPL2 Documentation Structure
 
 ### Core Documentation
 
@@ -462,6 +471,12 @@ These files contain:
 * Compatibility notes
 * Copilot guidance
 
+## HPL3 Documentation
+
+HPL3 comes with "its own documentation".
+Copilot uses the specific game' root folder "maps" and "scripts" folders
+to accurately suggest SOMA/Rebirth/Bunker specific code conventions.
+
 ---
 
 ## Project Goals
@@ -478,8 +493,7 @@ These files contain:
 
 ### Future
 
-* Support additional generations of the HPL engine
-* Add HPL3 support
+* Improve support for AMFP and HPL3
 * Improve AI-assisted configuration editing
 * Improve troubleshooting assistance
 * Improve script generation quality

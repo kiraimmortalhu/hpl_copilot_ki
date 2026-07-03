@@ -92,9 +92,12 @@ Prefer `.hps` files as the primary source of scripting patterns.
 
 Use generic `.as`, `.html`, or AngelScript language references only as secondary language-level guidance.
 
-Depending on version of the engine used:
+Depending on the version of the engine used,
+for HPL2:
+* `.github/hpl2-instructions.md`
 * `copilot_hpl2/`
-* `copilot_hpl3/`
+for HPL3:
+* `.github/hpl3-instructions.md`
 
 ---
 
@@ -133,7 +136,7 @@ Ignore them unless explicitly relevant to the current task.
 
 ## Project Target and Detection
 
-Before using HPL2 documentation, read:
+Before using any specific HPL documentation, read:
 
 `copilot_shared/project_config.cfg`
 
