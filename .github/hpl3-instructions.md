@@ -23,6 +23,20 @@ copilot_shared/project_config.cfg contains:
 
 If this condition is not met, following instructions MUST be ignored.
 
+## 2a. Mandatory Mode Check
+
+Before reading or using any engine documentation, first read:
+
+- `.github/copilot-instructions.md`
+- `.github/hpl3-instructions.md`
+- `copilot_shared/project_config.cfg`
+
+If `TARGET_ENGINE=HPL3`, then:
+
+- ignore `copilot_hpl2/` entirely
+- do not use HPL2 examples as implementation guidance
+- resolve all engine references from `<ENGINE_ROOT>` and `<MOD_ROOT>` only
+
 ---
 
 ## 3. Engine Root Resolution (HPL3 Only)

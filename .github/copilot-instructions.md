@@ -142,6 +142,9 @@ Before using any specific HPL documentation, read:
 
 The `TARGET_ENGINE` value is authoritative.
 
+Before any API lookup or implementation suggestion, verify the active engine mode first.
+If `TARGET_ENGINE=HPL3`, treat `copilot_hpl2/` as out of scope and do not use it for implementation guidance.
+
 ## HPL2 components
 
 Engine default is HPL2 (1.2 patch), as configured in "project_config.cfg". 
