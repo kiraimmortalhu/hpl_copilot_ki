@@ -59,6 +59,7 @@ If a requested feature cannot be implemented using known public APIs:
 * Follow patterns from original game scripts whenever possible.
 * Use existing engine systems instead of custom abstractions.
 * Match scripting style used in official Frictional Games projects.
+* Ignore the `.vscode/` folder completely when generating code or selecting implementation guidance; it contains only editor autocomplete and file recognition settings.
 
 ---
 

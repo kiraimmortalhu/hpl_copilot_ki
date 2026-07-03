@@ -22,6 +22,11 @@ This file is the minimal path for future HPL3 tasks. Use it when you need to sol
    - Visual/effects/tweens: `helpers/helper_effects.hps`
    - Sequence/timer callbacks: `helpers/helper_sequences.hps`
 
+4. If the game root scripts or `maps/` folder cannot be found:
+   - Stop the current task immediately.
+   - Alert the user that the mod or project is not properly installed/configured.
+   - Ask the user to provide the exact path to the game root or `script/` folder so you can continue.
+
 ## Most useful HPL3 patterns
 
 - Map script callback structure:

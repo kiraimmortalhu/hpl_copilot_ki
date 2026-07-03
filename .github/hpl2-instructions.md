@@ -52,6 +52,12 @@ Contains:
 
 Update folders contain functionality introduced in official patches.
 
+If the `copilot_hpl2/` folder is missing or cannot be found:
+
+* Stop the current task immediately.
+* Alert the user that the project is not properly installed or configured.
+* Ask the user to verify project integrity and redownload HPL Copilot if necessary.
+
 ### custom_story_settings.cfg
 
 Indicates that the repository root is the active HPL2 custom story.
