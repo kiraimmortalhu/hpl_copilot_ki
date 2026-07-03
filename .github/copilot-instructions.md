@@ -55,7 +55,7 @@ If a requested feature cannot be implemented using known public APIs:
 
 * Use AngelScript-compatible syntax only.
 * Prefer HPL public script functions whenever possible.
-* Prefer APIs defined in local `copilot_hpl2/` documentation over inferred implementations.
+* Prefer APIs defined in the active engine's documentation or engine resources over inferred implementations.
 * Follow patterns from original game scripts whenever possible.
 * Use existing engine systems instead of custom abstractions.
 * Match scripting style used in official Frictional Games projects.
@@ -85,6 +85,8 @@ Avoid:
 Focus primarily on:
 
 * `.github/copilot-instructions.md`
+* `.github/README.md`
+* `AGENTS.md`
 * `copilot_shared/`
 * `maps/`
 
@@ -92,12 +94,10 @@ Prefer `.hps` files as the primary source of scripting patterns.
 
 Use generic `.as`, `.html`, or AngelScript language references only as secondary language-level guidance.
 
-Depending on the version of the engine used,
-for HPL2:
-* `.github/hpl2-instructions.md`
-* `copilot_hpl2/`
-for HPL3:
-* `.github/hpl3-instructions.md`
+Depending on the version of the engine used:
+- For HPL2 targets, use `.github/hpl2-instructions.md` and the HPL2 documentation set.
+- For HPL3 targets, use `.github/hpl3-instructions.md` and the HPL3 engine resources.
+- If the target engine is missing or unclear, ask the user before using version-specific APIs; otherwise fall back to HPL2 (1.2 patch) guidance.
 
 ---
 
@@ -143,7 +143,8 @@ Before using any specific HPL documentation, read:
 The `TARGET_ENGINE` value is authoritative.
 
 Before any API lookup or implementation suggestion, verify the active engine mode first.
-If `TARGET_ENGINE=HPL3`, treat `copilot_hpl2/` as out of scope and do not use it for implementation guidance.
+Use the guidance set that matches `TARGET_ENGINE` and do not mix engine-specific references from the wrong target.
+If `TARGET_ENGINE` is missing or invalid, ask the user before using version-specific APIs; if no clarification is available, fall back to HPL2 (1.2 patch) guidance.
 
 ## HPL2 components
 

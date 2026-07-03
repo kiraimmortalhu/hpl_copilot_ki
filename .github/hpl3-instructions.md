@@ -28,6 +28,8 @@ If this condition is not met, following instructions MUST be ignored.
 Before reading or using any engine documentation, first read:
 
 - `.github/copilot-instructions.md`
+- `.github/README.md`
+- `AGENTS.md`
 - `.github/hpl3-instructions.md`
 - `copilot_shared/project_config.cfg`
 
