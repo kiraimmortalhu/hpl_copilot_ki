@@ -337,11 +337,11 @@ If you are familiar with Git basics and you use github or any similar platform t
 you should add the following lines to the root folder gitignore:
 
 ```text
-*/.github
-*/.vscode
-*/copilot_hpl2
-*/copilot_shared
-*README.md
+.github/
+.vscode/
+copilot_hpl2/
+copilot_shared/
+README.md
 ```
 
 ### Important
